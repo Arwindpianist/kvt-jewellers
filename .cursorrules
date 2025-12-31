@@ -1,0 +1,168 @@
+# .cursorrules — KVT Jewellers Website & Web App Refresh
+
+These rules are **non-negotiable** and must be followed exactly by Cursor and any LLM-assisted development.
+
+---
+
+## 1. Project Intent (Read First)
+
+This project is a **security-sensitive, brand-critical rebuild** of a luxury jewelry website and staff web app.
+
+Primary goals:
+
+* Zero exposed infrastructure endpoints
+* Premium, trustworthy visual presentation
+* Clear separation between public site and staff app
+* Maintainable, future-proof architecture
+
+Do NOT treat this like a generic SaaS dashboard or template website.
+
+---
+
+## 2. Tech Stack (Locked)
+
+* Framework: **Next.js (App Router only)**
+* Deployment: **Vercel**
+* Language: **TypeScript** (no JavaScript files)
+* Styling: **Tailwind CSS**
+* UI primitives: **shadcn/ui**
+* PWA: **next-pwa** (or equivalent service worker setup)
+
+No alternative frameworks, routers, or CSS systems are allowed.
+
+---
+
+## 3. Rendering Rules (Critical)
+
+* Default to **Server Components**
+* Use **Client Components only when strictly necessary** (forms, interactions)
+* Never fetch sensitive data in Client Components
+* Never expose secrets, endpoints, or provider URLs to the browser
+
+If unsure, keep logic server-side.
+
+---
+
+## 4. Security Rules (Highest Priority)
+
+### 4.1 Gold Price Fetching
+
+* Gold prices MUST be fetched server-side only
+* External providers must be accessed only inside Route Handlers
+* Provider URLs, API keys, AWS details must live ONLY in environment variables
+* Client must NEVER know where prices originate
+
+### 4.2 API Design
+
+* Use Next.js Route Handlers under `/app/api/*`
+* Apply basic rate limiting where applicable
+* Validate all inputs
+* Never proxy external APIs directly to the client
+
+### 4.3 Auth & Access Control
+
+* Staff routes must be protected
+* Public users must not access staff data or APIs
+* Implement role-based checks where staff actions affect public data
+
+---
+
+## 5. Application Structure
+
+### 5.1 Public Website
+
+* SEO-first
+* No authentication
+* Read-only data access
+* PWA installable
+
+### 5.2 Staff Web App
+
+* Auth-protected
+* Tablet-friendly layout
+* Allows:
+
+  * Gold price management
+  * Product/catalog updates
+
+Public and staff concerns must never be mixed.
+
+---
+
+## 6. UX & Design Rules
+
+This is a **luxury jewelry brand**, not a startup dashboard.
+
+### Must Do
+
+* Generous spacing
+* Strong typography
+* High-quality jewelry imagery
+* Calm, premium color palette
+* Mobile-first layouts
+
+### Must NOT Do
+
+* No loud gradients
+* No neon colors
+* No SaaS-style cards everywhere
+* No cluttered dashboards
+* No stock dashboard icons
+
+Design should convey **trust, heritage, and value**.
+
+---
+
+## 7. PWA Rules
+
+* App must be installable on mobile and desktop
+* Offline fallback page required
+* App icons and manifest required
+* Staff app must work reliably on tablets
+
+---
+
+## 8. Performance Rules
+
+* Optimize images using Next.js Image
+* Avoid unnecessary client-side JS
+* Use caching and revalidation for gold prices
+* Target high Lighthouse scores
+
+---
+
+## 9. Code Quality Rules
+
+* Strict TypeScript
+* No `any`
+* Clear folder structure
+* Reusable components
+* Descriptive naming
+
+No rushed or hacky implementations.
+
+---
+
+## 10. Scope Control
+
+### Explicitly Forbidden (Phase 1)
+
+* Online payments
+* Customer accounts
+* POS integrations
+* Third-party tracking bloat
+
+If a feature is not in the PRD, do NOT implement it.
+
+---
+
+## 11. Output Expectations
+
+Cursor should:
+
+* Clone existing site structure ONLY as reference
+* Replace all visuals with modern equivalents
+* Improve UX significantly without changing business intent
+* Follow this ruleset strictly
+
+Failure to follow these rules is considered an invalid output.
