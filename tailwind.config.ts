@@ -98,6 +98,20 @@ const config: Config = {
         serif: ["var(--font-serif)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        meteor: {
+          "0%": { transform: "translateX(-200px) translateY(-200px) rotate(45deg)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": {
+            transform: "translateX(200px) translateY(200px) rotate(45deg)",
+            opacity: "0",
+          },
+        },
+      },
+      animation: {
+        meteor: "meteor linear infinite",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],

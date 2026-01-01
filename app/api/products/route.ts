@@ -6,6 +6,7 @@ import {
   updateProduct,
   deleteProduct,
 } from "@/lib/products";
+import { logActivity } from "@/lib/activity-log";
 
 /**
  * GET /api/products - Get all products (public)
@@ -27,6 +28,18 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const product = createProduct(body);
+    
+    // Log activity
+    logActivity(
+      "product_created",
+      session.user.id,
+      session.user.name,
+      "product",
+      product.id,
+      product.name,
+      `Created product: ${product.name}`
+    );
+    
     return NextResponse.json({ product });
   } catch (error) {
     console.error("Error creating product:", error);
@@ -49,12 +62,38 @@ export async function PUT(request: NextRequest) {
   try {
     const body = await request.json();
     const { id, ...updates } = body;
+    
+    // Get current product for logging
+    const allProducts = getAllProducts();
+    const currentProduct = allProducts.find((p) => p.id === id);
+    
     const product = updateProduct(id, updates);
     
     if (!product) {
       return NextResponse.json(
         { error: "Product not found" },
         { status: 404 }
+      );
+    }
+
+    // Log changes
+    const changes: Record<string, { from: any; to: any }> = {};
+    Object.keys(updates).forEach((key) => {
+      if (currentProduct && (currentProduct as any)[key] !== (updates as any)[key]) {
+        changes[key] = { from: (currentProduct as any)[key], to: (updates as any)[key] };
+      }
+    });
+
+    if (Object.keys(changes).length > 0) {
+      logActivity(
+        "product_updated",
+        session.user.id,
+        session.user.name,
+        "product",
+        product.id,
+        product.name,
+        `Updated product: ${product.name}`,
+        changes
       );
     }
 
@@ -88,12 +127,29 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    // Get product name before deletion
+    const allProducts = getAllProducts();
+    const product = allProducts.find((p) => p.id === id);
+    
     const success = deleteProduct(id);
     
     if (!success) {
       return NextResponse.json(
         { error: "Product not found" },
         { status: 404 }
+      );
+    }
+
+    // Log activity
+    if (product) {
+      logActivity(
+        "product_deleted",
+        session.user.id,
+        session.user.name,
+        "product",
+        id,
+        product.name,
+        `Deleted product: ${product.name}`
       );
     }
 

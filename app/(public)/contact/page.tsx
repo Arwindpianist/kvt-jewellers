@@ -48,7 +48,7 @@ export default function ContactPage() {
       <div className="grid gap-8 lg:grid-cols-2">
         {/* Contact Form */}
         <AnimatedSection>
-          <Card className="shadow-lg">
+          <Card className="bg-card-level-2 shadow-card-elevated">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Send className="h-5 w-5 text-brand-600" />
@@ -131,7 +131,7 @@ export default function ContactPage() {
         {/* Contact Information */}
         <div className="space-y-6">
           <AnimatedSection delay={0.1}>
-            <Card className="shadow-lg">
+            <Card className="bg-card-level-2 shadow-card-elevated">
               <CardHeader>
                 <CardTitle>Contact Information</CardTitle>
               </CardHeader>

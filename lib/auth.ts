@@ -8,13 +8,11 @@ const MOCK_USERS: User[] = [
     id: "1",
     email: "admin@kvtjewellers.com",
     name: "Admin User",
-    role: "admin",
   },
   {
     id: "2",
     email: "staff@kvtjewellers.com",
     name: "Staff User",
-    role: "staff",
   },
 ];
 

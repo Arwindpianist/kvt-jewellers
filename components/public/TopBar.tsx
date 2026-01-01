@@ -1,7 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Phone } from "lucide-react";
+import { Phone, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const STORAGE_KEY = "kvt-topbar-dismissed";
 
 export function TopBar() {
   const [times, setTimes] = useState({
@@ -9,8 +12,19 @@ export function TopBar() {
     india: "",
     malaysia: "",
   });
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    // Check if user has dismissed the bar
+    const dismissed = localStorage.getItem(STORAGE_KEY);
+    if (dismissed === "true") {
+      setIsVisible(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isVisible) return;
+
     const updateTimes = () => {
       const now = new Date();
       
@@ -55,7 +69,12 @@ export function TopBar() {
     const interval = setInterval(updateTimes, 1000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isVisible]);
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    localStorage.setItem(STORAGE_KEY, "true");
+  };
 
   // Format time for mobile (shorter format)
   const formatTimeMobile = (timeStr: string) => {
@@ -65,37 +84,38 @@ export function TopBar() {
   };
 
   return (
-    <div className="border-b bg-brand-700 text-white">
-      <div className="container mx-auto px-4 py-2">
-        {/* Mobile View */}
-        <div className="flex flex-col gap-2 md:hidden">
-          {/* Phone Number - Prominent on Mobile */}
-          <div className="flex items-center justify-center gap-2">
-            <Phone className="h-4 w-4" />
-            <a 
-              href="tel:+60326029916" 
-              className="text-sm font-semibold hover:underline active:text-brand-200"
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ height: 0, opacity: 0 }}
+          animate={{ height: "auto", opacity: 1 }}
+          exit={{ height: 0, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="border-b bg-brand-700 text-white overflow-hidden"
+        >
+          <div className="container mx-auto px-4 py-2 relative">
+            <button
+              onClick={handleDismiss}
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-brand-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-brand-700"
+              aria-label="Dismiss top bar"
             >
-              03 2602 9916
-            </a>
-          </div>
-          
-          {/* Time Zones - Simplified on Mobile */}
-          <div className="flex items-center justify-center gap-3 text-xs">
-            <div className="flex items-center gap-1">
-              <span>🇲🇾</span>
-              <span className="font-medium">{formatTimeMobile(times.malaysia)}</span>
+              <X className="h-4 w-4" />
+            </button>
+            {/* Mobile View */}
+            <div className="flex items-center justify-center gap-3 text-xs md:hidden pr-8">
+              <div className="flex items-center gap-1">
+                <span>🇲🇾</span>
+                <span className="font-medium">{formatTimeMobile(times.malaysia)}</span>
+              </div>
+              <span className="text-white/40">•</span>
+              <div className="flex items-center gap-1">
+                <span>🇮🇳</span>
+                <span className="font-medium">{formatTimeMobile(times.india)}</span>
+              </div>
             </div>
-            <span className="text-white/40">•</span>
-            <div className="flex items-center gap-1">
-              <span>🇮🇳</span>
-              <span className="font-medium">{formatTimeMobile(times.india)}</span>
-            </div>
-          </div>
-        </div>
 
         {/* Desktop View */}
-        <div className="hidden md:flex flex-wrap items-center justify-between gap-4 text-xs">
+        <div className="hidden md:flex flex-wrap items-center justify-between gap-4 text-xs pr-8">
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-1.5">
               <span>🇺🇸</span>
@@ -121,7 +141,9 @@ export function TopBar() {
             </a>
           </div>
         </div>
-      </div>
-    </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

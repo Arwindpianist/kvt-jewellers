@@ -18,6 +18,12 @@ export interface GoldPrice {
   // For product rates table
   buy?: number;
   sell?: number;
+  // Buy/Sell percentage configuration
+  buyPercentage?: number; // Percentage to subtract from base price for buying
+  sellPercentage?: number; // Percentage to add to base price for selling
+  // Exchange rate configuration
+  usePresetExchangeRate?: boolean;
+  presetExchangeRate?: number; // Manual exchange rate override
 }
 
 export interface GoldPriceResponse {

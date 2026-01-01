@@ -35,19 +35,953 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 318 59% 20%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 318 59% 45%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217.2 32.6% 25%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 75%;
+    --accent: 318 59% 20%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 318 59% 20%;
+    --border: 217.2 32.6% 25%;
+    --input: 217.2 32.6% 12%;
+    --ring: 318 59% 50%;
+  }
+
+  /* Dark mode brand color adjustments - Professional contrast ratios */
+  .dark .bg-brand-600 {
+    background-color: hsl(318, 59%, 30%);
+  }
+
+  .dark .bg-brand-500 {
+    background-color: hsl(318, 59%, 35%);
+  }
+
+  .dark .bg-brand-400 {
+    background-color: hsl(318, 59%, 40%);
+  }
+
+  .dark .bg-brand-300 {
+    background-color: hsl(318, 59%, 45%);
+  }
+
+  /* Text colors - WCAG AA compliant (4.5:1 contrast) */
+  .dark .text-brand-700 {
+    color: hsl(318, 59%, 75%);
+  }
+
+  .dark .text-brand-600 {
+    color: hsl(318, 59%, 70%);
+  }
+
+  .dark .text-brand-500 {
+    color: hsl(318, 59%, 65%);
+  }
+
+  .dark .text-brand-400 {
+    color: hsl(318, 59%, 60%);
+  }
+
+  .dark .text-brand-300 {
+    color: hsl(318, 59%, 55%);
+  }
+
+  /* Border colors - Visible but subtle */
+  .dark .border-brand-200\/50,
+  .dark .border-brand-200\/30 {
+    border-color: hsl(318, 59%, 35% / 0.6);
+  }
+
+  .dark .border-brand-300 {
+    border-color: hsl(318, 59%, 40%);
+  }
+
+  .dark .border-brand-400 {
+    border-color: hsl(318, 59%, 45%);
+  }
+
+  /* Background colors for cards and containers */
+  .dark .bg-brand-50 {
+    background-color: hsl(318, 59%, 12%);
+  }
+
+  .dark .bg-brand-100 {
+    background-color: hsl(318, 59%, 15%);
+  }
+
+  .dark .bg-brand-200 {
+    background-color: hsl(318, 59%, 18%);
+  }
+
+  .dark .bg-brand-300 {
+    background-color: hsl(318, 59%, 22%);
+  }
+
+  /* Dark mode - Remove ALL gradient backgrounds (except text gradients, buttons, and hero elements) */
+  .dark [class*="bg-gradient-to"]:not(.bg-clip-text):not(.gold-gradient-text):not(.silver-gradient-text):not([class*="gold-gradient"]):not([class*="silver-gradient"]):not([class*="button"]):not([class*="Button"]):not(.hero-section):not(.hero-bg-transparent):not(.hero-bg-overlay):not(.hero-vignette):not(.pwa-prompt-bg):not([class*="hero"]) {
+    background-image: none !important;
+    background-color: hsl(var(--background)) !important;
+  }
+  
+  /* Hero section - allow transparent backgrounds and gradients */
+  .dark .hero-section,
+  .dark .hero-section[class*="bg-gradient-to"],
+  .dark .hero-bg-transparent,
+  .dark .hero-bg-transparent[class*="bg-gradient-to"] {
+    background-image: inherit !important;
+    background-color: hsl(var(--background) / 0.5) !important;
+  }
+  
+  /* Hero background overlay - allow gradient to show and be transparent */
+  /* Don't override background-image - let Tailwind gradient classes work naturally */
+  .dark .hero-bg-overlay {
+    background-color: transparent !important;
+  }
+  
+  /* PWA prompt background - allow gradient with 30% opacity */
+  .dark .pwa-prompt-bg[class*="bg-gradient-to-br"] {
+    background-image: linear-gradient(to bottom right, hsl(var(--background) / 0.3), hsl(var(--background) / 0.25), hsl(var(--background) / 0.3)) !important;
+    background-color: hsl(var(--background) / 0.3) !important;
+  }
+  
+  /* PWA prompt decorative elements - ensure gradients show in dark mode */
+  .dark .pwa-prompt-bg [class*="from-gold"],
+  .dark .pwa-prompt-bg [class*="from-brand"],
+  .dark .pwa-prompt-bg [class*="to-transparent"] {
+    background-image: inherit !important;
+    background-color: transparent !important;
+  }
+  
+  /* PWA prompt wrapper - ensure transparent */
+  .dark .pwa-prompt-wrapper {
+    background-color: transparent !important;
+  }
+  
+  /* Target CardHeader and other card components */
+  .dark [class*="CardHeader"][class*="bg-gradient-to"],
+  .dark [class*="card"][class*="bg-gradient-to"]:not(.pwa-prompt-bg) {
+    background-image: none !important;
+    background-color: hsl(var(--card)) !important;
+  }
+  
+  /* Target rounded elements with gradients (like badges, icons) */
+  .dark [class*="rounded"][class*="bg-gradient-to"]:not([class*="text"]):not([class*="button"]):not(.hero-bg-overlay):not(.hero-vignette):not(.hero-section):not(.pwa-prompt-bg) {
+    background-image: none !important;
+    background-color: hsl(var(--background)) !important;
+  }
+
+  /* Dark mode card backgrounds */
+  .dark .bg-white {
+    background-color: hsl(222.2, 84%, 6%);
+  }
+
+  /* Dark mode - ensure solid backgrounds override gradients */
+  .dark .from-brand-50,
+  .dark .from-brand-50\/30,
+  .dark .from-brand-50\/50 {
+    --tw-gradient-from: hsl(var(--background));
+  }
+
+  .dark .to-brand-50\/30,
+  .dark .to-brand-50\/50,
+  .dark .via-white {
+    --tw-gradient-to: hsl(var(--background));
+    --tw-gradient-via: hsl(var(--background));
+  }
+
+  .dark .from-white {
+    --tw-gradient-from: hsl(var(--background));
+  }
+
+  .dark .to-background:not(.pwa-prompt-bg) {
+    --tw-gradient-to: hsl(var(--background));
+  }
+  
+  /* Preserve gradient stops for PWA prompt */
+  .dark .pwa-prompt-bg.from-background\/20,
+  .dark .pwa-prompt-bg.via-background\/15,
+  .dark .pwa-prompt-bg.to-background\/20 {
+    --tw-gradient-from: hsl(var(--background) / 0.2) !important;
+    --tw-gradient-via: hsl(var(--background) / 0.15) !important;
+    --tw-gradient-to: hsl(var(--background) / 0.2) !important;
+  }
+
+  /* Dark mode text color adjustments - WCAG AA compliant */
+  .dark .text-muted-foreground {
+    color: hsl(215, 20.2%, 80%);
+  }
+
+  /* Ensure all text is readable */
+  .dark .text-foreground {
+    color: hsl(210, 40%, 98%);
+  }
+
+  .dark .text-card-foreground {
+    color: hsl(210, 40%, 98%);
+  }
+
+  /* Headings should be bright white for maximum contrast */
+  .dark h1,
+  .dark h2,
+  .dark h3,
+  .dark h4,
+  .dark h5,
+  .dark h6 {
+    color: hsl(210, 40%, 98%);
+  }
+
+  /* Paragraph and body text */
+  .dark p {
+    color: hsl(210, 40%, 95%);
+  }
+
+  /* Labels and small text */
+  .dark label,
+  .dark small {
+    color: hsl(210, 40%, 85%);
+  }
+
+  /* Dark mode brand gradient text for hero title - ensure gradient is applied, don't override */
+  .dark h1 span.bg-clip-text:not(.gold-gradient-text):not(.silver-gradient-text) {
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+  }
+
+  /* Ensure text-brand-300 is visible in dark mode */
+  .dark .text-brand-300 {
+    color: hsl(318, 59%, 75%);
+  }
+
+  /* Dark mode hover states */
+  .dark .hover\:bg-brand-50\/30:hover {
+    background-color: hsl(318, 59%, 15% / 0.3);
+  }
+
+  .dark .hover\:bg-brand-700:hover {
+    background-color: hsl(318, 59%, 20%);
+  }
+
+  .dark .hover\:bg-brand-800:hover {
+    background-color: hsl(318, 59%, 18%);
+  }
+
+  /* Dark mode border adjustments - All borders visible */
+  .dark .border {
+    border-color: hsl(217.2, 32.6%, 25%);
+  }
+
+  .dark .border-border {
+    border-color: hsl(var(--border));
+  }
+
+  /* Card borders */
+  .dark [class*="Card"] .border,
+  .dark .card .border {
+    border-color: hsl(217.2, 32.6%, 30%);
+  }
+
+  /* Dark mode shadow adjustments */
+  .dark .shadow-lg {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .shadow-xl {
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Dark mode badge adjustments - Visible backgrounds */
+  .dark .bg-brand-50\/50 {
+    background-color: hsl(318, 59%, 15% / 0.6);
+  }
+
+  .dark [class*="Badge"] {
+    border-color: hsl(318, 59%, 40%);
+  }
+
+  /* Badge text colors */
+  .dark [class*="Badge"] .text-brand-700,
+  .dark [class*="badge"] .text-brand-700 {
+    color: hsl(318, 59%, 75%);
+  }
+
+  /* Dark mode grid pattern */
+  .dark .bg-grid-pattern {
+    background-image: 
+      linear-gradient(to right, rgba(82, 21, 64, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(82, 21, 64, 0.1) 1px, transparent 1px);
+  }
+
+  /* Dark mode card adjustments - Hierarchy with background color shades */
+  .dark .bg-card {
+    background-color: hsl(222.2, 84%, 6%);
+  }
+
+  /* Card depth hierarchy using background color shades */
+  /* Light mode card hierarchy */
+  .bg-card-level-1 {
+    background-color: hsl(0, 0%, 100%);
+  }
+
+  .bg-card-level-2 {
+    background-color: hsl(0, 0%, 99%);
+  }
+
+  .bg-card-level-3 {
+    background-color: hsl(0, 0%, 98%);
+  }
+
+  /* Dark mode card hierarchy - Using dark background shades */
+  .dark .bg-card-level-1 {
+    background-color: hsl(222.2, 84%, 6%);
+  }
+
+  .dark .bg-card-level-2 {
+    background-color: hsl(222.2, 84%, 7%);
+  }
+
+  .dark .bg-card-level-3 {
+    background-color: hsl(222.2, 84%, 8%);
+  }
+
+  /* Card header hierarchy - Subtle depth */
+  .dark [class*="CardHeader"]:not([class*="bg-gradient"]):not([class*="bg-brand"]):not([class*="bg-gold"]):not([class*="bg-white"]) {
+    background-color: hsl(222.2, 84%, 7%);
+    border-bottom: 1px solid hsl(217.2, 32.6%, 20%);
+  }
+
+  [class*="CardHeader"]:not([class*="bg-gradient"]):not([class*="bg-brand"]):not([class*="bg-gold"]):not([class*="bg-white"]) {
+    background-color: hsl(0, 0%, 99%);
+    border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%);
+  }
+
+  /* Dark mode - Remove gradient backgrounds from card headers in dark mode, use solid colors */
+  .dark [class*="CardHeader"][class*="bg-gradient-to"]:not([class*="gold"]):not([class*="silver"]) {
+    background: hsl(222.2, 84%, 7%) !important;
+    border-bottom: 1px solid hsl(217.2, 32.6%, 20%);
+  }
+
+  /* Light mode card headers with gradients - keep them */
+  [class*="CardHeader"][class*="bg-gradient-to"] {
+    border-bottom: 1px solid hsl(214.3, 31.8%, 91.4%);
+  }
+
+  /* Card content - Slightly different shade */
+  .dark [class*="CardContent"] {
+    background-color: hsl(222.2, 84%, 6%);
+  }
+
+  [class*="CardContent"] {
+    background-color: hsl(0, 0%, 100%);
+  }
+
+  /* Enhanced card shadows for hierarchy */
+  .dark .shadow-lg {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.4),
+      0 4px 6px -2px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .shadow-xl {
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.5),
+      0 10px 10px -5px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .shadow-md {
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.3),
+      0 2px 4px -1px rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Light mode shadows */
+  .shadow-lg {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+
+  .shadow-xl {
+    box-shadow: 
+      0 20px 25px -5px rgba(0, 0, 0, 0.1),
+      0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  }
+
+  .shadow-md {
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  /* Dark mode input/select backgrounds */
+  .dark input,
+  .dark select,
+  .dark textarea {
+    background-color: hsl(217.2, 32.6%, 12%);
+    border-color: hsl(217.2, 32.6%, 20%);
+  }
+
+  .dark input:focus,
+  .dark select:focus,
+  .dark textarea:focus {
+    border-color: hsl(318, 59%, 40%);
+    outline-color: hsl(318, 59%, 40%);
+  }
+
+  /* Dark mode link colors - WCAG AA compliant */
+  .dark a {
+    color: hsl(318, 59%, 70%);
+  }
+
+  .dark a:hover {
+    color: hsl(318, 59%, 80%);
+  }
+
+  .dark a:focus {
+    color: hsl(318, 59%, 85%);
+    outline-color: hsl(318, 59%, 50%);
+  }
+
+  /* Dark mode separator/border */
+  .dark hr,
+  .dark .border-t,
+  .dark .border-b {
+    border-color: hsl(217.2, 32.6%, 20%);
+  }
+
+  /* Dark mode backdrop blur adjustments */
+  .dark .backdrop-blur-sm {
+    background-color: rgba(34, 34, 34, 0.8);
+  }
+
+  /* Dark mode opacity adjustments for better contrast */
+  .dark .text-white\/80 {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  .dark .text-white\/60 {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .dark .text-white\/90 {
+    color: rgba(255, 255, 255, 0.98);
+  }
+
+  .dark .text-white\/70 {
+    color: rgba(255, 255, 255, 0.9);
+  }
+
+  /* Icon colors - Ensure visibility */
+  .dark svg:not([class*="gold"]):not([class*="silver"]) {
+    color: hsl(210, 40%, 90%);
+  }
+
+  .dark [class*="icon"] {
+    color: hsl(210, 40%, 90%);
+  }
+
+  /* Button text in dark mode */
+  .dark button:not([class*="gold"]):not([class*="silver"]) {
+    color: hsl(210, 40%, 95%);
+  }
+
+  /* Table and list items */
+  .dark td,
+  .dark th {
+    color: hsl(210, 40%, 95%);
+    border-color: hsl(217.2, 32.6%, 25%);
+  }
+
+  .dark tr:hover {
+    background-color: hsl(217.2, 32.6%, 12%);
+  }
+
+  /* Code and pre elements */
+  .dark code,
+  .dark pre {
+    background-color: hsl(217.2, 32.6%, 10%);
+    color: hsl(210, 40%, 95%);
+    border-color: hsl(217.2, 32.6%, 25%);
+  }
+
+  /* Alert and notification colors */
+  .dark [class*="alert"] {
+    border-color: hsl(217.2, 32.6%, 30%);
+  }
+
+  /* Success, warning, error colors - WCAG AA compliant */
+  .dark .text-green-600,
+  .dark .text-green-700,
+  .dark .text-green-500 {
+    color: hsl(142, 71%, 68%);
+  }
+
+  .dark .text-red-600,
+  .dark .text-red-700,
+  .dark .text-red-500 {
+    color: hsl(0, 84%, 72%);
+  }
+
+  .dark .text-yellow-600,
+  .dark .text-yellow-700,
+  .dark .text-yellow-500 {
+    color: hsl(45, 93%, 68%);
+  }
+
+  .dark .text-blue-600,
+  .dark .text-blue-700,
+  .dark .text-blue-500 {
+    color: hsl(217, 91%, 68%);
+  }
+
+  .dark .text-orange-600,
+  .dark .text-orange-700,
+  .dark .text-orange-500 {
+    color: hsl(25, 95%, 68%);
+  }
+
+  /* Background colors for status indicators */
+  .dark .bg-green-100,
+  .dark .bg-green-50 {
+    background-color: hsl(142, 71%, 20%);
+  }
+
+  .dark .bg-red-100,
+  .dark .bg-red-50 {
+    background-color: hsl(0, 84%, 20%);
+  }
+
+  .dark .bg-yellow-100,
+  .dark .bg-yellow-50 {
+    background-color: hsl(45, 93%, 20%);
+  }
+
+  .dark .bg-blue-100,
+  .dark .bg-blue-50 {
+    background-color: hsl(217, 91%, 20%);
+  }
+
+  .dark .bg-orange-100,
+  .dark .bg-orange-50 {
+    background-color: hsl(25, 95%, 20%);
+  }
+
+  /* Border colors for status */
+  .dark .border-green-200,
+  .dark .border-green-300 {
+    border-color: hsl(142, 71%, 35%);
+  }
+
+  .dark .border-red-200,
+  .dark .border-red-300 {
+    border-color: hsl(0, 84%, 35%);
+  }
+
+  .dark .border-yellow-200,
+  .dark .border-yellow-300 {
+    border-color: hsl(45, 93%, 35%);
+  }
+
+  .dark .border-blue-200,
+  .dark .border-blue-300 {
+    border-color: hsl(217, 91%, 35%);
+  }
+
+  .dark .border-orange-200,
+  .dark .border-orange-300 {
+    border-color: hsl(25, 95%, 35%);
+  }
+
+  /* Staff page specific - Badge colors in dark mode */
+  .dark .border-green-200.bg-green-50 {
+    background-color: hsl(142, 71%, 20%) !important;
+    border-color: hsl(142, 71%, 35%) !important;
+  }
+
+  .dark .border-green-200.bg-green-50 .text-green-700 {
+    color: hsl(142, 71%, 68%) !important;
+  }
+
+  .dark .border-orange-200.bg-orange-50 {
+    background-color: hsl(25, 95%, 20%) !important;
+    border-color: hsl(25, 95%, 35%) !important;
+  }
+
+  .dark .border-orange-200.bg-orange-50 .text-orange-700 {
+    color: hsl(25, 95%, 68%) !important;
+  }
+
+  .dark .border-blue-200.bg-blue-50 {
+    background-color: hsl(217, 91%, 20%) !important;
+    border-color: hsl(217, 91%, 35%) !important;
+  }
+
+  .dark .border-blue-200.bg-blue-50 .text-blue-700 {
+    color: hsl(217, 91%, 68%) !important;
+  }
+
+  /* Icon colors - Brand colored icons */
+  .dark .text-brand-600,
+  .dark svg.text-brand-600,
+  .dark [class*="icon"].text-brand-600 {
+    color: hsl(318, 59%, 65%);
+  }
+
+  .dark .text-brand-500,
+  .dark svg.text-brand-500 {
+    color: hsl(318, 59%, 60%);
+  }
+
+  .dark .text-brand-400,
+  .dark svg.text-brand-400 {
+    color: hsl(318, 59%, 55%);
+  }
+
+  /* Primary button in dark mode - Professional brand colors */
+  .dark .bg-primary,
+  .dark button.bg-primary,
+  .dark [class*="Button"][class*="default"],
+  .dark button[class*="default"]:not([class*="gold"]):not([class*="silver"]) {
+    background-color: hsl(318, 59%, 45%) !important;
+    color: hsl(210, 40%, 98%) !important;
+    border: none;
+  }
+
+  .dark .bg-primary:hover,
+  .dark button.bg-primary:hover,
+  .dark [class*="Button"][class*="default"]:hover,
+  .dark button[class*="default"]:not([class*="gold"]):not([class*="silver"]):hover,
+  .dark .hover\:bg-primary\/90:hover {
+    background-color: hsl(318, 59%, 50%) !important;
+    color: hsl(210, 40%, 98%) !important;
+  }
+
+  /* Primary button text */
+  .dark .text-primary-foreground {
+    color: hsl(210, 40%, 98%) !important;
+  }
+
+  /* Staff pages - Ensure all brand colors are visible */
+  .dark [class*="staff"] .text-brand-700,
+  .dark [class*="Staff"] .text-brand-700 {
+    color: hsl(318, 59%, 75%);
+  }
+
+  .dark [class*="staff"] .text-brand-600,
+  .dark [class*="Staff"] .text-brand-600 {
+    color: hsl(318, 59%, 70%);
+  }
+
+  .dark [class*="staff"] .border-brand-200\/50,
+  .dark [class*="Staff"] .border-brand-200\/50 {
+    border-color: hsl(318, 59%, 35% / 0.6);
+  }
+
+  .dark [class*="staff"] .border-brand-300,
+  .dark [class*="Staff"] .border-brand-300 {
+    border-color: hsl(318, 59%, 40%);
+  }
+
+  .dark [class*="staff"] .hover\:border-brand-300:hover,
+  .dark [class*="Staff"] .hover\:border-brand-300:hover {
+    border-color: hsl(318, 59%, 50%);
+  }
+
+  .dark [class*="staff"] .bg-brand-100,
+  .dark [class*="Staff"] .bg-brand-100 {
+    background-color: hsl(318, 59%, 18%);
+  }
+
+  .dark [class*="staff"] .bg-brand-200,
+  .dark [class*="Staff"] .bg-brand-200 {
+    background-color: hsl(318, 59%, 22%);
+  }
+
+  .dark [class*="staff"] .hover\:bg-brand-200:hover,
+  .dark [class*="Staff"] .hover\:bg-brand-200:hover {
+    background-color: hsl(318, 59%, 25%);
+  }
+
+  .dark [class*="staff"] .hover\:text-brand-800:hover,
+  .dark [class*="Staff"] .hover\:text-brand-800:hover {
+    color: hsl(318, 59%, 80%);
+  }
+
+  /* Button variants in dark mode - WCAG AA compliant contrast */
+  
+  /* Secondary button in dark mode - Proper contrast */
+  .dark button[data-variant="secondary"],
+  .dark .bg-secondary:is(button) {
+    background-color: hsl(217.2, 32.6%, 25%) !important;
+    color: hsl(210, 40%, 98%) !important;
+    border: none;
+  }
+
+  /* Secondary button hover - WCAG AA compliant (4.5:1 contrast) */
+  .dark button[data-variant="secondary"]:hover,
+  .dark .bg-secondary:is(button):hover {
+    background-color: hsl(217.2, 32.6%, 35%) !important;
+    color: hsl(210, 40%, 98%) !important;
+  }
+
+  /* Secondary button text */
+  .dark .text-secondary-foreground {
+    color: hsl(210, 40%, 98%) !important;
+  }
+
+  /* Outline button in dark mode - Proper contrast */
+  .dark button[class*="outline"]:not([class*="gold"]):not([class*="silver"]) {
+    border-color: hsl(318, 59%, 45%) !important;
+    color: hsl(318, 59%, 75%) !important;
+    background-color: transparent !important;
+  }
+
+  /* Outline button hover - WCAG AA compliant */
+  .dark button[class*="outline"]:not([class*="gold"]):not([class*="silver"]):hover {
+    background-color: hsl(318, 59%, 20%) !important;
+    border-color: hsl(318, 59%, 55%) !important;
+    color: hsl(318, 59%, 85%) !important;
+  }
+
+  /* Ghost button in dark mode - Proper contrast */
+  .dark button[class*="ghost"] {
+    color: hsl(210, 40%, 90%) !important;
+    background-color: transparent !important;
+  }
+
+  /* Ghost button hover - WCAG AA compliant */
+  .dark button[class*="ghost"]:hover {
+    background-color: hsl(318, 59%, 20%) !important;
+    color: hsl(318, 59%, 80%) !important;
+  }
+
+  /* Link button in dark mode */
+  .dark button[class*="link"] {
+    color: hsl(318, 59%, 70%) !important;
+  }
+
+  .dark button[class*="link"]:hover {
+    color: hsl(318, 59%, 85%) !important;
+  }
+
+  /* Card titles and headings */
+  .dark [class*="CardTitle"],
+  .dark [class*="card-title"] {
+    color: hsl(210, 40%, 98%);
+  }
+
+  .dark [class*="CardDescription"],
+  .dark [class*="card-description"] {
+    color: hsl(210, 40%, 85%);
+  }
+
+  /* Input placeholders */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: hsl(215, 20.2%, 60%);
+  }
+
+  /* Select dropdowns */
+  .dark select {
+    color: hsl(210, 40%, 95%);
+  }
+
+  .dark select option {
+    background-color: hsl(222.2, 84%, 6%);
+    color: hsl(210, 40%, 95%);
+  }
+
+  /* Tooltips and popovers */
+  .dark [class*="Tooltip"],
+  .dark [class*="Popover"] {
+    background-color: hsl(222.2, 84%, 8%);
+    border-color: hsl(217.2, 32.6%, 30%);
+    color: hsl(210, 40%, 98%);
+  }
+
+  /* Tabs */
+  .dark [class*="TabsTrigger"] {
+    color: hsl(210, 40%, 80%);
+  }
+
+  .dark [class*="TabsTrigger"][data-state="active"] {
+    color: hsl(210, 40%, 98%);
+    border-color: hsl(318, 59%, 50%);
+  }
+
+  /* Separators */
+  .dark [class*="Separator"] {
+    background-color: hsl(217.2, 32.6%, 25%);
+  }
+
+  /* Skeleton loaders */
+  .dark [class*="Skeleton"] {
+    background-color: hsl(217.2, 32.6%, 15%);
+  }
+
+  /* Progress bars */
+  .dark [class*="Progress"] {
+    background-color: hsl(217.2, 32.6%, 15%);
+  }
+
+  /* Switch and toggle */
+  .dark [class*="Switch"][data-state="checked"] {
+    background-color: hsl(318, 59%, 50%);
+  }
+
+  /* Checkbox and radio */
+  .dark [class*="Checkbox"][data-state="checked"],
+  .dark [class*="Radio"][data-state="checked"] {
+    background-color: hsl(318, 59%, 50%);
+    border-color: hsl(318, 59%, 50%);
+  }
+
+  /* Scrollbar styling - Consistent width across themes */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Light mode scrollbar - Subtle gold theme */
+  ::-webkit-scrollbar-track {
+    background: hsl(0, 0%, 98%);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(45, 60%, 70%);
+    border-radius: 4px;
+    border: 1px solid hsl(45, 50%, 80%);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(45, 65%, 65%);
+  }
+
+  /* Dark mode scrollbar - Reverted to original */
+  .dark ::-webkit-scrollbar-track {
+    background: hsl(222.2, 84%, 6%);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: hsl(217.2, 32.6%, 30%);
+    border-radius: 4px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: hsl(217.2, 32.6%, 40%);
+  }
+
+  /* Accent elements hierarchy - Badges, buttons, and interactive elements */
+  /* Badge shadows for depth */
+  .dark [class*="Badge"] {
+    box-shadow: 
+      0 1px 2px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  [class*="Badge"] {
+    box-shadow: 
+      0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  }
+
+  /* Button shadows for hierarchy */
+  .dark button:not([class*="gold"]):not([class*="silver"]):not([class*="outline"]):not([class*="ghost"]) {
+    box-shadow: 
+      0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .dark button:not([class*="gold"]):not([class*="silver"]):not([class*="outline"]):not([class*="ghost"]):hover {
+    box-shadow: 
+      0 2px 4px 0 rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  /* Input and form elements */
+  .dark input:focus,
+  .dark select:focus,
+  .dark textarea:focus {
+    box-shadow: 
+      inset 0 1px 2px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 2px hsl(318, 59%, 50%);
+  }
+
+  /* Table rows for depth */
+  .dark tbody tr {
+    background-color: hsl(222.2, 84%, 6%);
+    border-bottom: 1px solid hsl(217.2, 32.6%, 20%);
+  }
+
+  .dark tbody tr:hover {
+    background-color: hsl(222.2, 84%, 7%);
+    box-shadow: 
+      0 1px 3px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  /* Alert and notification cards */
+  .dark [class*="Alert"] {
+    background-color: hsl(222.2, 84%, 7%);
+    border-color: hsl(217.2, 32.6%, 25%);
+    box-shadow: 
+      0 2px 4px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  /* Tabs for depth */
+  .dark [class*="TabsList"] {
+    background-color: hsl(222.2, 84%, 6%);
+    box-shadow: 
+      inset 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .dark [class*="TabsTrigger"][data-state="active"] {
+    background-color: hsl(222.2, 84%, 8%);
+    box-shadow: 
+      0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  /* Image visibility in dark mode - Ensure images are bright and visible */
+  .dark img,
+  .dark [class*="Image"],
+  .dark picture {
+    filter: brightness(1.1) contrast(1.05);
+  }
+
+  /* Reduce dark overlay opacity in dark mode for better image visibility */
+  .dark .bg-gradient-to-t.from-black\/40,
+  .dark .bg-gradient-to-t.from-black\/60 {
+    opacity: 0.2 !important;
+  }
+
+  /* Ensure image containers don't darken on hover in dark mode */
+  .dark [class*="group"]:hover img,
+  .dark [class*="group"]:hover [class*="Image"] {
+    filter: brightness(1.15) contrast(1.1) !important;
+  }
+
+  /* Product card images - brighter in dark mode */
+  .dark [class*="ProductCard"] img,
+  .dark [class*="product"] img {
+    filter: brightness(1.1) contrast(1.05);
+  }
+
+  .dark [class*="ProductCard"]:hover img,
+  .dark [class*="product"]:hover img {
+    filter: brightness(1.2) contrast(1.1) !important;
+  }
+
+  /* Feature card images - brighter in dark mode */
+  .dark [class*="Card"] img,
+  .dark [class*="card"] img {
+    filter: brightness(1.1) contrast(1.05);
+  }
+
+  .dark [class*="Card"]:hover img,
+  .dark [class*="card"]:hover img {
+    filter: brightness(1.15) contrast(1.1) !important;
   }
 }
 
@@ -55,9 +989,96 @@
   * {
     @apply border-border;
   }
+  
+  /* Smooth theme transitions */
+  html {
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+  
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+  
+  /* Smooth theme transitions - Optimized for performance */
+  html {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Theme-aware transitions for key elements */
+  [class*="Card"],
+  [class*="card"],
+  button,
+  a,
+  input,
+  select,
+  textarea,
+  [class*="Badge"],
+  [class*="Alert"] {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 0.3s;
+  }
+  
+  /* Faster transitions for interactive elements */
+  button,
+  a,
+  [role="button"] {
+    transition-duration: 0.2s;
+  }
+  
+  /* Exclude transform from global transitions to avoid conflicts */
+  [class*="motion"],
+  [class*="animate"],
+  [data-framer-component] {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow !important;
+  }
+
+  /* Card hierarchy system - Using background color shades for depth */
+  .shadow-card {
+    box-shadow: 
+      0 1px 2px 0 rgba(0, 0, 0, 0.05),
+      0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .shadow-card-elevated {
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06),
+      0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
+
+  .shadow-card-floating {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05),
+      0 0 0 1px rgba(0, 0, 0, 0.05);
+  }
+
+  /* Dark mode card shadows */
+  .dark .shadow-card {
+    box-shadow: 
+      0 1px 2px 0 rgba(0, 0, 0, 0.3),
+      0 1px 3px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  .dark .shadow-card-elevated {
+    box-shadow: 
+      0 4px 6px -1px rgba(0, 0, 0, 0.4),
+      0 2px 4px -1px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  .dark .shadow-card-floating {
+    box-shadow: 
+      0 10px 15px -3px rgba(0, 0, 0, 0.5),
+      0 4px 6px -2px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 }
 
@@ -80,11 +1101,27 @@
       #fbbf24 100%
     );
     background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
     animation: gold-shine 3s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(250, 195, 15, 0.3));
+  }
+
+  .dark .gold-gradient-text {
+    background: linear-gradient(
+      135deg,
+      #fde047 0%,
+      #fcd34d 25%,
+      #fbbf24 50%,
+      #fcd34d 75%,
+      #fde047 100%
+    ) !important;
+    background-size: 200% 200% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 2px 6px rgba(252, 211, 77, 0.6));
   }
 
   @keyframes gold-shine {
@@ -107,11 +1144,27 @@
       #e5e7eb 100%
     );
     background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
     animation: silver-shine 3s ease-in-out infinite;
     filter: drop-shadow(0 2px 4px rgba(209, 213, 219, 0.3));
+  }
+
+  .dark .silver-gradient-text {
+    background: linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f3f4f6 25%,
+      #e5e7eb 50%,
+      #f3f4f6 75%,
+      #ffffff 100%
+    ) !important;
+    background-size: 200% 200% !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    filter: drop-shadow(0 2px 6px rgba(243, 244, 246, 0.6));
   }
 
   @keyframes silver-shine {
@@ -134,6 +1187,7 @@
     color: #1b0715;
     font-weight: 600;
     border: none;
+    border-radius: 0.75rem;
     box-shadow: 0 4px 14px 0 rgba(250, 195, 15, 0.4);
     transition: all 0.3s ease;
   }
@@ -152,6 +1206,34 @@
   .gold-gradient-button:active {
     transform: translateY(0);
     box-shadow: 0 2px 10px 0 rgba(250, 195, 15, 0.4);
+  }
+
+  /* Dark mode gold gradient button - Better colors */
+  .dark .gold-gradient-button {
+    background: linear-gradient(
+      135deg,
+      #f59e0b 0%,
+      #fbbf24 50%,
+      #fcd34d 100%
+    ) !important;
+    color: #1b0715 !important;
+    box-shadow: 0 4px 14px 0 rgba(245, 158, 11, 0.5) !important;
+  }
+
+  .dark .gold-gradient-button:hover {
+    background: linear-gradient(
+      135deg,
+      #fbbf24 0%,
+      #fcd34d 50%,
+      #fde047 100%
+    ) !important;
+    box-shadow: 0 6px 20px 0 rgba(245, 158, 11, 0.7) !important;
+    transform: translateY(-2px);
+  }
+
+  .dark .gold-gradient-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px 0 rgba(245, 158, 11, 0.5) !important;
   }
 
   /* Gold gradient button outline */
@@ -199,5 +1281,154 @@
       #f59e0b 100%
     ) 1;
   }
-}
 
+  .dark .gold-gradient-button-outline {
+    color: hsl(210, 40%, 98%);
+    border-image: linear-gradient(
+      135deg,
+      #fcd34d 0%,
+      #fbbf24 50%,
+      #f59e0b 100%
+    ) 1;
+  }
+
+  .dark .gold-gradient-button-outline::before {
+    background: linear-gradient(
+      135deg,
+      rgba(252, 211, 77, 0.15) 0%,
+      rgba(251, 191, 36, 0.15) 50%,
+      rgba(245, 158, 11, 0.15) 100%
+    );
+  }
+
+  .dark .gold-gradient-button-outline:hover {
+    color: #fcd34d;
+  }
+
+  /* Silver gradient button */
+  .silver-gradient-button {
+    background: linear-gradient(
+      135deg,
+      #e5e7eb 0%,
+      #d1d5db 50%,
+      #9ca3af 100%
+    );
+    color: #1b0715;
+    font-weight: 600;
+    border: none;
+    box-shadow: 0 4px 14px 0 rgba(156, 163, 175, 0.4);
+    transition: all 0.3s ease;
+  }
+
+  .silver-gradient-button:hover {
+    background: linear-gradient(
+      135deg,
+      #f3f4f6 0%,
+      #e5e7eb 50%,
+      #d1d5db 100%
+    );
+    box-shadow: 0 6px 20px 0 rgba(156, 163, 175, 0.6);
+    transform: translateY(-2px);
+  }
+
+  .silver-gradient-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px 0 rgba(156, 163, 175, 0.4);
+  }
+
+  /* Silver gradient button outline */
+  .silver-gradient-button-outline {
+    background: transparent;
+    color: #521540;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 2px solid transparent;
+    background-image: 
+      linear-gradient(white, white),
+      linear-gradient(135deg, #e5e7eb 0%, #d1d5db 50%, #9ca3af 100%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .silver-gradient-button-outline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      135deg,
+      rgba(229, 231, 235, 0.2) 0%,
+      rgba(209, 213, 219, 0.2) 50%,
+      rgba(156, 163, 175, 0.2) 100%
+    );
+    border-radius: 0.75rem;
+    transition: left 0.3s ease;
+    z-index: -1;
+  }
+
+  .silver-gradient-button-outline:hover::before {
+    left: 0;
+  }
+
+  .silver-gradient-button-outline:hover {
+    color: #374151;
+    background-image: 
+      linear-gradient(135deg, rgba(243, 244, 246, 0.3) 0%, rgba(229, 231, 235, 0.3) 50%, rgba(209, 213, 219, 0.3) 100%),
+      linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 50%, #d1d5db 100%);
+    box-shadow: 0 4px 14px 0 rgba(156, 163, 175, 0.3);
+  }
+
+  .dark .silver-gradient-button-outline {
+    color: hsl(210, 40%, 98%) !important;
+    background-image: 
+      linear-gradient(hsl(222.2, 84%, 4.9%), hsl(222.2, 84%, 4.9%)),
+      linear-gradient(135deg, #e5e7eb 0%, #d1d5db 50%, #9ca3af 100%) !important;
+    border-color: hsl(217.2, 32.6%, 40%) !important;
+  }
+
+  .dark .silver-gradient-button-outline::before {
+    background: linear-gradient(
+      135deg,
+      rgba(229, 231, 235, 0.15) 0%,
+      rgba(209, 213, 219, 0.15) 50%,
+      rgba(156, 163, 175, 0.15) 100%
+    ) !important;
+  }
+
+  .dark .silver-gradient-button-outline:hover {
+    color: hsl(222.2, 84%, 4.9%) !important;
+    background-image: 
+      linear-gradient(135deg, #f9fafb 0%, #f3f4f6 50%, #e5e7eb 100%),
+      linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%) !important;
+    box-shadow: 0 4px 14px 0 rgba(243, 244, 246, 0.5) !important;
+    border-color: hsl(217.2, 32.6%, 50%) !important;
+    transform: translateY(-2px);
+  }
+
+  /* Meteors background animation with purple theme - matching shadcn docs */
+  .animate-meteor {
+    animation: meteor linear infinite;
+  }
+
+  @keyframes meteor {
+    0% {
+      transform: translateX(-200px) translateY(-200px) rotate(45deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(200px) translateY(200px) rotate(45deg);
+      opacity: 0;
+    }
+  }
+
+}

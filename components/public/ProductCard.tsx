@@ -34,7 +34,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       whileHover={{ y: -8 }}
     >
       <HoverCard>
-        <Card className="group overflow-hidden transition-all hover:shadow-xl">
+        <Card className="group overflow-hidden bg-card-level-2 shadow-card-elevated transition-all hover:bg-card-level-3 hover:shadow-card-floating">
           <Link href={`/product/${product.id}`}>
             <div className="relative aspect-square w-full overflow-hidden">
               <motion.div
@@ -50,13 +50,13 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
                 <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+                  className="absolute inset-0 bg-gradient-to-t from-black/40 dark:from-black/20 via-transparent to-transparent"
                   initial={{ opacity: 0 }}
                   whileHover={{ opacity: 1 }}
                   transition={{ duration: 0.3 }}
                 />
               </motion.div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 dark:from-black/20 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
               {product.purity && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0 }}

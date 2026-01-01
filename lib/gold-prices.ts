@@ -140,6 +140,18 @@ export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
         if (override.isPublished !== undefined) {
           price.isPublished = override.isPublished;
         }
+        if (override.buyPercentage !== undefined) {
+          price.buyPercentage = override.buyPercentage;
+        }
+        if (override.sellPercentage !== undefined) {
+          price.sellPercentage = override.sellPercentage;
+        }
+        if (override.usePresetExchangeRate !== undefined) {
+          price.usePresetExchangeRate = override.usePresetExchangeRate;
+        }
+        if (override.presetExchangeRate !== undefined) {
+          price.presetExchangeRate = override.presetExchangeRate;
+        }
       }
     });
 

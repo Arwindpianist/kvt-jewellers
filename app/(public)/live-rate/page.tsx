@@ -57,7 +57,7 @@ export default async function LiveRatePage() {
         <div className="lg:col-span-2 space-y-6">
           {/* Live Rates Table - Demo with Fast Refresh */}
           <AnimatedSection>
-            <Card className="shadow-lg">
+            <Card className="bg-card-level-2 shadow-card-elevated">
               <CardHeader className="bg-brand-50">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
@@ -81,7 +81,7 @@ export default async function LiveRatePage() {
 
           {/* Product Rates Table */}
           <AnimatedSection delay={0.2}>
-            <Card className="shadow-lg">
+            <Card className="bg-card-level-2 shadow-card-elevated">
               <CardHeader className="bg-brand-50">
                 <CardTitle>Product Rates</CardTitle>
               </CardHeader>

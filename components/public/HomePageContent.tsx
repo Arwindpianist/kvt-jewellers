@@ -15,6 +15,8 @@ import { HoverCard } from "@/components/ui/hover-card";
 import { Sparkles, TrendingUp, Shield, Award } from "lucide-react";
 import type { GoldPrice } from "@/types/gold-prices";
 import { categoryImages, storeImage } from "@/lib/image-placeholders";
+import { HeroGeometric } from "@/components/ui/shape-landing-hero";
+import { PWADownloadPrompt } from "@/components/public/PWADownloadPrompt";
 
 interface HomePageContentProps {
   publishedPrices: GoldPrice[];
@@ -22,56 +24,65 @@ interface HomePageContentProps {
 
 export function HomePageContent({ publishedPrices }: HomePageContentProps) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-transparent">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50 via-white to-background py-20 md:py-32">
-        <div className="absolute inset-0 bg-grid-pattern opacity-5" />
-        <div className="container relative mx-auto px-4">
-          <FadeIn>
-            <div className="mx-auto max-w-4xl text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              >
-                <Badge className="mb-4 bg-brand-100 text-brand-700 hover:bg-brand-200">
-                  <Sparkles className="mr-2 h-3 w-3" />
-                  Established 2018
+      <section className="relative overflow-hidden">
+        <HeroGeometric
+          badge="Established 2018"
+          title1="Premium Gold"
+          title2="& Silver Trading"
+          description="KVT Jewellers offers premium 916 gold jewelry and 999.9 gold bar bullion. Experience luxury craftsmanship backed by years of expertise in precious metals."
+        >
+          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:justify-center">
+            <AnimatedButton asChild size="lg" className="gold-gradient-button rounded-xl">
+              <Link href="/products">Browse Products</Link>
+            </AnimatedButton>
+            <AnimatedButton asChild size="lg" className="silver-gradient-button-outline rounded-xl">
+              <Link href="/live-rate">View Live Rates</Link>
+            </AnimatedButton>
+          </div>
+        </HeroGeometric>
+      </section>
+
+      {/* Gold Price Preview - Moved to be first after hero */}
+      <section className="border-y bg-gradient-to-br from-brand-50/50 to-white dark:bg-background dark:from-background dark:to-background py-12 md:py-16">
+        <div className="container mx-auto px-4">
+          <AnimatedSection>
+            <div className="mx-auto max-w-2xl">
+              <div className="mb-6 md:mb-8 text-center">
+                <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
+                  Live Prices
                 </Badge>
-              </motion.div>
-              <h1 className="mb-6 font-serif text-5xl font-bold tracking-tight md:text-7xl">
-                Premium{" "}
-                <span className="gold-gradient-text">Gold</span>
-                {" & "}
-                <span className="silver-gradient-text">Silver</span>
-                <motion.span
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="block text-brand-600"
-                >
-                  Trading Excellence
-                </motion.span>
-              </h1>
-              <p className="mb-8 text-lg text-muted-foreground md:text-xl">
-                KVT Jewellers offers premium 916 gold jewelry and 999.9 gold bar bullion.
-                Experience luxury craftsmanship backed by years of expertise in precious metals.
-              </p>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                className="flex flex-col gap-4 sm:flex-row sm:justify-center"
-              >
-                <AnimatedButton asChild size="lg" className="gold-gradient-button">
-                  <Link href="/products">Browse Products</Link>
-                </AnimatedButton>
-                <AnimatedButton asChild variant="outline" size="lg" className="gold-gradient-button-outline">
-                  <Link href="/live-rate">View Live Rates</Link>
-                </AnimatedButton>
-              </motion.div>
+                <h2 className="mb-2 font-serif text-3xl md:text-4xl font-semibold">
+                  Today&apos;s Gold Prices
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">Updated in real-time</p>
+              </div>
+              <Card className="bg-card-level-2 shadow-card-elevated">
+                <CardHeader>
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <CardTitle className="text-lg md:text-xl">Current Market Rates</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-2 md:px-3 py-1">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
+                        <span className="text-xs font-medium text-green-700">Live</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">Updates every 2s</span>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <HomePriceTicker prices={publishedPrices} showLastUpdated={true} />
+                  <Separator className="my-4 md:my-6" />
+                  <div className="text-center">
+                    <AnimatedButton asChild className="w-full sm:w-auto gold-gradient-button-outline rounded-lg">
+                      <Link href="/live-rate">View All Rates →</Link>
+                    </AnimatedButton>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
-          </FadeIn>
+          </AnimatedSection>
         </div>
       </section>
 
@@ -103,48 +114,6 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
               ))}
             </div>
           </StaggerAnimation>
-        </div>
-      </section>
-
-      {/* Gold Price Preview */}
-      <section className="border-y bg-gradient-to-br from-brand-50/50 to-white py-16">
-        <div className="container mx-auto px-4">
-          <AnimatedSection>
-            <div className="mx-auto max-w-2xl">
-              <div className="mb-8 text-center">
-                <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
-                  Live Prices
-                </Badge>
-                <h2 className="mb-2 font-serif text-4xl font-semibold">
-                  Today&apos;s Gold Prices
-                </h2>
-                <p className="text-muted-foreground">Updated in real-time</p>
-              </div>
-              <Card className="shadow-lg">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle>Current Market Rates</CardTitle>
-                    <div className="flex items-center gap-2">
-                      <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1">
-                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
-                        <span className="text-xs font-medium text-green-700">Live</span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">Updates every 2s</span>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <HomePriceTicker prices={publishedPrices} showLastUpdated={true} />
-                  <Separator className="my-6" />
-                  <div className="text-center">
-                    <AnimatedButton asChild className="w-full sm:w-auto gold-gradient-button-outline">
-                      <Link href="/live-rate">View All Rates →</Link>
-                    </AnimatedButton>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </AnimatedSection>
         </div>
       </section>
 
@@ -191,7 +160,7 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
               ].map((item) => (
                 <StaggerItem key={item.href}>
                   <HoverCard>
-                    <Card className="group overflow-hidden transition-all hover:shadow-xl">
+                    <Card className="group overflow-hidden bg-card-level-2 shadow-card-elevated transition-all hover:bg-card-level-3 hover:shadow-card-floating">
                       <div className="relative h-64 w-full overflow-hidden">
                         <motion.div
                           whileHover={{ scale: 1.1 }}
@@ -205,7 +174,7 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           />
                         </motion.div>
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 dark:from-black/20 via-transparent to-transparent" />
                         <motion.div
                           initial={{ opacity: 0, scale: 0.8 }}
                           whileHover={{ opacity: 1, scale: 1 }}
@@ -237,7 +206,7 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
       </section>
 
       {/* About Preview */}
-      <section className="bg-gradient-to-br from-brand-50/30 via-white to-brand-50/30 py-20">
+      <section className="bg-gradient-to-br from-brand-50/30 via-white to-brand-50/30 dark:bg-background dark:from-background dark:via-background dark:to-background py-20">
         <div className="container mx-auto px-4">
           <AnimatedSection>
             <div className="mx-auto max-w-4xl">
@@ -283,6 +252,9 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
           </AnimatedSection>
         </div>
       </section>
+
+      {/* PWA Download Prompt */}
+      <PWADownloadPrompt />
     </div>
   );
 }

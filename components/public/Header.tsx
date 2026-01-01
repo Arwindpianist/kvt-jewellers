@@ -13,7 +13,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { RotatingText } from "@/components/ui/shadcn-io/rotating-text";
 import { TopBar } from "./TopBar";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -48,12 +50,20 @@ export function Header() {
               <span className="font-serif text-2xl font-bold text-white">
                 KVT
               </span>
-              <span className="text-sm text-white/80">Jewellers</span>
+              <span className="text-sm text-white/80 inline-flex items-center justify-start w-[85px] h-6 relative">
+                <RotatingText 
+                  text={["Jewellers", "Gold", "Silver"]}
+                  duration={3000}
+                  y={-15}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  containerClassName="absolute inset-0 flex items-center justify-start"
+                />
+              </span>
             </Link>
           </motion.div>
 
           {/* Desktop Navigation */}
-          <div className="hidden items-center space-x-8 md:flex">
+          <div className="hidden items-center space-x-6 md:flex">
             {navItems.map((item, index) => (
               <motion.div
                 key={item.href}
@@ -80,6 +90,7 @@ export function Header() {
                 </Link>
               </motion.div>
             ))}
+            <ThemeSwitcher />
           </div>
 
           {/* Mobile Menu - Bottom Drawer */}
@@ -164,6 +175,12 @@ export function Header() {
 
                 {/* Drawer Footer */}
                 <div className="px-6 py-4 border-t border-white/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-xs text-white/60">
+                      Theme
+                    </p>
+                    <ThemeSwitcher />
+                  </div>
                   <p className="text-xs text-white/60 text-center">
                     © {new Date().getFullYear()} KVT Jewellers. All rights reserved.
                   </p>

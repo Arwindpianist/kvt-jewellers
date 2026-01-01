@@ -110,7 +110,7 @@ export default function ProductsPage() {
             {categories.map((category) => (
               <StaggerItem key={category.href}>
                 <HoverCard>
-                  <div className="group rounded-lg border-2 border-brand-200 bg-gradient-to-br from-brand-50/50 to-white p-6 transition-all hover:border-brand-400 hover:shadow-lg">
+                  <div className="group rounded-lg border-2 border-brand-200 dark:border-brand-800 bg-gradient-to-br from-brand-50/50 to-white dark:bg-background dark:from-background dark:to-background p-6 transition-all hover:border-brand-400 dark:hover:border-brand-700 hover:shadow-lg">
                     <AnimatedIcon className="mb-4 inline-flex rounded-lg bg-brand-100 p-3">
                       <category.icon className="h-6 w-6 text-brand-600" />
                     </AnimatedIcon>

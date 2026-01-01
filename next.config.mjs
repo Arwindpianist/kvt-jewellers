@@ -41,27 +41,28 @@ const nextConfig = {
   turbopack: {},
 };
 
-// Only apply PWA in production
-const config = process.env.NODE_ENV === "production" 
-  ? withPWA({
-      dest: "public",
-      register: true,
-      skipWaiting: true,
-      disable: false,
-      runtimeCaching: [
-        {
-          urlPattern: /^https?.*/,
-          handler: "NetworkFirst",
-          options: {
-            cacheName: "offlineCache",
-            expiration: {
-              maxEntries: 200,
-            },
-          },
+// Apply PWA in both development and production for testing
+// In production, this will work fully. In development, service worker may have limitations.
+const config = withPWA({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development" ? false : false, // Enable in dev for testing
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "offlineCache",
+        expiration: {
+          maxEntries: 200,
         },
-      ],
-    })(nextConfig)
-  : nextConfig;
+      },
+    },
+  ],
+  // Build exclusions for development
+  buildExcludes: [/middleware-manifest\.json$/],
+})(nextConfig);
 
 export default config;
 

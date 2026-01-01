@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { StaffHeader } from "@/components/staff/StaffHeader";
+import { Meteors } from "@/components/ui/meteors";
 
 export default async function StaffLayout({
   children,
@@ -17,9 +18,14 @@ export default async function StaffLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <StaffHeader />
-      <main className="flex-1 bg-muted/30">{children}</main>
+    <div className="relative flex min-h-screen flex-col overflow-hidden">
+      <Meteors number={20} />
+      <div className="relative z-10 flex min-h-screen flex-col">
+        <StaffHeader userName={session.user.name} />
+        <main className="flex-1 bg-gradient-to-b from-brand-50/30 via-white to-background dark:bg-background dark:from-background dark:via-background dark:to-background">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
