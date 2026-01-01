@@ -1431,4 +1431,9 @@
     }
   }
 
+  /* Force reset button active state when drawer closes */
+  button:not(:focus):not(:hover):not([data-state="open"]) {
+    background-color: transparent !important;
+  }
+
 }
