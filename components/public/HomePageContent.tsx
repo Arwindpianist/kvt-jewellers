@@ -8,7 +8,7 @@ import { AnimatedButton } from "@/components/public/AnimatedButton";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { GoldPriceDisplay } from "@/components/public/GoldPriceDisplay";
+import { HomePriceTicker } from "@/components/public/HomePriceTicker";
 import { AnimatedSection, FadeIn } from "@/components/ui/animated-section";
 import { StaggerAnimation, StaggerItem } from "@/components/ui/stagger-animation";
 import { HoverCard } from "@/components/ui/hover-card";
@@ -122,10 +122,19 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
               </div>
               <Card className="shadow-lg">
                 <CardHeader>
-                  <CardTitle>Current Market Rates</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Current Market Rates</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
+                        <span className="text-xs font-medium text-green-700">Live</span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">Updates every 2s</span>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <GoldPriceDisplay prices={publishedPrices} showLastUpdated={true} />
+                  <HomePriceTicker prices={publishedPrices} showLastUpdated={true} />
                   <Separator className="my-6" />
                   <div className="text-center">
                     <AnimatedButton asChild className="w-full sm:w-auto gold-gradient-button-outline">
@@ -260,7 +269,7 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
                     We offer custom-made jewelry crafted by professional goldsmiths, ensuring
                     each piece meets the highest standards of quality and craftsmanship.
                   </p>
-                  <div className="flex flex-col gap-3 sm:flex-row">
+                  <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     <AnimatedButton asChild className="gold-gradient-button">
                       <Link href="/about">Learn More</Link>
                     </AnimatedButton>

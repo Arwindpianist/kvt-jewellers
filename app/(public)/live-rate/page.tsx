@@ -1,4 +1,5 @@
 import { LiveRatesTable } from "@/components/public/LiveRatesTable";
+import { LivePriceTicker } from "@/components/public/LivePriceTicker";
 import { ProductRatesTable } from "@/components/public/ProductRatesTable";
 import { LiveRateSidebar } from "@/components/public/LiveRateSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -54,17 +55,26 @@ export default async function LiveRatePage() {
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Main Content - Two Tables */}
         <div className="lg:col-span-2 space-y-6">
-          {/* Live Rates Table */}
+          {/* Live Rates Table - Demo with Fast Refresh */}
           <AnimatedSection>
             <Card className="shadow-lg">
               <CardHeader className="bg-brand-50">
-                <CardTitle className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-brand-600" />
-                  Live Rates
-                </CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5 text-brand-600" />
+                    Live Rates
+                  </CardTitle>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1">
+                      <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
+                      <span className="text-xs font-medium text-green-700">Live</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">Updates every 2s</span>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent className="pt-6">
-                <LiveRatesTable prices={publishedPrices} />
+                <LivePriceTicker prices={publishedPrices} />
               </CardContent>
             </Card>
           </AnimatedSection>
@@ -83,7 +93,7 @@ export default async function LiveRatePage() {
         </div>
 
         {/* Sidebar */}
-        <AnimatedSection delay={0.3}>
+        <AnimatedSection delay={0.3} className="order-1 lg:order-2">
           <LiveRateSidebar />
         </AnimatedSection>
       </div>

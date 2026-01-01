@@ -2,6 +2,7 @@
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AnimatedTableRow } from "@/components/public/AnimatedTable";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ProductRate {
   id: string;
@@ -34,33 +35,63 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
   };
 
   return (
-    <div className="w-full overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow className="bg-brand-500 text-white">
-            <TableHead className="text-white">Description</TableHead>
-            <TableHead className="text-right text-white">Buy</TableHead>
-            <TableHead className="text-right text-white">Sell</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {products.map((product, index) => (
-            <AnimatedTableRow key={product.id} index={index}>
-              <TableCell className="font-medium">
-                <span className="mr-2">{product.flag}</span>
-                {product.description}
-              </TableCell>
-              <TableCell className="text-right font-semibold text-green-600">
-                {formatPrice(product.buy)}
-              </TableCell>
-              <TableCell className="text-right font-semibold text-green-600">
-                {formatPrice(product.sell)}
-              </TableCell>
-            </AnimatedTableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </div>
+    <>
+      {/* Desktop Table */}
+      <div className="hidden md:block w-full overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-brand-500 text-white">
+              <TableHead className="text-white">Description</TableHead>
+              <TableHead className="text-right text-white">Buy</TableHead>
+              <TableHead className="text-right text-white">Sell</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {products.map((product, index) => (
+              <AnimatedTableRow key={product.id} index={index}>
+                <TableCell className="font-medium">
+                  <span className="mr-2">{product.flag}</span>
+                  {product.description}
+                </TableCell>
+                <TableCell className="text-right font-semibold text-green-600">
+                  {formatPrice(product.buy)}
+                </TableCell>
+                <TableCell className="text-right font-semibold text-green-600">
+                  {formatPrice(product.sell)}
+                </TableCell>
+              </AnimatedTableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="md:hidden space-y-3">
+        {products.map((product, index) => (
+          <Card key={product.id} className="overflow-hidden">
+            <CardHeader className="bg-brand-500 text-white pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <span>{product.flag}</span>
+                <span className="line-clamp-2">{product.description}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              <div className="flex items-center justify-between border-b pb-2">
+                <span className="text-sm text-muted-foreground">Buy</span>
+                <span className="text-sm font-semibold text-green-600">
+                  {formatPrice(product.buy)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Sell</span>
+                <span className="text-sm font-semibold text-green-600">
+                  {formatPrice(product.sell)}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </>
   );
 }
-

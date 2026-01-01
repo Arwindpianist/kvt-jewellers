@@ -63,7 +63,7 @@ export default function ProductsPage() {
       <AnimatedSection>
         <div className="mb-12">
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="mb-8 grid w-full grid-cols-4">
+            <TabsList className="mb-8 grid w-full grid-cols-2 sm:grid-cols-4 gap-2">
               <TabsTrigger value="all" className="transition-all hover:scale-105">
                 All Products
               </TabsTrigger>

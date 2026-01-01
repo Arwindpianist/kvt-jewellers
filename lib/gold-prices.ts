@@ -1,4 +1,12 @@
 import type { GoldPrice, GoldPriceType, ExternalGoldPriceData } from "@/types/gold-prices";
+import { 
+  fetchGoldPriceUSD, 
+  fetchGoldPriceInCurrency, 
+  fetchSilverPriceUSD,
+  fetchSilverPriceInCurrency,
+  ounceToGram 
+} from "./gold-price-api";
+import { fetchExchangeRates } from "./currency-converter";
 
 // In-memory storage for price overrides and publish status
 // In production, this would be in a database
@@ -18,145 +26,130 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 /**
  * Fetches gold prices from external API (SERVER-ONLY)
  * This function must NEVER be called from client components
+ * Uses gold price in USD and converts to MYR and INR
  */
 export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
-  const apiUrl = process.env.GOLD_PRICE_API_URL;
-  const apiKey = process.env.GOLD_PRICE_API_KEY;
-
-  // If no API URL configured, return mock data
-  if (!apiUrl) {
-    return getMockGoldPrices();
-  }
-
   try {
-    // Try metals.live API format
-    if (apiUrl.includes("metals.live")) {
-      const response = await fetch(`${apiUrl}/gold`, {
-        headers: apiKey ? { "X-API-Key": apiKey } : {},
-        next: { revalidate: 300 }, // 5 minutes
-      });
+    // Fetch gold and silver prices in USD per ounce using gold-api.com
+    const [goldPriceUSDPerOunce, silverPriceUSDPerOunce] = await Promise.all([
+      fetchGoldPriceUSD(),
+      fetchSilverPriceUSD(),
+    ]);
+    
+    // Convert to per gram for easier calculations
+    const goldPriceUSDPerGram = ounceToGram(goldPriceUSDPerOunce);
+    const silverPriceUSDPerGram = ounceToGram(silverPriceUSDPerOunce);
+    
+    // Fetch prices in different currencies
+    const [goldPriceMYR, goldPriceINR, silverPriceMYR, silverPriceINR] = await Promise.all([
+      fetchGoldPriceInCurrency("MYR"),
+      fetchGoldPriceInCurrency("INR"),
+      fetchSilverPriceInCurrency("MYR"),
+      fetchSilverPriceInCurrency("INR"),
+    ]);
+    
+    // Convert to per gram
+    const goldPriceMYRPerGram = ounceToGram(goldPriceMYR);
+    const goldPriceINRPerGram = ounceToGram(goldPriceINR);
+    const silverPriceMYRPerGram = ounceToGram(silverPriceMYR);
+    const silverPriceINRPerGram = ounceToGram(silverPriceINR);
+    
+    // Fetch exchange rates for currency conversion
+    const exchangeRates = await fetchExchangeRates();
+    
+    // Calculate 916 gold (91.6% pure)
+    const gold916MYR = goldPriceMYRPerGram * 0.916;
+    const gold916USD = goldPriceUSDPerGram * 0.916;
+    const gold916INR = goldPriceINRPerGram * 0.916;
+    
+    // Create price entries
+    const prices: GoldPrice[] = [
+      {
+        id: "gold-c",
+        type: "GOLD_C",
+        fetchedPrice: goldPriceMYRPerGram,
+        currency: "MYR",
+        isPublished: priceOverrides.get("gold-c")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "gold-usd",
+        type: "GOLD_USD",
+        fetchedPrice: goldPriceUSDPerGram,
+        currency: "USD",
+        isPublished: priceOverrides.get("gold-usd")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "gold-inr",
+        type: "GOLD_C",
+        fetchedPrice: goldPriceINRPerGram,
+        currency: "INR",
+        isPublished: priceOverrides.get("gold-inr")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "silver-c",
+        type: "SILVER_C",
+        fetchedPrice: silverPriceMYRPerGram,
+        currency: "MYR",
+        isPublished: priceOverrides.get("silver-c")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "silver-usd",
+        type: "SILVER_USD",
+        fetchedPrice: silverPriceUSDPerGram,
+        currency: "USD",
+        isPublished: priceOverrides.get("silver-usd")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "sing",
+        type: "SING",
+        fetchedPrice: gold916MYR,
+        currency: "MYR",
+        isPublished: priceOverrides.get("sing")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "myr-usd",
+        type: "MYR_USD",
+        fetchedPrice: exchangeRates.MYR,
+        currency: "USD",
+        isPublished: priceOverrides.get("myr-usd")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+      {
+        id: "myr-inr",
+        type: "MYR_INR",
+        fetchedPrice: exchangeRates.INR / exchangeRates.MYR, // MYR to INR rate
+        currency: "INR",
+        isPublished: priceOverrides.get("myr-inr")?.isPublished ?? true,
+        lastUpdated: new Date(),
+      },
+    ];
 
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
-      }
-
-      const data = (await response.json()) as ExternalGoldPriceData;
-      
-      // Transform to our format
-      const prices: GoldPrice[] = [
-        {
-          id: "gold-c",
-          type: "GOLD_C",
-          fetchedPrice: data.gold || 0,
-          currency: "MYR",
-          isPublished: priceOverrides.get("gold-c")?.isPublished ?? true,
-          lastUpdated: new Date(),
-        },
-        {
-          id: "gold-usd",
-          type: "GOLD_USD",
-          fetchedPrice: (data.gold || 0) * 0.24, // Approximate USD conversion
-          currency: "USD",
-          isPublished: priceOverrides.get("gold-usd")?.isPublished ?? true,
-          lastUpdated: new Date(),
-        },
-        {
-          id: "silver-c",
-          type: "SILVER_C",
-          fetchedPrice: data.silver || 0,
-          currency: "MYR",
-          isPublished: priceOverrides.get("silver-c")?.isPublished ?? true,
-          lastUpdated: new Date(),
-        },
-        {
-          id: "silver-usd",
-          type: "SILVER_USD",
-          fetchedPrice: (data.silver || 0) * 0.24, // Approximate USD conversion
-          currency: "USD",
-          isPublished: priceOverrides.get("silver-usd")?.isPublished ?? true,
-          lastUpdated: new Date(),
-        },
-        {
-          id: "sing",
-          type: "SING",
-          fetchedPrice: (data.gold || 0) * 0.916, // 916 gold
-          currency: "MYR",
-          isPublished: priceOverrides.get("sing")?.isPublished ?? true,
-          lastUpdated: new Date(),
-        },
-      ];
-
-      // Apply overrides
-      prices.forEach((price) => {
-        const override = priceOverrides.get(price.id);
-        if (override) {
-          if (override.overridePrice !== undefined) {
-            price.overridePrice = override.overridePrice;
-          }
-          if (override.isPublished !== undefined) {
-            price.isPublished = override.isPublished;
-          }
+    // Apply overrides
+    prices.forEach((price) => {
+      const override = priceOverrides.get(price.id);
+      if (override) {
+        if (override.overridePrice !== undefined) {
+          price.overridePrice = override.overridePrice;
         }
-      });
-
-      // Update cache
-      priceCache = {
-        data: prices,
-        timestamp: Date.now(),
-      };
-
-      return prices;
-    }
-
-    // Try goldapi.io format
-    if (apiUrl.includes("goldapi.io")) {
-      const response = await fetch(`${apiUrl}/XAU/MYR`, {
-        headers: apiKey ? { "x-access-token": apiKey } : {},
-        next: { revalidate: 300 },
-      });
-
-      if (!response.ok) {
-        throw new Error(`API returned ${response.status}`);
-      }
-
-      const data = (await response.json()) as { price: number; currency: string };
-      
-      // Similar transformation as above
-      const prices: GoldPrice[] = [
-        {
-          id: "gold-c",
-          type: "GOLD_C",
-          fetchedPrice: data.price || 0,
-          currency: "MYR",
-          isPublished: priceOverrides.get("gold-c")?.isPublished ?? true,
-          lastUpdated: new Date(),
-        },
-        // ... similar for other types
-      ];
-
-      // Apply overrides and update cache
-      prices.forEach((price) => {
-        const override = priceOverrides.get(price.id);
-        if (override) {
-          if (override.overridePrice !== undefined) {
-            price.overridePrice = override.overridePrice;
-          }
-          if (override.isPublished !== undefined) {
-            price.isPublished = override.isPublished;
-          }
+        if (override.isPublished !== undefined) {
+          price.isPublished = override.isPublished;
         }
-      });
+      }
+    });
 
-      priceCache = {
-        data: prices,
-        timestamp: Date.now(),
-      };
+    // Update cache
+    priceCache = {
+      data: prices,
+      timestamp: Date.now(),
+    };
 
-      return prices;
-    }
-
-    // Fallback: Return mock data if API is not configured
-    return getMockGoldPrices();
+    return prices;
   } catch (error) {
     console.error("Error fetching gold prices:", error);
     

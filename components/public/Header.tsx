@@ -5,8 +5,15 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { TopBar } from "./TopBar";
-import { cn } from "@/lib/utils";
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -32,142 +39,140 @@ export function Header() {
       <TopBar />
       <nav className="border-b bg-brand-600 text-white">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <motion.div
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Link href="/home" className="flex items-center space-x-2">
-            <span className="font-serif text-2xl font-bold text-white">
-              KVT
-            </span>
-            <span className="text-sm text-white/80">Jewellers</span>
-          </Link>
-        </motion.div>
-
-        {/* Desktop Navigation */}
-        <div className="hidden items-center space-x-8 md:flex">
-          {navItems.map((item, index) => (
-            <motion.div
-              key={item.href}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Link
-                href={item.href}
-                className="relative text-sm font-medium text-white transition-colors hover:text-brand-200"
-              >
-                <motion.span
-                  whileHover={{ scale: 1.1 }}
-                  className="block"
-                >
-                  {item.label}
-                </motion.span>
-                <motion.div
-                  className="absolute -bottom-1 left-0 h-0.5 bg-white"
-                  initial={{ width: 0 }}
-                  whileHover={{ width: "100%" }}
-                  transition={{ duration: 0.3 }}
-                />
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Mobile Menu Button */}
-        <motion.div
-          whileTap={{ scale: 0.9 }}
-        >
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            <AnimatePresence mode="wait">
-              {mobileMenuOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <X className="h-6 w-6" />
-                </motion.div>
-              ) : (
-                <motion.div
-                  key="menu"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                >
-                  <Menu className="h-6 w-6" />
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </Button>
-        </motion.div>
-        </div>
-      </nav>
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
+          {/* Logo */}
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.3 }}
-            className="border-t bg-brand-600 md:hidden overflow-hidden"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
-            <div className="container mx-auto space-y-1 px-4 py-4">
-              {navItems.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
+            <Link href="/home" className="flex items-center space-x-2">
+              <span className="font-serif text-2xl font-bold text-white">
+                KVT
+              </span>
+              <span className="text-sm text-white/80">Jewellers</span>
+            </Link>
+          </motion.div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden items-center space-x-8 md:flex">
+            {navItems.map((item, index) => (
+              <motion.div
+                key={item.href}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Link
+                  href={item.href}
+                  className="relative text-sm font-medium text-white transition-colors hover:text-brand-200"
                 >
-                  <Link
-                    href={item.href}
-                    className="block rounded-md px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-brand-700"
-                    onClick={() => setMobileMenuOpen(false)}
+                  <motion.span
+                    whileHover={{ scale: 1.1 }}
+                    className="block"
                   >
                     {item.label}
-                  </Link>
-                  {item.submenu && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="ml-4 mt-1 space-y-1"
-                    >
-                      {item.submenu.map((subItem, subIndex) => (
-                        <motion.div
-                          key={subItem.href}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: (index + 1) * 0.1 + subIndex * 0.05 }}
+                  </motion.span>
+                  <motion.div
+                    className="absolute -bottom-1 left-0 h-0.5 bg-white"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Mobile Menu - Bottom Drawer */}
+          <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+            <SheetTrigger asChild>
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="md:hidden text-white hover:bg-brand-700"
+                >
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </motion.div>
+            </SheetTrigger>
+            <SheetContent 
+              side="bottom" 
+              className="h-[85vh] rounded-t-3xl border-t-4 border-brand-500 bg-brand-600 text-white p-0"
+            >
+              <div className="flex flex-col h-full">
+                {/* Drawer Handle */}
+                <div className="flex justify-center pt-4 pb-2">
+                  <div className="w-12 h-1.5 bg-white/30 rounded-full" />
+                </div>
+
+                {/* Drawer Header */}
+                <SheetHeader className="px-6 pb-4 border-b border-white/20">
+                  <SheetTitle className="text-2xl font-serif text-white text-left">
+                KVT Jewellers
+                  </SheetTitle>
+                  <SheetDescription className="text-white/80 text-left">
+                    Navigation Menu
+                  </SheetDescription>
+                </SheetHeader>
+
+                {/* Navigation Items */}
+                <div className="flex-1 overflow-y-auto px-6 py-6">
+                  <nav className="space-y-2">
+                    {navItems.map((item, index) => (
+                      <motion.div
+                        key={item.href}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                      >
+                        <Link
+                          href={item.href}
+                          className="block rounded-lg px-4 py-4 text-base font-medium text-white transition-colors hover:bg-brand-700 active:bg-brand-800"
+                          onClick={() => setMobileMenuOpen(false)}
                         >
-                          <Link
-                            href={subItem.href}
-                            className="block rounded-md px-3 py-2 text-sm text-white/80 transition-colors hover:bg-brand-700 hover:text-white"
-                            onClick={() => setMobileMenuOpen(false)}
+                          {item.label}
+                        </Link>
+                        {item.submenu && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            transition={{ delay: index * 0.05 + 0.1 }}
+                            className="ml-4 mt-2 space-y-1 border-l-2 border-white/20 pl-4"
                           >
-                            {subItem.label}
-                          </Link>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                            {item.submenu.map((subItem, subIndex) => (
+                              <motion.div
+                                key={subItem.href}
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.05 + 0.15 + subIndex * 0.05 }}
+                              >
+                                <Link
+                                  href={subItem.href}
+                                  className="block rounded-lg px-4 py-3 text-sm text-white/90 transition-colors hover:bg-brand-700 hover:text-white active:bg-brand-800"
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  {subItem.label}
+                                </Link>
+                              </motion.div>
+                            ))}
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </nav>
+                </div>
+
+                {/* Drawer Footer */}
+                <div className="px-6 py-4 border-t border-white/20">
+                  <p className="text-xs text-white/60 text-center">
+                    © {new Date().getFullYear()} KVT Jewellers. All rights reserved.
+                  </p>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
     </header>
   );
 }
-

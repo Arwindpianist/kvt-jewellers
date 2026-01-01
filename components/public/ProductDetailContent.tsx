@@ -77,7 +77,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             <Badge variant="outline" className="mb-4 w-fit border-brand-300 text-brand-700">
               {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
             </Badge>
-            <h1 className="mb-4 font-serif text-4xl font-bold md:text-5xl">{product.name}</h1>
+            <h1 className="mb-4 font-serif text-3xl font-bold md:text-5xl">{product.name}</h1>
             
             <motion.div
               className="mb-6"
@@ -85,7 +85,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <span className="text-4xl font-semibold gold-gradient-text">
+              <span className="text-3xl md:text-4xl font-semibold gold-gradient-text">
                 {formatPrice(product.price)}
               </span>
             </motion.div>
