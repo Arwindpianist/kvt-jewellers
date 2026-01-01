@@ -114,6 +114,15 @@ export default async function LiveRatePage() {
           </div>
         </div>
       </AnimatedSection>
+
+      {/* Disclaimer */}
+      <AnimatedSection delay={0.5}>
+        <div className="mt-8 rounded-lg border border-brand-200/50 dark:border-brand-700/20 bg-card-level-1 shadow-card p-6">
+          <p className="text-xs leading-relaxed text-muted-foreground text-center">
+            KVT Jewellers Liverates provides gold & silver prices obtained from various sources believed to be reliable, but we do not guarantee their accuracy. Our gold & silver price data are provided without warranty or claim of reliability. It is accepted by the site visitor on the condition that errors or omissions shall not be made the basis for any claim, demand or cause for action.
+          </p>
+        </div>
+      </AnimatedSection>
     </div>
   );
 }

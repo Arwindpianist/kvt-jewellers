@@ -59,13 +59,21 @@ export function HomePriceTicker({ prices, showLastUpdated = true }: HomePriceTic
     intervalRef.current = setInterval(() => {
       setLivePrices((prev) =>
         prev.map((price) => {
-          // Random change between 1% and 2%
-          const changePercent = 1 + Math.random() * 1; // 1% to 2%
+          // Calculate small fixed change based on currency
+          let changeAmount: number;
+          if (price.currency === "USD") {
+            changeAmount = 0.10 + Math.random() * 0.90; // $0.10 to $1.00
+          } else if (price.currency === "MYR") {
+            changeAmount = 0.10 + Math.random() * 0.90; // RM 0.10 to RM 1.00
+          } else if (price.currency === "INR") {
+            changeAmount = 1 + Math.random() * 9; // ₹1 to ₹10
+          } else {
+            changeAmount = 0.10 + Math.random() * 0.90; // Default: 0.10 to 1.00
+          }
+          
           const direction = Math.random() > 0.5 ? 1 : -1; // Up or down
-
           const change = direction === 1 ? "up" : "down";
-          const multiplier = 1 + (direction * changePercent) / 100;
-          const newPrice = price.price * multiplier;
+          const newPrice = price.price + (direction * changeAmount);
 
           return {
             ...price,

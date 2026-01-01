@@ -8,7 +8,12 @@ export const metadata = {
 
 export default async function HomePage() {
   const allPrices = await fetchGoldPricesFromAPI();
-  const publishedPrices = getPublishedGoldPrices(allPrices).slice(0, 3);
+  const publishedPrices = getPublishedGoldPrices(allPrices);
+  
+  // Show 3 specific prices from live rate page: GOLD_USD, SILVER_USD, and MYR_USD
+  const homePagePrices = publishedPrices.filter(
+    (price) => price.type === "GOLD_USD" || price.type === "SILVER_USD" || price.type === "MYR_USD"
+  );
 
-  return <HomePageContent publishedPrices={publishedPrices} />;
+  return <HomePageContent publishedPrices={homePagePrices} />;
 }
