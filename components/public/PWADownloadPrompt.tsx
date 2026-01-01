@@ -45,10 +45,8 @@ export function PWADownloadPrompt() {
       currentPrompt = promptEvent;
       setDeferredPrompt(promptEvent);
       setHasInstallPrompt(true);
-      // Show prompt after capturing the install event
-      timer = setTimeout(() => {
-        setShowPrompt(true);
-      }, 3000);
+      // Don't show our custom prompt if native prompt is available
+      // The native browser prompt is better UX - let it handle installation
     };
 
     // Check if we're on iOS (which doesn't support beforeinstallprompt)
@@ -66,8 +64,9 @@ export function PWADownloadPrompt() {
         window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
         
         // Fallback: if event doesn't fire within 5 seconds, show anyway (might be installable)
+        // This handles cases where the browser supports PWA but doesn't fire the event
         fallbackTimer = setTimeout(() => {
-          if (!currentPrompt) {
+          if (!currentPrompt && !isStandalone) {
             setShowPrompt(true);
           }
         }, 5000);
@@ -134,7 +133,9 @@ export function PWADownloadPrompt() {
     localStorage.setItem("pwa-download-dismissed", Date.now().toString());
   };
 
-  if (isInstalled || !showPrompt) {
+  // Don't show custom prompt if native install prompt is available
+  // The native browser prompt is better UX - let it handle installation
+  if (isInstalled || !showPrompt || hasInstallPrompt) {
     return null;
   }
 
@@ -190,7 +191,6 @@ export function PWADownloadPrompt() {
                     <AnimatedButton
                       onClick={handleInstall}
                       className="gold-gradient-button rounded-lg text-sm px-4 py-2 h-auto flex-1 w-full sm:w-auto"
-                      disabled={!hasInstallPrompt && !deferredPrompt}
                     >
                       <Download className="h-4 w-4 mr-2" />
                       {hasInstallPrompt || deferredPrompt ? "Install Now" : "Show Instructions"}
