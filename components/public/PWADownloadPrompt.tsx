@@ -18,8 +18,12 @@ export function PWADownloadPrompt() {
   const [hasInstallPrompt, setHasInstallPrompt] = useState(false);
 
   useEffect(() => {
-    // Check if already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
+    // Check if already installed - multiple detection methods
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
+    const isIOSStandalone = (window.navigator as any).standalone === true;
+    const isInstalled = isStandalone || isIOSStandalone;
+    
+    if (isInstalled) {
       setIsInstalled(true);
       return;
     }
@@ -51,9 +55,8 @@ export function PWADownloadPrompt() {
 
     // Check if we're on iOS (which doesn't support beforeinstallprompt)
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
-    const isStandalone = window.matchMedia("(display-mode: standalone)").matches;
 
-    if (!isStandalone) {
+    if (!isInstalled) {
       if (isIOS) {
         // For iOS, show instructions after delay
         timer = setTimeout(() => {
@@ -66,7 +69,7 @@ export function PWADownloadPrompt() {
         // Fallback: if event doesn't fire within 5 seconds, show anyway (might be installable)
         // This handles cases where the browser supports PWA but doesn't fire the event
         fallbackTimer = setTimeout(() => {
-          if (!currentPrompt && !isStandalone) {
+          if (!currentPrompt && !isInstalled) {
             setShowPrompt(true);
           }
         }, 5000);
@@ -81,6 +84,7 @@ export function PWADownloadPrompt() {
   }, []);
 
   const handleInstall = async () => {
+    // Always try to install first
     if (deferredPrompt) {
       try {
         // Show the native install prompt
@@ -90,16 +94,19 @@ export function PWADownloadPrompt() {
         if (outcome === "accepted") {
           setIsInstalled(true);
           setShowPrompt(false);
+        } else {
+          // User dismissed, just close our prompt
+          setShowPrompt(false);
         }
         
         setDeferredPrompt(null);
       } catch (error) {
         console.error("Error showing install prompt:", error);
-        // Fallback to instructions if prompt fails
+        // Only show instructions if prompt truly fails
         showInstallInstructions();
       }
     } else {
-      // Fallback for iOS or browsers without install prompt
+      // No native prompt available - show instructions as fallback
       showInstallInstructions();
     }
   };
@@ -133,8 +140,17 @@ export function PWADownloadPrompt() {
     localStorage.setItem("pwa-download-dismissed", Date.now().toString());
   };
 
-  // Don't show custom prompt if native install prompt is available
+  // Don't show custom prompt if already installed or native install prompt is available
   // The native browser prompt is better UX - let it handle installation
+  // Additional check at render time (client-side only)
+  if (typeof window !== 'undefined') {
+    const isStandaloneCheck = window.matchMedia("(display-mode: standalone)").matches;
+    const isIOSStandaloneCheck = (window.navigator as any).standalone === true;
+    if (isStandaloneCheck || isIOSStandaloneCheck) {
+      return null;
+    }
+  }
+  
   if (isInstalled || !showPrompt || hasInstallPrompt) {
     return null;
   }
@@ -193,7 +209,7 @@ export function PWADownloadPrompt() {
                       className="gold-gradient-button rounded-lg text-sm px-4 py-2 h-auto flex-1 w-full sm:w-auto"
                     >
                       <Download className="h-4 w-4 mr-2" />
-                      {hasInstallPrompt || deferredPrompt ? "Install Now" : "Show Instructions"}
+                      Install Now
                     </AnimatedButton>
                     <Button
                       onClick={handleDismiss}
