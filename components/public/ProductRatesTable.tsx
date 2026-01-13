@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AnimatedTableRow } from "@/components/public/AnimatedTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp, ArrowDown } from "lucide-react";
+import { AnimatedCounter } from "@/components/public/AnimatedCounter";
 
 interface ProductRate {
   id: string;
@@ -62,7 +63,7 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
           // Calculate small fixed change for MYR (all products are in MYR)
           // For larger amounts (like 1KG gold), use larger changes
           // For smaller amounts (like 916 rates), use smaller changes
-          const baseAmount = product.buy > 10000 ? 1.00 + Math.random() * 4.00 : 0.10 + Math.random() * 0.90;
+          const baseAmount = product.buy > 10000 ? 1.00 + Math.random() * 4.00 : 0.10 + Math.random() * 0.90; // RM 0.10 to RM 1.00 for small, RM 1.00 to RM 5.00 for large
           
           const buyDirection = Math.random() > 0.5 ? 1 : -1;
           const sellDirection = Math.random() > 0.5 ? 1 : -1;
@@ -101,84 +102,9 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
   };
 
   const getChangeColor = (change: "up" | "down" | "neutral") => {
-    switch (change) {
-      case "up":
-        return "text-green-600 dark:text-green-500";
-      case "down":
-        return "text-red-600 dark:text-red-500";
-      default:
-        return "text-foreground";
-    }
-  };
-
-  const getChangeBgColor = (change: "up" | "down" | "neutral") => {
-    switch (change) {
-      case "up":
-        return "bg-green-50 dark:bg-green-950/20";
-      case "down":
-        return "bg-red-50 dark:bg-red-950/20";
-      default:
-        return "";
-    }
-  };
-
-  const getChangeIcon = (change: "up" | "down" | "neutral") => {
-    switch (change) {
-      case "up":
-        return <ArrowUp className="h-3 w-3" />;
-      case "down":
-        return <ArrowDown className="h-3 w-3" />;
-      default:
-        return null;
-    }
-  };
-
-  const RollingNumber = ({ value, prevValue, change }: {
-    value: number;
-    prevValue: number;
-    change: "up" | "down" | "neutral";
-  }) => {
-    const [displayValue, setDisplayValue] = useState(prevValue);
-
-    useEffect(() => {
-      const duration = 500; // Animation duration in ms
-      const startTime = Date.now();
-      const startValue = prevValue;
-      const endValue = value;
-      const difference = endValue - startValue;
-
-      const animate = () => {
-        const now = Date.now();
-        const elapsed = now - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-
-        // Easing function for smooth animation
-        const easeOutCubic = 1 - Math.pow(1 - progress, 3);
-        const currentValue = startValue + difference * easeOutCubic;
-
-        setDisplayValue(currentValue);
-
-        if (progress < 1) {
-          requestAnimationFrame(animate);
-        } else {
-          setDisplayValue(endValue);
-        }
-      };
-
-      requestAnimationFrame(animate);
-    }, [value, prevValue]);
-
-    return (
-      <motion.span
-        className={`inline-flex items-center gap-1 font-mono ${getChangeColor(change)}`}
-        animate={{
-          scale: change !== "neutral" ? [1, 1.05, 1] : 1,
-        }}
-        transition={{ duration: 0.3 }}
-      >
-        RM {formatPrice(displayValue)}
-      </motion.span>
-    );
+    if (change === "up") return "text-green-600";
+    if (change === "down") return "text-red-600";
+    return "text-muted-foreground";
   };
 
   return (
@@ -188,69 +114,57 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
         <Table>
           <TableHeader>
             <TableRow className="bg-brand-500 text-white">
-              <TableHead className="text-white">DESCRIPTION</TableHead>
-              <TableHead className="text-right text-white">BUY</TableHead>
-              <TableHead className="text-right text-white">SELL</TableHead>
+              <TableHead className="text-white">Description</TableHead>
+              <TableHead className="text-right text-white">Buy</TableHead>
+              <TableHead className="text-right text-white">Sell</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {liveProducts.map((product, index) => (
-              <motion.tr
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className={`transition-colors ${getChangeBgColor(product.buyChange)}`}
-              >
+              <AnimatedTableRow key={product.id} index={index}>
                 <TableCell className="font-medium">
                   <span className="mr-2">{product.flag}</span>
                   {product.description}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right font-semibold">
                   <div className="flex items-center justify-end gap-1.5">
-                    <AnimatePresence mode="wait">
-                      {product.buyChange !== "neutral" && (
-                        <motion.div
-                          key={product.buyChange}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          className={getChangeColor(product.buyChange)}
-                        >
-                          {getChangeIcon(product.buyChange)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <RollingNumber
-                      value={product.buy}
-                      prevValue={product.buyPrev}
-                      change={product.buyChange}
-                    />
+                    {product.buyChange !== "neutral" && (
+                      <ArrowUp
+                        className={`h-3.5 w-3.5 ${getChangeColor(product.buyChange)}`}
+                        style={{
+                          transform: product.buyChange === "down" ? "rotate(180deg)" : "none",
+                        }}
+                      />
+                    )}
+                    <span className={getChangeColor(product.buyChange)}>
+                      <AnimatedCounter
+                        value={product.buy}
+                        decimals={2}
+                        prefix="RM "
+                      />
+                    </span>
                   </div>
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right font-semibold">
                   <div className="flex items-center justify-end gap-1.5">
-                    <AnimatePresence mode="wait">
-                      {product.sellChange !== "neutral" && (
-                        <motion.div
-                          key={product.sellChange}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          className={getChangeColor(product.sellChange)}
-                        >
-                          {getChangeIcon(product.sellChange)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <RollingNumber
-                      value={product.sell}
-                      prevValue={product.sellPrev}
-                      change={product.sellChange}
-                    />
+                    {product.sellChange !== "neutral" && (
+                      <ArrowUp
+                        className={`h-3.5 w-3.5 ${getChangeColor(product.sellChange)}`}
+                        style={{
+                          transform: product.sellChange === "down" ? "rotate(180deg)" : "none",
+                        }}
+                      />
+                    )}
+                    <span className={getChangeColor(product.sellChange)}>
+                      <AnimatedCounter
+                        value={product.sell}
+                        decimals={2}
+                        prefix="RM "
+                      />
+                    </span>
                   </div>
                 </TableCell>
-              </motion.tr>
+              </AnimatedTableRow>
             ))}
           </TableBody>
         </Table>
@@ -259,69 +173,56 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
       {/* Mobile Card View */}
       <div className="md:hidden space-y-3">
         {liveProducts.map((product, index) => (
-          <motion.div
-            key={product.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
-          >
-            <Card className={`overflow-hidden transition-colors ${getChangeBgColor(product.buyChange)}`}>
-              <CardHeader className="bg-brand-500 text-white pb-3">
-                <CardTitle className="text-base flex items-center gap-2">
-                  <span>{product.flag}</span>
-                  <span className="line-clamp-2">{product.description}</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4 space-y-3">
-                <div className="flex items-center justify-between border-b pb-2">
-                  <span className="text-sm text-muted-foreground">BUY</span>
-                  <div className="flex items-center gap-1.5">
-                    <AnimatePresence mode="wait">
-                      {product.buyChange !== "neutral" && (
-                        <motion.div
-                          key={product.buyChange}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          className={getChangeColor(product.buyChange)}
-                        >
-                          {getChangeIcon(product.buyChange)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <RollingNumber
+          <Card key={product.id} className="overflow-hidden">
+            <CardHeader className="bg-brand-500 text-white pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <span>{product.flag}</span>
+                <span className="line-clamp-2">{product.description}</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              <div className="flex items-center justify-between border-b pb-2">
+                <span className="text-sm text-muted-foreground">Buy</span>
+                <div className="flex items-center gap-1.5">
+                  {product.buyChange !== "neutral" && (
+                    <ArrowUp
+                      className={`h-3.5 w-3.5 ${getChangeColor(product.buyChange)}`}
+                      style={{
+                        transform: product.buyChange === "down" ? "rotate(180deg)" : "none",
+                      }}
+                    />
+                  )}
+                  <span className={`text-sm font-semibold ${getChangeColor(product.buyChange)}`}>
+                    <AnimatedCounter
                       value={product.buy}
-                      prevValue={product.buyPrev}
-                      change={product.buyChange}
+                      decimals={2}
+                      prefix="RM "
                     />
-                  </div>
+                  </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">SELL</span>
-                  <div className="flex items-center gap-1.5">
-                    <AnimatePresence mode="wait">
-                      {product.sellChange !== "neutral" && (
-                        <motion.div
-                          key={product.sellChange}
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          exit={{ opacity: 0, scale: 0 }}
-                          className={getChangeColor(product.sellChange)}
-                        >
-                          {getChangeIcon(product.sellChange)}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                    <RollingNumber
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-muted-foreground">Sell</span>
+                <div className="flex items-center gap-1.5">
+                  {product.sellChange !== "neutral" && (
+                    <ArrowUp
+                      className={`h-3.5 w-3.5 ${getChangeColor(product.sellChange)}`}
+                      style={{
+                        transform: product.sellChange === "down" ? "rotate(180deg)" : "none",
+                      }}
+                    />
+                  )}
+                  <span className={`text-sm font-semibold ${getChangeColor(product.sellChange)}`}>
+                    <AnimatedCounter
                       value={product.sell}
-                      prevValue={product.sellPrev}
-                      change={product.sellChange}
+                      decimals={2}
+                      prefix="RM "
                     />
-                  </div>
+                  </span>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              </div>
+            </CardContent>
+          </Card>
         ))}
       </div>
     </>

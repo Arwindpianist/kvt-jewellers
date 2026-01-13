@@ -43,3 +43,8 @@ next-env.d.ts
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
 
+# Sensitive documents
+PRD.md
+MVP_ENHANCEMENT_PROPOSAL.md
+STAFF_PORTAL_ENHANCEMENTS.md
+PWA_SETUP.md
