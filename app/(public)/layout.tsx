@@ -3,6 +3,7 @@ import { Footer } from "@/components/public/Footer";
 import { Meteors } from "@/components/ui/meteors";
 import { PWAInstallPrompt } from "@/components/public/PWAInstallPrompt";
 import { PWADiagnostic } from "@/components/public/PWADiagnostic";
+import { ContentProtection } from "@/components/public/ContentProtection";
 
 export default function PublicLayout({
   children,
@@ -11,6 +12,7 @@ export default function PublicLayout({
 }) {
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-transparent">
+      <ContentProtection />
       <Meteors number={30} />
       <div className="relative z-10 flex min-h-screen flex-col bg-transparent">
         <Header />
