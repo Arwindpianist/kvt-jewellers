@@ -13,10 +13,12 @@ export function LogoutButton() {
       await fetch("/api/auth/logout", {
         method: "POST",
       });
-      router.push("/staff/login");
-      router.refresh();
+      // Use window.location for a full page reload to ensure cookie is cleared
+      window.location.href = "/staff/login";
     } catch (error) {
       console.error("Logout error:", error);
+      // Even if API call fails, redirect to login
+      window.location.href = "/staff/login";
     }
   };
 

@@ -26,13 +26,16 @@ export const metadata: Metadata = {
     type: "website",
   },
   manifest: "/manifest.json",
-  themeColor: "#521540",
-  viewport: {
+};
+
+export function generateViewport() {
+  return {
     width: "device-width",
     initialScale: 1,
     maximumScale: 5,
-  },
-};
+    themeColor: "#521540",
+  };
+}
 
 export default function RootLayout({
   children,

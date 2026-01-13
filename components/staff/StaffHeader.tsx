@@ -9,7 +9,7 @@ import { LogoutButton } from "./LogoutButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { User, Menu, LayoutDashboard, DollarSign, Package, BarChart3, Activity, Settings } from "lucide-react";
+import { User, Menu, LayoutDashboard, DollarSign, Package, BarChart3, Activity, Settings, LogOut } from "lucide-react";
 
 interface StaffHeaderProps {
   userName: string;
@@ -111,12 +111,15 @@ export function StaffHeader({ userName }: StaffHeaderProps) {
 
         {/* Right Side - Mobile Menu & Desktop User Info */}
         <div className="flex items-center space-x-3">
-          {/* Desktop User Info */}
-          <div className="hidden items-center space-x-2 rounded-lg bg-white/10 px-3 py-1.5 md:flex">
-            <User className="h-4 w-4 text-white/80" />
-            <span className="text-sm font-medium text-white">
-              {userName}
-            </span>
+          {/* Desktop User Info & Logout */}
+          <div className="hidden items-center space-x-3 md:flex">
+            <div className="flex items-center space-x-2 rounded-lg bg-white/10 px-3 py-1.5">
+              <User className="h-4 w-4 text-white/80" />
+              <span className="text-sm font-medium text-white">
+                {userName}
+              </span>
+            </div>
+            <LogoutButton />
           </div>
 
           {/* Mobile Hamburger Menu - Vaul Drawer */}
@@ -215,9 +218,33 @@ export function StaffHeader({ userName }: StaffHeaderProps) {
                       <span className="text-xs text-white/60">Theme</span>
                       <ThemeSwitcher />
                     </div>
-                    <div className="pt-2">
-                      <LogoutButton />
-                    </div>
+                    {/* Mobile Logout Button */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="pt-2"
+                    >
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={async () => {
+                          try {
+                            await fetch("/api/auth/logout", {
+                              method: "POST",
+                            });
+                            window.location.href = "/staff/login";
+                          } catch (error) {
+                            console.error("Logout error:", error);
+                            window.location.href = "/staff/login";
+                          }
+                        }}
+                        className="w-full flex items-center justify-center gap-2 border-white/30 text-white hover:bg-white/20 hover:text-white bg-white/5"
+                      >
+                        <LogOut className="h-4 w-4" />
+                        <span>Logout</span>
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
               </Drawer.Content>

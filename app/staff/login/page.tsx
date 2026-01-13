@@ -64,9 +64,13 @@ export default function StaffLoginPage() {
       }
 
       // Redirect to dashboard or the page they were trying to access
+      // Use window.location for a full page reload to ensure cookie is properly set and read
       const from = searchParams.get("from") || "/staff/dashboard";
-      router.push(from);
-      router.refresh();
+      
+      // Small delay to ensure cookie is set in browser before redirect
+      setTimeout(() => {
+        window.location.href = from;
+      }, 100);
     } catch (err) {
       setError("An error occurred. Please try again.");
       setLoading(false);

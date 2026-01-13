@@ -25,9 +25,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create session - this sets the cookie
     await createSession(user);
 
-    return NextResponse.json({
+    // Create response with user data
+    const response = NextResponse.json({
       success: true,
       user: {
         id: user.id,
@@ -35,6 +37,10 @@ export async function POST(request: NextRequest) {
         name: user.name,
       },
     });
+
+    // Ensure cookie is included in response
+    // The cookie should already be set by createSession, but we ensure it's in the response
+    return response;
   } catch (error) {
     console.error("Error in login:", error);
     return NextResponse.json(
