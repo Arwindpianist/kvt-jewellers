@@ -1,168 +1,191 @@
-# .cursorrules — KVT Jewellers Website & Web App Refresh
+Here’s an **updated, project-wide `.cursorrules`** that now covers **all 4 phases**, with strict instructions for Cursor to **only act according to the active PRD**. It integrates your Phase 1 + Phase 3 demo rules, while keeping Phase 2 and 4 off-limits unless explicitly enabled in their respective PRDs.
+
+---
+
+# **.cursorrules — KVT Jewellers Full Digital Platform**
 
 These rules are **non-negotiable** and must be followed exactly by Cursor and any LLM-assisted development.
 
 ---
 
-## 1. Project Intent (Read First)
+## **1. Project Intent (Read First)**
 
-This project is a **security-sensitive, brand-critical rebuild** of a luxury jewelry website and staff web app.
+This is a **security-sensitive, brand-critical platform** for KVT Jewellers, spanning:
+
+* Public-facing website
+* PWA
+* Staff/admin portal
+* Online commerce workflows
+* Full live trading system (Phase 4, future)
 
 Primary goals:
 
 * Zero exposed infrastructure endpoints
 * Premium, trustworthy visual presentation
-* Clear separation between public site and staff app
+* Clear separation between public, staff, and trading systems
 * Maintainable, future-proof architecture
 
-Do NOT treat this like a generic SaaS dashboard or template website.
+Do NOT treat this like a generic SaaS template or dashboard.
 
 ---
 
-## 2. Tech Stack (Locked)
+## **2. Phases Overview**
+
+| Phase       | Description                                      | Cursor Instructions                                                       |
+| ----------- | ------------------------------------------------ | ------------------------------------------------------------------------- |
+| **Phase 1** | Public website + PWA + staff/admin panel         | Fully implement per PRD — production-ready                                |
+| **Phase 2** | Backend hardening, testing, security             | Do NOT implement unless PRD explicitly allows                             |
+| **Phase 3** | Online buying workflow (demo in Phase 1 allowed) | Only implement demo functionality per PRD; sandbox mode; no real payments |
+| **Phase 4** | Full live trading                                | Do NOT implement unless PRD explicitly allows                             |
+
+Cursor **must only implement the features described in the current active PRD**. Do NOT scaffold future phases or assume features exist.
+
+---
+
+## **3. Tech Stack (Locked)**
 
 * Framework: **Next.js (App Router only)**
 * Deployment: **Vercel**
-* Language: **TypeScript** (no JavaScript files)
+* Language: **TypeScript** (strict, no JavaScript)
 * Styling: **Tailwind CSS**
 * UI primitives: **shadcn/ui**
 * PWA: **next-pwa** (or equivalent service worker setup)
+* Backend: **Supabase** (mandatory for Phases 3 & 4 functionality)
 
-No alternative frameworks, routers, or CSS systems are allowed.
+No alternative frameworks, routers, CSS systems, or databases are allowed.
 
 ---
 
-## 3. Rendering Rules (Critical)
+## **4. Rendering & Data Rules**
 
 * Default to **Server Components**
-* Use **Client Components only when strictly necessary** (forms, interactions)
+* Use **Client Components only when necessary** (forms, interactive elements)
 * Never fetch sensitive data in Client Components
 * Never expose secrets, endpoints, or provider URLs to the browser
 
-If unsure, keep logic server-side.
+**Phase 3/4 demo workflows must use real backend** (Supabase) in sandbox mode.
 
 ---
 
-## 4. Security Rules (Highest Priority)
+## **5. Security Rules (Highest Priority)**
 
-### 4.1 Gold Price Fetching
+### **5.1 Gold Price Fetching**
 
-* Gold prices MUST be fetched server-side only
-* External providers must be accessed only inside Route Handlers
-* Provider URLs, API keys, AWS details must live ONLY in environment variables
-* Client must NEVER know where prices originate
+* Prices must be fetched server-side only
+* External providers accessed only inside Route Handlers
+* API keys live **only in environment variables**
+* Client must never know where prices originate
 
-### 4.2 API Design
+### **5.2 API Design**
 
-* Use Next.js Route Handlers under `/app/api/*`
-* Apply basic rate limiting where applicable
+* Next.js Route Handlers under `/app/api/*`
 * Validate all inputs
-* Never proxy external APIs directly to the client
+* Apply rate-limiting if applicable
+* Do not proxy external APIs directly to the client
 
-### 4.3 Auth & Access Control
+### **5.3 Auth & Access Control**
 
-* Staff routes must be protected
-* Public users must not access staff data or APIs
-* Implement role-based checks where staff actions affect public data
+* Staff routes protected by role-based auth
+* Public users cannot access staff or trade data
+* Admin-only actions strictly enforced
+* Sandbox demo accounts must be separated from live system
 
 ---
 
-## 5. Application Structure
+## **6. Application Structure**
 
-### 5.1 Public Website
+### **6.1 Public Website**
 
-* SEO-first
-* No authentication
+* SEO-first, responsive
 * Read-only data access
 * PWA installable
+* Live metal prices displayed
 
-### 5.2 Staff Web App
+### **6.2 Staff/Admin Web App**
 
-* Auth-protected
 * Tablet-friendly layout
-* Allows:
+* Auth-protected
+* Allows product/catalog updates
+* Allows order/payment approval (demo sandbox for Phase 3)
 
-  * Gold price management
-  * Product/catalog updates
+### **6.3 Phase 3 Demo**
 
-Public and staff concerns must never be mixed.
+* Sandbox orders must use real Supabase backend
+* Payment simulation only (QR/reference)
+* Notifications via WhatsApp/email
+* Admin approval must trigger customer notification
 
 ---
 
-## 6. UX & Design Rules
+## **7. UX & Design Rules**
 
-This is a **luxury jewelry brand**, not a startup dashboard.
-
-### Must Do
+**Luxury jewelry brand rules:**
 
 * Generous spacing
 * Strong typography
-* High-quality jewelry imagery
+* High-quality imagery
 * Calm, premium color palette
 * Mobile-first layouts
 
-### Must NOT Do
+**Forbidden:**
 
-* No loud gradients
-* No neon colors
-* No SaaS-style cards everywhere
-* No cluttered dashboards
-* No stock dashboard icons
-
-Design should convey **trust, heritage, and value**.
+* Loud gradients, neon colors, cluttered dashboards, SaaS-style card overload
 
 ---
 
-## 7. PWA Rules
+## **8. PWA Rules**
 
-* App must be installable on mobile and desktop
+* Must be installable on mobile & desktop
 * Offline fallback page required
-* App icons and manifest required
-* Staff app must work reliably on tablets
+* Manifest & icons required
+* Staff app must work on tablets
 
 ---
 
-## 8. Performance Rules
+## **9. Performance Rules**
 
-* Optimize images using Next.js Image
+* Optimize images with Next.js Image
 * Avoid unnecessary client-side JS
-* Use caching and revalidation for gold prices
+* Cache & revalidate gold prices
 * Target high Lighthouse scores
 
 ---
 
-## 9. Code Quality Rules
+## **10. Code Quality Rules**
 
-* Strict TypeScript
-* No `any`
+* Strict TypeScript only, no `any`
 * Clear folder structure
 * Reusable components
 * Descriptive naming
 
-No rushed or hacky implementations.
-
 ---
 
-## 10. Scope Control
+## **11. Scope Control**
 
-### Explicitly Forbidden (Phase 1)
+Cursor must strictly follow the **current PRD**:
 
-* Online payments
-* Customer accounts
+* **Phase 1**: Full production features
+* **Phase 3 demo**: Sandbox workflow only
+* **Phase 2 & 4**: Do NOT implement unless PRD explicitly allows
+
+**Forbidden globally:**
+
+* Real card processing (Phase 3/4)
+* Wallets
 * POS integrations
 * Third-party tracking bloat
-
-If a feature is not in the PRD, do NOT implement it.
+* Features not listed in PRD
 
 ---
 
-## 11. Output Expectations
+## **12. Output Expectations**
 
 Cursor should:
 
-* Clone existing site structure ONLY as reference
-* Replace all visuals with modern equivalents
+* Replace existing visuals with modern equivalents
 * Improve UX significantly without changing business intent
 * Follow this ruleset strictly
+* Keep production-ready code for Phase 1
+* Enable demo workflow for Phase 3
 
-Failure to follow these rules is considered an invalid output.
+---
