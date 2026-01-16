@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { AnimatedSection } from "@/components/ui/animated-section";
-import { TrendingUp, Package, BarChart3, Settings, FileText } from "lucide-react";
+import { TrendingUp, Package, BarChart3, Settings, FileText, ShoppingBag, Users } from "lucide-react";
 
 const iconMap = {
   TrendingUp,
@@ -10,6 +10,8 @@ const iconMap = {
   BarChart3,
   Settings,
   FileText,
+  ShoppingBag,
+  Users,
 };
 
 type IconName = keyof typeof iconMap;

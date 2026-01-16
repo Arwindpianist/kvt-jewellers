@@ -1,0 +1,19 @@
+CONFIRM YOUR SIGNUP - KVT JEWELLERS
+====================================
+
+Thank you for creating an account with KVT Jewellers. We're excited to have you join our community of valued customers.
+
+To complete your registration and start exploring our premium collection of gold jewelry and bullion, please confirm your email address by clicking the link below:
+
+{{ .ConfirmationURL }}
+
+This confirmation link will expire in 24 hours. If you didn't create an account with KVT Jewellers, you can safely ignore this email.
+
+---
+
+KVT JEWELLERS
+Premium Gold Jewelry & Bullion
+
+Questions? Contact us at info@kvtjewellers.com
+
+© 2024 KVT Jewellers. All rights reserved.

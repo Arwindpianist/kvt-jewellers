@@ -43,6 +43,20 @@
       "description": "Browse our product catalog",
       "url": "/products",
       "icons": [{ "src": "/app.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Orders",
+      "short_name": "Orders",
+      "description": "View your order history",
+      "url": "/account/orders",
+      "icons": [{ "src": "/app.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Cart",
+      "short_name": "Cart",
+      "description": "View your shopping cart",
+      "url": "/cart",
+      "icons": [{ "src": "/app.jpg", "sizes": "192x192" }]
     }
   ]
 }

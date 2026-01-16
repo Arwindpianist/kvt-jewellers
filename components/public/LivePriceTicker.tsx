@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp, ArrowDown, Minus } from "lucide-react";
+import { useCurrency } from "@/lib/currency-context";
+import { fetchExchangeRates } from "@/lib/currency-converter";
 import type { GoldPrice } from "@/types/gold-prices";
 
 interface LivePriceTickerProps {
@@ -35,8 +37,15 @@ const priceTypeLabels: Record<string, { label: string; flag: string }> = {
 };
 
 export function LivePriceTicker({ prices }: LivePriceTickerProps) {
+  const { currency: selectedCurrency } = useCurrency();
   const [livePrices, setLivePrices] = useState<LivePriceData[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<{ MYR: number; INR: number } | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch exchange rates for currency conversion
+  useEffect(() => {
+    fetchExchangeRates().then(setExchangeRates).catch(console.error);
+  }, []);
 
   // Initialize prices
   useEffect(() => {
@@ -326,96 +335,89 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
         </Table>
       </div>
 
-      {/* Mobile Card View */}
-      <div className="md:hidden space-y-3">
-        {livePrices.map((price, index) => {
-          const decimals = price.type === "MYR_USD" || price.type === "MYR_INR" ? 4 : 2;
-          const isExchangeRate = price.type === "MYR_USD" || price.type === "MYR_INR";
+      {/* Mobile Horizontal Scroll View */}
+      <div className="md:hidden w-full">
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide -mx-4 px-4">
+          {livePrices.map((price, index) => {
+            const decimals = price.type === "MYR_USD" || price.type === "MYR_INR" ? 4 : 2;
+            const isExchangeRate = price.type === "MYR_USD" || price.type === "MYR_INR";
 
-          return (
-            <motion.div
-              key={price.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-            >
-              <Card className={`overflow-hidden transition-colors ${getChangeBgColor(price.bidChange)}`}>
-                <CardHeader className="bg-brand-500 text-white pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <span>{price.flag}</span>
-                    {price.label}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4 space-y-3">
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm text-muted-foreground">BID</span>
-                    <div className="flex items-center gap-1.5">
-                      <AnimatePresence mode="wait">
-                        {price.bidChange !== "neutral" && (
-                          <motion.div
-                            key={price.bidChange}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0 }}
-                            className={getChangeColor(price.bidChange)}
-                          >
-                            {getChangeIcon(price.bidChange)}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                      <RollingNumber
-                        value={price.bid}
-                        prevValue={price.bidPrev}
-                        currency={price.currency}
-                        decimals={decimals}
-                        change={price.bidChange}
-                        isExchangeRate={isExchangeRate}
-                      />
+            return (
+              <motion.div
+                key={price.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+                className="flex-shrink-0 w-[280px]"
+              >
+                <Card className={`overflow-hidden transition-colors h-full ${getChangeBgColor(price.bidChange)}`}>
+                  <CardHeader className="bg-brand-500 text-white pb-2 pt-3 px-4">
+                    <CardTitle className="text-sm font-semibold flex items-center gap-1.5">
+                      <span className="text-base">{price.flag}</span>
+                      <span className="truncate">{price.label}</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-3 px-4 pb-4 space-y-2.5">
+                    {/* BID */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-medium text-muted-foreground uppercase">BID</span>
+                      <div className="flex items-center gap-1">
+                        <AnimatePresence mode="wait">
+                          {price.bidChange !== "neutral" && (
+                            <motion.div
+                              key={price.bidChange}
+                              initial={{ opacity: 0, scale: 0 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0 }}
+                              className={getChangeColor(price.bidChange)}
+                            >
+                              {getChangeIcon(price.bidChange)}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        <RollingNumber
+                          value={price.bid}
+                          prevValue={price.bidPrev}
+                          currency={price.currency}
+                          decimals={decimals}
+                          change={price.bidChange}
+                          isExchangeRate={isExchangeRate}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm text-muted-foreground">ASK</span>
-                    <div className="flex items-center gap-1.5">
-                      <AnimatePresence mode="wait">
-                        {price.askChange !== "neutral" && (
-                          <motion.div
-                            key={price.askChange}
-                            initial={{ opacity: 0, scale: 0 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0 }}
-                            className={getChangeColor(price.askChange)}
-                          >
-                            {getChangeIcon(price.askChange)}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                      <RollingNumber
-                        value={price.ask}
-                        prevValue={price.askPrev}
-                        currency={price.currency}
-                        decimals={decimals}
-                        change={price.askChange}
-                        isExchangeRate={isExchangeRate}
-                      />
+                    {/* ASK */}
+                    <div className="flex items-center justify-between pt-2 border-t">
+                      <span className="text-xs font-medium text-muted-foreground uppercase">ASK</span>
+                      <div className="flex items-center gap-1">
+                        <AnimatePresence mode="wait">
+                          {price.askChange !== "neutral" && (
+                            <motion.div
+                              key={price.askChange}
+                              initial={{ opacity: 0, scale: 0 }}
+                              animate={{ opacity: 1, scale: 1 }}
+                              exit={{ opacity: 0, scale: 0 }}
+                              className={getChangeColor(price.askChange)}
+                            >
+                              {getChangeIcon(price.askChange)}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                        <RollingNumber
+                          value={price.ask}
+                          prevValue={price.askPrev}
+                          currency={price.currency}
+                          decimals={decimals}
+                          change={price.askChange}
+                          isExchangeRate={isExchangeRate}
+                        />
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between border-b pb-2">
-                    <span className="text-sm text-muted-foreground">HIGH</span>
-                    <span className="text-sm font-mono text-muted-foreground">
-                      {formatPrice(price.high, price.currency, decimals, isExchangeRate)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">LOW</span>
-                    <span className="text-sm font-mono text-muted-foreground">
-                      {formatPrice(price.low, price.currency, decimals, isExchangeRate)}
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
       </div>
     </>
   );

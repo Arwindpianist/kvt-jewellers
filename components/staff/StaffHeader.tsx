@@ -9,14 +9,16 @@ import { LogoutButton } from "./LogoutButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { User, Menu, LayoutDashboard, DollarSign, Package, BarChart3, Activity, Settings, LogOut } from "lucide-react";
+import { User, Menu, LayoutDashboard, DollarSign, Package, BarChart3, Activity, Settings, LogOut, ShoppingBag, Users } from "lucide-react";
 
 interface StaffHeaderProps {
   userName: string;
+  userRole?: 'admin' | 'staff';
 }
 
 const navItems = [
   { href: "/staff/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/staff/orders", label: "Orders", icon: ShoppingBag },
   { href: "/staff/prices", label: "Prices", icon: DollarSign },
   { href: "/staff/products", label: "Products", icon: Package },
   { href: "/staff/analytics", label: "Analytics", icon: BarChart3 },
@@ -24,10 +26,20 @@ const navItems = [
   { href: "/staff/settings", label: "Settings", icon: Settings },
 ];
 
-export function StaffHeader({ userName }: StaffHeaderProps) {
+const adminNavItems = [
+  { href: "/staff/staff-users", label: "Staff Users", icon: Users },
+  { href: "/staff/customers", label: "Customers", icon: Users },
+];
+
+export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) {
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Combine nav items - add admin items if user is admin
+  const allNavItems = userRole === 'admin' 
+    ? [...navItems, ...adminNavItems]
+    : navItems;
 
   // Force reset button state when drawer closes
   useEffect(() => {
@@ -64,7 +76,7 @@ export function StaffHeader({ userName }: StaffHeaderProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden items-center space-x-6 md:flex">
-            {navItems.map((item, index) => {
+            {allNavItems.map((item, index) => {
               const isActive = pathname === item.href;
               
               return (
@@ -166,7 +178,7 @@ export function StaffHeader({ userName }: StaffHeaderProps) {
                   {/* Navigation Items */}
                   <div className="flex-1 overflow-y-auto px-6 py-6">
                     <nav className="space-y-2">
-                      {navItems.map((item, index) => {
+                      {allNavItems.map((item, index) => {
                         const Icon = item.icon;
                         const isActive = pathname === item.href;
                         

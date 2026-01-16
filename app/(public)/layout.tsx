@@ -2,7 +2,6 @@ import { Header } from "@/components/public/Header";
 import { Footer } from "@/components/public/Footer";
 import { Meteors } from "@/components/ui/meteors";
 import { PWAInstallPrompt } from "@/components/public/PWAInstallPrompt";
-import { PWADiagnostic } from "@/components/public/PWADiagnostic";
 import { ContentProtection } from "@/components/public/ContentProtection";
 
 export default function PublicLayout({
@@ -19,7 +18,6 @@ export default function PublicLayout({
         <main className="flex-1 bg-transparent">{children}</main>
         <Footer />
         <PWAInstallPrompt />
-        <PWADiagnostic />
       </div>
     </div>
   );

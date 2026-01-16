@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/public/ProductCard";
-import { getProductsByCategory } from "@/lib/products";
+import { getProductsByCategory } from "@/lib/db/products";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AnimatedSection, FadeIn } from "@/components/ui/animated-section";
@@ -54,7 +54,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     notFound();
   }
 
-  const products = getProductsByCategory(categoryInfo.type);
+  const products = await getProductsByCategory(categoryInfo.type);
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
   const Icon = categoryInfo.icon;
 

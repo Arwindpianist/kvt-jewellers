@@ -6,6 +6,8 @@ import { AnimatedTableRow } from "@/components/public/AnimatedTable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import { AnimatedCounter } from "@/components/public/AnimatedCounter";
+import { useCurrency } from "@/lib/currency-context";
+import { fetchExchangeRates } from "@/lib/currency-converter";
 
 interface ProductRate {
   id: string;
@@ -37,8 +39,15 @@ const defaultProducts: ProductRate[] = [
 ];
 
 export function ProductRatesTable({ products = defaultProducts }: ProductRatesTableProps) {
+  const { currency: selectedCurrency } = useCurrency();
   const [liveProducts, setLiveProducts] = useState<LiveProductRate[]>([]);
+  const [exchangeRates, setExchangeRates] = useState<{ MYR: number; INR: number } | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fetch exchange rates for currency conversion
+  useEffect(() => {
+    fetchExchangeRates().then(setExchangeRates).catch(console.error);
+  }, []);
 
   // Initialize prices
   useEffect(() => {
@@ -94,11 +103,50 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
     };
   }, [liveProducts.length]);
 
-  const formatPrice = (price: number) => {
+  const convertPrice = (priceMYR: number, targetCurrency: string): number => {
+    if (!exchangeRates) return priceMYR;
+    if (targetCurrency === "MYR") return priceMYR;
+    if (targetCurrency === "USD") return priceMYR / exchangeRates.MYR;
+    if (targetCurrency === "INR") return (priceMYR / exchangeRates.MYR) * exchangeRates.INR;
+    return priceMYR;
+  };
+
+  const formatPrice = (price: number, currency: string) => {
+    if (currency === "USD") {
+      return new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(price);
+    }
+    if (currency === "MYR") {
+      return new Intl.NumberFormat("en-MY", {
+        style: "currency",
+        currency: "MYR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(price);
+    }
+    if (currency === "INR") {
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(price);
+    }
     return new Intl.NumberFormat("en-MY", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     }).format(price);
+  };
+
+  const getCurrencyPrefix = (currency: string) => {
+    if (currency === "USD") return "$";
+    if (currency === "MYR") return "RM ";
+    if (currency === "INR") return "₹";
+    return "RM ";
   };
 
   const getChangeColor = (change: "up" | "down" | "neutral") => {
@@ -106,6 +154,30 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
     if (change === "down") return "text-red-600";
     return "text-muted-foreground";
   };
+
+  // Show loading state while exchange rates are being fetched
+  if (!exchangeRates || liveProducts.length === 0) {
+    return (
+      <div className="w-full space-y-3">
+        <div className="hidden md:block">
+          <div className="space-y-3">
+            {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+              <div key={i} className="flex gap-4">
+                <div className="h-12 flex-1 bg-muted rounded animate-pulse" />
+                <div className="h-12 w-32 bg-muted rounded animate-pulse" />
+                <div className="h-12 w-32 bg-muted rounded animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="md:hidden space-y-3">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="h-32 bg-muted rounded animate-pulse" />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -138,9 +210,9 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
                     )}
                     <span className={getChangeColor(product.buyChange)}>
                       <AnimatedCounter
-                        value={product.buy}
+                        value={convertPrice(product.buy, selectedCurrency)}
                         decimals={2}
-                        prefix="RM "
+                        prefix={getCurrencyPrefix(selectedCurrency)}
                       />
                     </span>
                   </div>
@@ -157,9 +229,9 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
                     )}
                     <span className={getChangeColor(product.sellChange)}>
                       <AnimatedCounter
-                        value={product.sell}
+                        value={convertPrice(product.sell, selectedCurrency)}
                         decimals={2}
-                        prefix="RM "
+                        prefix={getCurrencyPrefix(selectedCurrency)}
                       />
                     </span>
                   </div>
@@ -194,9 +266,9 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
                   )}
                   <span className={`text-sm font-semibold ${getChangeColor(product.buyChange)}`}>
                     <AnimatedCounter
-                      value={product.buy}
+                      value={convertPrice(product.buy, selectedCurrency)}
                       decimals={2}
-                      prefix="RM "
+                      prefix={getCurrencyPrefix(selectedCurrency)}
                     />
                   </span>
                 </div>
@@ -214,9 +286,9 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
                   )}
                   <span className={`text-sm font-semibold ${getChangeColor(product.sellChange)}`}>
                     <AnimatedCounter
-                      value={product.sell}
+                      value={convertPrice(product.sell, selectedCurrency)}
                       decimals={2}
-                      prefix="RM "
+                      prefix={getCurrencyPrefix(selectedCurrency)}
                     />
                   </span>
                 </div>

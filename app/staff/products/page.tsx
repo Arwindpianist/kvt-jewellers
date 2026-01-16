@@ -1,8 +1,11 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { getAllProducts } from "@/lib/products";
 import { ProductManager } from "@/components/staff/ProductManager";
 import { StaffPageHeader } from "@/components/staff/StaffPageHeader";
+import { ProductManagerSkeleton } from "@/components/staff/skeletons/ProductManagerSkeleton";
+
+export const dynamic = 'force-dynamic';
 
 export default async function StaffProductsPage() {
   const session = await getSession();
@@ -11,8 +14,6 @@ export default async function StaffProductsPage() {
     redirect("/staff/login");
   }
 
-  const products = getAllProducts();
-
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       <StaffPageHeader
@@ -20,7 +21,9 @@ export default async function StaffProductsPage() {
         title="Product Management"
         description="Manage your product catalog, add new products, and update existing ones"
       />
-      <ProductManager initialProducts={products} />
+      <Suspense fallback={<ProductManagerSkeleton />}>
+        <ProductManager />
+      </Suspense>
     </div>
   );
 }

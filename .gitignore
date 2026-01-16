@@ -43,12 +43,34 @@ next-env.d.ts
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
 
-# Sensitive documents
 PRD.md
+MASTER-PRD.md
+PRD-PHASE*.md
 MVP_ENHANCEMENT_PROPOSAL.md
 STAFF_PORTAL_ENHANCEMENTS.md
+
+ENV_SETUP.md
+STAFF_AUTH_SETUP.md
+NOTIFICATION_SETUP.md
 PWA_SETUP.md
+CREATE_ADMIN_VIA_MCP.md
+
+ORDER_MANAGEMENT_GUIDE.md
+PRICE_HISTORY_CHART_GUIDE.md
+PRODUCTION_READINESS.md
+TESTING_CHECKLIST.md
+UI_UX_STATUS.md
+
 .cursorrules
-MASTER-PRD.md
-PRD-PHASE 1 + PHASE 3 DEMO.md
-.cursorrules
+.cursor/plans/
+
+scripts/create-admin-user.*
+scripts/production-readiness-check.*
+scripts/generate-icons-instructions.md
+
+*.notes.md
+*_STATUS.md
+*_CHECKLIST.md
+
+**/*README.md
+!/README.md

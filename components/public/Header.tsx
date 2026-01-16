@@ -9,6 +9,8 @@ import { Button } from "@/components/ui/button";
 import { RotatingText } from "@/components/ui/shadcn-io/rotating-text";
 import { TopBar } from "./TopBar";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { UserMenu } from "./UserMenu";
+import { CartButton } from "./CartButton";
 
 export function Header() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -81,7 +83,7 @@ export function Header() {
               >
                 <Link
                   href={item.href}
-                  className="relative text-sm font-medium text-white transition-colors hover:text-brand-200"
+                  className="relative text-sm font-medium text-white transition-colors hover:text-white/90"
                 >
                   <motion.span
                     whileHover={{ scale: 1.1 }}
@@ -98,6 +100,8 @@ export function Header() {
                 </Link>
               </motion.div>
             ))}
+            <CartButton />
+            <UserMenu />
             <ThemeSwitcher />
           </div>
 
@@ -182,6 +186,18 @@ export function Header() {
                         </motion.div>
                       ))}
                     </nav>
+                  </div>
+
+                  {/* Mobile Menu Actions - Match Desktop */}
+                  <div className="px-6 py-4 border-t border-white/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-white/80">Cart</span>
+                      <CartButton />
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-white/80">Account</span>
+                      <UserMenu />
+                    </div>
                   </div>
 
                   {/* Drawer Footer */}

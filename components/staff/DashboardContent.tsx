@@ -8,10 +8,32 @@ import { StaggerAnimation, StaggerItem } from "@/components/ui/stagger-animation
 import { HoverCard } from "@/components/ui/hover-card";
 import { Badge } from "@/components/ui/badge";
 import { useMemo } from "react";
-import { TrendingUp, Package, Zap, ArrowRight, Clock, FileText, DollarSign, AlertCircle, CheckCircle2, BarChart3, Activity } from "lucide-react";
+import { TrendingUp, Package, Zap, ArrowRight, Clock, FileText, DollarSign, AlertCircle, CheckCircle2, BarChart3, Activity, ShoppingBag } from "lucide-react";
+import { format } from "date-fns";
 import type { GoldPrice } from "@/types/gold-prices";
 import type { Product } from "@/types/products";
 import type { ActivityLog } from "@/types/activity-log";
+
+interface OrderStats {
+  total: number;
+  pending: number;
+  payment_pending: number;
+  payment_verified: number;
+  completed: number;
+  revenue: number;
+}
+
+type RecentOrder = {
+  id: string;
+  payment_reference: string;
+  status: string;
+  total: number;
+  created_at: string;
+  user: {
+    name: string;
+    email: string;
+  } | null;
+};
 
 interface DashboardContentProps {
   userName: string;
@@ -20,6 +42,8 @@ interface DashboardContentProps {
   products: Product[];
   recentActivity: ActivityLog[];
   allActivityLogs: ActivityLog[];
+  orderStats: OrderStats;
+  recentOrders: RecentOrder[];
 }
 
 export function DashboardContent({
@@ -29,6 +53,8 @@ export function DashboardContent({
   products,
   recentActivity,
   allActivityLogs,
+  orderStats,
+  recentOrders,
 }: DashboardContentProps) {
   const formatDate = (date: Date | string) => {
     const d = typeof date === "string" ? new Date(date) : date;
@@ -354,89 +380,189 @@ export function DashboardContent({
         </StaggerItem>
       </div>
 
-      {/* Recent Activity Section */}
-      <StaggerItem>
-        <Card className="mt-8 border-2 border-brand-200/50 dark:border-brand-700/50 bg-card-level-2 shadow-card-elevated">
-          <CardHeader className="bg-gradient-to-br from-brand-50 to-white">
-            <div className="flex items-center justify-between">
-              <CardTitle className="font-serif text-xl font-semibold text-brand-700">
-                Recent Activity
-              </CardTitle>
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600">
-                <FileText className="h-5 w-5 text-white" />
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-6">
-            {recentActivity.length === 0 ? (
-              <p className="py-4 text-center text-sm text-muted-foreground">
-                No recent activity
-              </p>
-            ) : (
-              <div className="space-y-3">
-                {recentActivity.slice(0, 5).map((log, index) => (
-                  <motion.div
-                    key={log.id}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="group flex items-start gap-3 rounded-lg border border-brand-200/50 bg-white p-3.5 transition-all duration-200 hover:border-brand-300 hover:bg-gradient-to-r hover:from-brand-50/50 hover:to-white hover:shadow-sm"
-                  >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500/10 to-brand-600/10 flex-shrink-0 transition-all duration-200 group-hover:from-brand-500/20 group-hover:to-brand-600/20">
-                      <Clock className="h-4.5 w-4.5 text-brand-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-brand-700">
-                        {log.action}
-                      </p>
-                      <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                        <Badge variant="outline" className="h-5 border-brand-200/50 bg-brand-50/50 px-2 text-xs font-normal">
-                          {log.entityName}
-                        </Badge>
-                        <span className="text-muted-foreground/60">by</span>
-                        <span className="font-medium text-brand-600">{log.userName}</span>
-                        <span className="text-muted-foreground/40">•</span>
-                        <span className="text-muted-foreground/70">{formatDate(log.timestamp)}</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <Link
-                href="/staff/activity"
-                className="group relative mt-6 flex w-full items-center justify-between rounded-xl border-2 border-brand-200/50 bg-gradient-to-r from-white to-brand-50/30 p-4 transition-all duration-300 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-200/50"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:shadow-lg">
-                    <FileText className="h-5 w-5 text-white" />
-                  </div>
-                  <div className="text-left">
-                    <p className="font-semibold text-brand-700 transition-colors group-hover:text-brand-800">
-                      View All Activity
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      See complete activity history and audit trail
-                    </p>
-                  </div>
+      {/* Recent Orders & Activity Row */}
+      <div className="grid gap-6 md:grid-cols-2 mt-8">
+        <StaggerItem>
+          <Card className="border-2 border-brand-200/50 dark:border-brand-700/50 bg-card-level-2 shadow-card-elevated">
+            <CardHeader className="bg-gradient-to-br from-brand-50 to-white">
+              <div className="flex items-center justify-between">
+                <CardTitle className="font-serif text-xl font-semibold text-brand-700">
+                  Recent Orders
+                </CardTitle>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-green-600">
+                  <ShoppingBag className="h-5 w-5 text-white" />
                 </div>
-                <motion.div
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-600 transition-colors group-hover:bg-brand-200"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {recentOrders.length === 0 ? (
+                <p className="py-4 text-center text-sm text-muted-foreground">
+                  No orders yet
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {recentOrders.map((order, index) => {
+                    const statusColors: Record<string, string> = {
+                      pending: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
+                      payment_pending: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
+                      payment_verified: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+                      completed: "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200",
+                      cancelled: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+                    };
+                    return (
+                      <motion.div
+                        key={order.id}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.1 }}
+                        className="group flex items-start gap-3 rounded-lg border border-brand-200/50 bg-white p-3.5 transition-all duration-200 hover:border-brand-300 hover:bg-gradient-to-r hover:from-brand-50/50 hover:to-white hover:shadow-sm"
+                      >
+                        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/10 flex-shrink-0 transition-all duration-200 group-hover:from-green-500/20 group-hover:to-green-600/20">
+                          <ShoppingBag className="h-4.5 w-4.5 text-green-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <Link
+                              href={`/staff/orders/${order.id}`}
+                              className="text-sm font-semibold text-foreground transition-colors group-hover:text-brand-700 hover:underline"
+                            >
+                              {order.payment_reference}
+                            </Link>
+                            <Badge className={`${statusColors[order.status] || ""} text-xs`}>
+                              {order.status.replace('_', ' ').toUpperCase()}
+                            </Badge>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                            <span className="font-medium">{order.user?.name || "Unknown"}</span>
+                            <span className="text-muted-foreground/40">•</span>
+                            <span className="font-semibold text-brand-600">${Number(order.total).toFixed(2)}</span>
+                            <span className="text-muted-foreground/40">•</span>
+                            <span className="text-muted-foreground/70">{format(new Date(order.created_at), "MMM d, h:mm a")}</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Link
+                  href="/staff/orders"
+                  className="group relative mt-6 flex w-full items-center justify-between rounded-xl border-2 border-brand-200/50 bg-gradient-to-r from-white to-brand-50/30 p-4 transition-all duration-300 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-200/50"
                 >
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </motion.div>
-              </Link>
-            </motion.div>
-          </CardContent>
-        </Card>
-      </StaggerItem>
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-green-500 to-green-600 shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:shadow-lg">
+                      <ShoppingBag className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-brand-700 transition-colors group-hover:text-brand-800">
+                        View All Orders
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Manage and verify all customer orders
+                      </p>
+                    </div>
+                  </div>
+                  <motion.div
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-600 transition-colors group-hover:bg-brand-200"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </motion.div>
+                </Link>
+              </motion.div>
+            </CardContent>
+          </Card>
+        </StaggerItem>
+
+        <StaggerItem>
+          <Card className="border-2 border-brand-200/50 dark:border-brand-700/50 bg-card-level-2 shadow-card-elevated">
+            <CardHeader className="bg-gradient-to-br from-brand-50 to-white">
+              <div className="flex items-center justify-between">
+                <CardTitle className="font-serif text-xl font-semibold text-brand-700">
+                  Recent Activity
+                </CardTitle>
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600">
+                  <FileText className="h-5 w-5 text-white" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-6">
+              {recentActivity.length === 0 ? (
+                <p className="py-4 text-center text-sm text-muted-foreground">
+                  No recent activity
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {recentActivity.slice(0, 5).map((log, index) => (
+                    <motion.div
+                      key={log.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      className="group flex items-start gap-3 rounded-lg border border-brand-200/50 bg-white p-3.5 transition-all duration-200 hover:border-brand-300 hover:bg-gradient-to-r hover:from-brand-50/50 hover:to-white hover:shadow-sm"
+                    >
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500/10 to-brand-600/10 flex-shrink-0 transition-all duration-200 group-hover:from-brand-500/20 group-hover:to-brand-600/20">
+                        <Clock className="h-4.5 w-4.5 text-brand-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-foreground transition-colors group-hover:text-brand-700">
+                          {log.action}
+                        </p>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                          <Badge variant="outline" className="h-5 border-brand-200/50 bg-brand-50/50 px-2 text-xs font-normal">
+                            {log.entityName}
+                          </Badge>
+                          <span className="text-muted-foreground/60">by</span>
+                          <span className="font-medium text-brand-600">{log.userName}</span>
+                          <span className="text-muted-foreground/40">•</span>
+                          <span className="text-muted-foreground/70">{formatDate(log.timestamp)}</span>
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.6 }}
+              >
+                <Link
+                  href="/staff/activity"
+                  className="group relative mt-6 flex w-full items-center justify-between rounded-xl border-2 border-brand-200/50 bg-gradient-to-r from-white to-brand-50/30 p-4 transition-all duration-300 hover:border-brand-300 hover:shadow-lg hover:shadow-brand-200/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 shadow-md transition-transform duration-300 group-hover:scale-110 group-hover:shadow-lg">
+                      <FileText className="h-5 w-5 text-white" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-semibold text-brand-700 transition-colors group-hover:text-brand-800">
+                        View All Activity
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        See complete activity history and audit trail
+                      </p>
+                    </div>
+                  </div>
+                  <motion.div
+                    className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-brand-600 transition-colors group-hover:bg-brand-200"
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </motion.div>
+                </Link>
+              </motion.div>
+            </CardContent>
+          </Card>
+        </StaggerItem>
+      </div>
 
       {/* Quick Links Row */}
       <StaggerItem>
@@ -452,7 +578,7 @@ export function DashboardContent({
             </div>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
               {[
                 {
                   href: "/staff/prices",
@@ -469,6 +595,14 @@ export function DashboardContent({
                   description: "Catalog management",
                   gradient: "from-blue-500 to-blue-600",
                   bgGradient: "from-blue-50 to-blue-100/50",
+                },
+                {
+                  href: "/staff/orders",
+                  icon: ShoppingBag,
+                  title: "Manage Orders",
+                  description: "View & verify orders",
+                  gradient: "from-green-500 to-green-600",
+                  bgGradient: "from-green-50 to-green-100/50",
                 },
                 {
                   href: "/staff/analytics",

@@ -29,94 +29,95 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 318 59% 45%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217.2 32.6% 25%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 75%;
-    --accent: 318 59% 20%;
-    --accent-foreground: 210 40% 98%;
+    /* Luxury black + champagne gold theme */
+    --background: 0 0% 8%; /* Deep charcoal / near-black */
+    --foreground: 0 0% 98%; /* Soft white */
+    --card: 0 0% 10%; /* Slightly lighter charcoal for panels */
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 38 55% 52%; /* Champagne gold accent */
+    --primary-foreground: 0 0% 12%; /* Dark ink on gold */
+    --secondary: 0 0% 15%; /* Darker charcoal */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 70%;
+    --accent: 38 55% 52%; /* Champagne gold accent */
+    --accent-foreground: 0 0% 12%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 25%;
-    --input: 217.2 32.6% 12%;
-    --ring: 318 59% 50%;
+    --border: 38 40% 32%; /* Dark champagne gold for borders */
+    --input: 0 0% 12%;
+    --ring: 38 55% 52%; /* Champagne gold ring for focus */
   }
 
-  /* Dark mode brand color adjustments - Professional contrast ratios */
+  /* Dark mode brand color adjustments - Champagne gold theme */
   .dark .bg-brand-600 {
-    background-color: hsl(318, 59%, 30%);
+    background-color: hsl(38, 55%, 46%) !important;
   }
 
   .dark .bg-brand-500 {
-    background-color: hsl(318, 59%, 35%);
+    background-color: hsl(38, 55%, 52%);
   }
 
   .dark .bg-brand-400 {
-    background-color: hsl(318, 59%, 40%);
+    background-color: hsl(38, 60%, 58%);
   }
 
   .dark .bg-brand-300 {
-    background-color: hsl(318, 59%, 45%);
+    background-color: hsl(38, 60%, 60%);
   }
 
-  /* Text colors - WCAG AA compliant (4.5:1 contrast) */
+  /* Text colors - Champagne gold theme */
   .dark .text-brand-700 {
-    color: hsl(318, 59%, 75%);
+    color: hsl(38, 55%, 58%);
   }
 
   .dark .text-brand-600 {
-    color: hsl(318, 59%, 70%);
+    color: hsl(38, 55%, 56%);
   }
 
   .dark .text-brand-500 {
-    color: hsl(318, 59%, 65%);
+    color: hsl(38, 55%, 54%);
   }
 
   .dark .text-brand-400 {
-    color: hsl(318, 59%, 60%);
+    color: hsl(38, 55%, 52%);
   }
 
   .dark .text-brand-300 {
-    color: hsl(318, 59%, 55%);
+    color: hsl(38, 55%, 50%);
   }
 
-  /* Border colors - Visible but subtle */
+  /* Border colors - Champagne gold theme */
   .dark .border-brand-200\/50,
   .dark .border-brand-200\/30 {
-    border-color: hsl(318, 59%, 35% / 0.6);
+    border-color: hsl(38, 40%, 35% / 0.6);
   }
 
   .dark .border-brand-300 {
-    border-color: hsl(318, 59%, 40%);
+    border-color: hsl(38, 40%, 38%);
   }
 
   .dark .border-brand-400 {
-    border-color: hsl(318, 59%, 45%);
+    border-color: hsl(38, 40%, 42%);
   }
 
-  /* Background colors for cards and containers */
+  /* Background colors for cards and containers - Champagne gold theme */
   .dark .bg-brand-50 {
-    background-color: hsl(318, 59%, 12%);
+    background-color: hsl(38, 30%, 12%);
   }
 
   .dark .bg-brand-100 {
-    background-color: hsl(318, 59%, 15%);
+    background-color: hsl(38, 30%, 15%);
   }
 
   .dark .bg-brand-200 {
-    background-color: hsl(318, 59%, 18%);
+    background-color: hsl(38, 30%, 18%);
   }
 
   .dark .bg-brand-300 {
-    background-color: hsl(318, 59%, 22%);
+    background-color: hsl(38, 30%, 22%);
   }
 
   /* Dark mode - Remove ALL gradient backgrounds (except text gradients, buttons, and hero elements) */
@@ -174,7 +175,7 @@
 
   /* Dark mode card backgrounds */
   .dark .bg-white {
-    background-color: hsl(222.2, 84%, 6%);
+    background-color: hsl(0, 0%, 10%);
   }
 
   /* Dark mode - ensure solid backgrounds override gradients */
@@ -210,16 +211,16 @@
 
   /* Dark mode text color adjustments - WCAG AA compliant */
   .dark .text-muted-foreground {
-    color: hsl(215, 20.2%, 80%);
+    color: hsl(0, 0%, 70%);
   }
 
   /* Ensure all text is readable */
   .dark .text-foreground {
-    color: hsl(210, 40%, 98%);
+    color: hsl(0, 0%, 98%);
   }
 
   .dark .text-card-foreground {
-    color: hsl(210, 40%, 98%);
+    color: hsl(0, 0%, 98%);
   }
 
   /* Headings should be bright white for maximum contrast */
@@ -229,18 +230,18 @@
   .dark h4,
   .dark h5,
   .dark h6 {
-    color: hsl(210, 40%, 98%);
+    color: hsl(0, 0%, 98%);
   }
 
   /* Paragraph and body text */
   .dark p {
-    color: hsl(210, 40%, 95%);
+    color: hsl(0, 0%, 95%);
   }
 
   /* Labels and small text */
   .dark label,
   .dark small {
-    color: hsl(210, 40%, 85%);
+    color: hsl(0, 0%, 85%);
   }
 
   /* Dark mode brand gradient text for hero title - ensure gradient is applied, don't override */
@@ -252,25 +253,25 @@
 
   /* Ensure text-brand-300 is visible in dark mode */
   .dark .text-brand-300 {
-    color: hsl(318, 59%, 75%);
+    color: hsl(38, 55%, 56%);
   }
 
-  /* Dark mode hover states */
+  /* Dark mode hover states - Champagne gold theme */
   .dark .hover\:bg-brand-50\/30:hover {
-    background-color: hsl(318, 59%, 15% / 0.3);
+    background-color: hsl(38, 30%, 15% / 0.3);
   }
 
   .dark .hover\:bg-brand-700:hover {
-    background-color: hsl(318, 59%, 20%);
+    background-color: hsl(38, 55%, 46%);
   }
 
   .dark .hover\:bg-brand-800:hover {
-    background-color: hsl(318, 59%, 18%);
+    background-color: hsl(38, 55%, 42%);
   }
 
-  /* Dark mode border adjustments - All borders visible */
+  /* Dark mode border adjustments - Champagne gold borders */
   .dark .border {
-    border-color: hsl(217.2, 32.6%, 25%);
+    border-color: hsl(38, 40%, 32%);
   }
 
   .dark .border-border {
@@ -280,7 +281,7 @@
   /* Card borders */
   .dark [class*="Card"] .border,
   .dark .card .border {
-    border-color: hsl(217.2, 32.6%, 30%);
+    border-color: hsl(38, 40%, 36%);
   }
 
   /* Dark mode shadow adjustments */
@@ -307,16 +308,81 @@
     color: hsl(318, 59%, 75%);
   }
 
-  /* Dark mode grid pattern */
+  /* Dark mode grid pattern - Champagne gold theme */
   .dark .bg-grid-pattern {
     background-image: 
-      linear-gradient(to right, rgba(82, 21, 64, 0.1) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(82, 21, 64, 0.1) 1px, transparent 1px);
+      linear-gradient(to right, rgba(201, 162, 77, 0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(201, 162, 77, 0.1) 1px, transparent 1px);
+  }
+
+  /* Navigation text - Ensure white text on brand-600 background is fully opaque */
+  nav.bg-brand-600,
+  nav[class*="bg-brand-600"],
+  .bg-brand-600 nav,
+  [class*="bg-brand-600"] nav {
+    color: #ffffff !important;
+  }
+
+  nav.bg-brand-600 a,
+  nav.bg-brand-600 *,
+  nav[class*="bg-brand-600"] a,
+  nav[class*="bg-brand-600"] *,
+  .bg-brand-600 nav a,
+  .bg-brand-600 nav *,
+  [class*="bg-brand-600"] nav a,
+  [class*="bg-brand-600"] nav * {
+    color: #ffffff !important;
+  }
+
+  nav.bg-brand-600 a:hover,
+  nav[class*="bg-brand-600"] a:hover,
+  .bg-brand-600 nav a:hover,
+  [class*="bg-brand-600"] nav a:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Card with brand-600 background - Ensure white text is always visible */
+  .bg-brand-600.text-white,
+  [class*="bg-brand-600"].text-white,
+  .bg-brand-600[class*="text-white"] {
+    color: #ffffff !important;
+  }
+
+  .bg-brand-600.text-white *,
+  [class*="bg-brand-600"].text-white *,
+  .bg-brand-600[class*="text-white"] * {
+    color: #ffffff !important;
+  }
+
+  .bg-brand-600.text-white a,
+  [class*="bg-brand-600"].text-white a,
+  .bg-brand-600[class*="text-white"] a {
+    color: #ffffff !important;
+  }
+
+  .bg-brand-600.text-white a:hover,
+  [class*="bg-brand-600"].text-white a:hover,
+  .bg-brand-600[class*="text-white"] a:hover {
+    color: rgba(255, 255, 255, 0.9) !important;
+  }
+
+  /* Dark mode - Ensure brand-600 cards maintain white text */
+  .dark .bg-brand-600.text-white,
+  .dark [class*="bg-brand-600"].text-white,
+  .dark .bg-brand-600[class*="text-white"] {
+    background-color: hsl(38, 55%, 46%) !important;
+    color: #ffffff !important;
+  }
+
+  .dark .bg-brand-600.text-white *,
+  .dark [class*="bg-brand-600"].text-white *,
+  .dark .bg-brand-600[class*="text-white"] * {
+    color: #ffffff !important;
   }
 
   /* Dark mode card adjustments - Hierarchy with background color shades */
   .dark .bg-card {
-    background-color: hsl(222.2, 84%, 6%);
+    background-color: hsl(0, 0%, 10%);
   }
 
   /* Card depth hierarchy using background color shades */
@@ -335,21 +401,21 @@
 
   /* Dark mode card hierarchy - Using dark background shades */
   .dark .bg-card-level-1 {
-    background-color: hsl(222.2, 84%, 6%);
+    background-color: hsl(0, 0%, 10%);
   }
 
   .dark .bg-card-level-2 {
-    background-color: hsl(222.2, 84%, 7%);
+    background-color: hsl(0, 0%, 12%);
   }
 
   .dark .bg-card-level-3 {
-    background-color: hsl(222.2, 84%, 8%);
+    background-color: hsl(0, 0%, 14%);
   }
 
   /* Card header hierarchy - Subtle depth */
   .dark [class*="CardHeader"]:not([class*="bg-gradient"]):not([class*="bg-brand"]):not([class*="bg-gold"]):not([class*="bg-white"]) {
-    background-color: hsl(222.2, 84%, 7%);
-    border-bottom: 1px solid hsl(217.2, 32.6%, 20%);
+    background-color: hsl(0, 0%, 12%);
+    border-bottom: 1px solid hsl(38, 40%, 28%);
   }
 
   [class*="CardHeader"]:not([class*="bg-gradient"]):not([class*="bg-brand"]):not([class*="bg-gold"]):not([class*="bg-white"]) {
@@ -359,8 +425,8 @@
 
   /* Dark mode - Remove gradient backgrounds from card headers in dark mode, use solid colors */
   .dark [class*="CardHeader"][class*="bg-gradient-to"]:not([class*="gold"]):not([class*="silver"]) {
-    background: hsl(222.2, 84%, 7%) !important;
-    border-bottom: 1px solid hsl(217.2, 32.6%, 20%);
+    background: hsl(0, 0%, 12%) !important;
+    border-bottom: 1px solid hsl(38, 40%, 28%);
   }
 
   /* Light mode card headers with gradients - keep them */
@@ -370,7 +436,7 @@
 
   /* Card content - Slightly different shade */
   .dark [class*="CardContent"] {
-    background-color: hsl(222.2, 84%, 6%);
+    background-color: hsl(0, 0%, 10%);
   }
 
   [class*="CardContent"] {
@@ -422,36 +488,36 @@
   .dark input,
   .dark select,
   .dark textarea {
-    background-color: hsl(217.2, 32.6%, 12%);
-    border-color: hsl(217.2, 32.6%, 20%);
+    background-color: hsl(0, 0%, 12%);
+    border-color: hsl(38, 40%, 28%);
   }
 
   .dark input:focus,
   .dark select:focus,
   .dark textarea:focus {
-    border-color: hsl(318, 59%, 40%);
-    outline-color: hsl(318, 59%, 40%);
+    border-color: hsl(38, 55%, 52%);
+    outline-color: hsl(38, 55%, 52%);
   }
 
-  /* Dark mode link colors - WCAG AA compliant */
+  /* Dark mode link colors - Champagne gold theme */
   .dark a {
-    color: hsl(318, 59%, 70%);
+    color: hsl(38, 55%, 58%);
   }
 
   .dark a:hover {
-    color: hsl(318, 59%, 80%);
+    color: hsl(38, 60%, 62%);
   }
 
   .dark a:focus {
-    color: hsl(318, 59%, 85%);
-    outline-color: hsl(318, 59%, 50%);
+    color: hsl(38, 60%, 64%);
+    outline-color: hsl(38, 55%, 52%);
   }
 
   /* Dark mode separator/border */
   .dark hr,
   .dark .border-t,
   .dark .border-b {
-    border-color: hsl(217.2, 32.6%, 20%);
+    border-color: hsl(38, 40%, 28%);
   }
 
   /* Dark mode backdrop blur adjustments */
@@ -478,40 +544,40 @@
 
   /* Icon colors - Ensure visibility */
   .dark svg:not([class*="gold"]):not([class*="silver"]) {
-    color: hsl(210, 40%, 90%);
+    color: hsl(0, 0%, 90%);
   }
 
   .dark [class*="icon"] {
-    color: hsl(210, 40%, 90%);
+    color: hsl(0, 0%, 90%);
   }
 
   /* Button text in dark mode */
   .dark button:not([class*="gold"]):not([class*="silver"]) {
-    color: hsl(210, 40%, 95%);
+    color: hsl(0, 0%, 95%);
   }
 
   /* Table and list items */
   .dark td,
   .dark th {
-    color: hsl(210, 40%, 95%);
-    border-color: hsl(217.2, 32.6%, 25%);
+    color: hsl(0, 0%, 95%);
+    border-color: hsl(38, 40%, 32%);
   }
 
   .dark tr:hover {
-    background-color: hsl(217.2, 32.6%, 12%);
+    background-color: hsl(0, 0%, 12%);
   }
 
   /* Code and pre elements */
   .dark code,
   .dark pre {
-    background-color: hsl(217.2, 32.6%, 10%);
-    color: hsl(210, 40%, 95%);
-    border-color: hsl(217.2, 32.6%, 25%);
+    background-color: hsl(0, 0%, 10%);
+    color: hsl(0, 0%, 95%);
+    border-color: hsl(38, 40%, 32%);
   }
 
   /* Alert and notification colors */
   .dark [class*="alert"] {
-    border-color: hsl(217.2, 32.6%, 30%);
+    border-color: hsl(38, 40%, 36%);
   }
 
   /* Success, warning, error colors - WCAG AA compliant */
@@ -625,30 +691,30 @@
     color: hsl(217, 91%, 68%) !important;
   }
 
-  /* Icon colors - Brand colored icons */
+  /* Icon colors - Brand colored icons - Champagne gold theme */
   .dark .text-brand-600,
   .dark svg.text-brand-600,
   .dark [class*="icon"].text-brand-600 {
-    color: hsl(318, 59%, 65%);
+    color: hsl(38, 55%, 58%);
   }
 
   .dark .text-brand-500,
   .dark svg.text-brand-500 {
-    color: hsl(318, 59%, 60%);
+    color: hsl(38, 55%, 56%);
   }
 
   .dark .text-brand-400,
   .dark svg.text-brand-400 {
-    color: hsl(318, 59%, 55%);
+    color: hsl(38, 55%, 54%);
   }
 
-  /* Primary button in dark mode - Professional brand colors */
+  /* Primary button in dark mode - Champagne gold theme */
   .dark .bg-primary,
   .dark button.bg-primary,
   .dark [class*="Button"][class*="default"],
   .dark button[class*="default"]:not([class*="gold"]):not([class*="silver"]) {
-    background-color: hsl(318, 59%, 45%) !important;
-    color: hsl(210, 40%, 98%) !important;
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
     border: none;
   }
 
@@ -657,59 +723,59 @@
   .dark [class*="Button"][class*="default"]:hover,
   .dark button[class*="default"]:not([class*="gold"]):not([class*="silver"]):hover,
   .dark .hover\:bg-primary\/90:hover {
-    background-color: hsl(318, 59%, 50%) !important;
-    color: hsl(210, 40%, 98%) !important;
+    background-color: hsl(38, 55%, 46%) !important;
+    color: hsl(0, 0%, 12%) !important;
   }
 
   /* Primary button text */
   .dark .text-primary-foreground {
-    color: hsl(210, 40%, 98%) !important;
+    color: hsl(0, 0%, 12%) !important;
   }
 
-  /* Staff pages - Ensure all brand colors are visible */
+  /* Staff pages - Ensure all brand colors are visible - Champagne gold theme */
   .dark [class*="staff"] .text-brand-700,
   .dark [class*="Staff"] .text-brand-700 {
-    color: hsl(318, 59%, 75%);
+    color: hsl(38, 55%, 60%);
   }
 
   .dark [class*="staff"] .text-brand-600,
   .dark [class*="Staff"] .text-brand-600 {
-    color: hsl(318, 59%, 70%);
+    color: hsl(38, 55%, 58%);
   }
 
   .dark [class*="staff"] .border-brand-200\/50,
   .dark [class*="Staff"] .border-brand-200\/50 {
-    border-color: hsl(318, 59%, 35% / 0.6);
+    border-color: hsl(38, 40%, 35% / 0.6);
   }
 
   .dark [class*="staff"] .border-brand-300,
   .dark [class*="Staff"] .border-brand-300 {
-    border-color: hsl(318, 59%, 40%);
+    border-color: hsl(38, 40%, 38%);
   }
 
   .dark [class*="staff"] .hover\:border-brand-300:hover,
   .dark [class*="Staff"] .hover\:border-brand-300:hover {
-    border-color: hsl(318, 59%, 50%);
+    border-color: hsl(38, 55%, 52%);
   }
 
   .dark [class*="staff"] .bg-brand-100,
   .dark [class*="Staff"] .bg-brand-100 {
-    background-color: hsl(318, 59%, 18%);
+    background-color: hsl(38, 30%, 18%);
   }
 
   .dark [class*="staff"] .bg-brand-200,
   .dark [class*="Staff"] .bg-brand-200 {
-    background-color: hsl(318, 59%, 22%);
+    background-color: hsl(38, 30%, 22%);
   }
 
   .dark [class*="staff"] .hover\:bg-brand-200:hover,
   .dark [class*="Staff"] .hover\:bg-brand-200:hover {
-    background-color: hsl(318, 59%, 25%);
+    background-color: hsl(38, 30%, 25%);
   }
 
   .dark [class*="staff"] .hover\:text-brand-800:hover,
   .dark [class*="Staff"] .hover\:text-brand-800:hover {
-    color: hsl(318, 59%, 80%);
+    color: hsl(38, 60%, 64%);
   }
 
   /* Button variants in dark mode - WCAG AA compliant contrast */
@@ -717,128 +783,129 @@
   /* Secondary button in dark mode - Proper contrast */
   .dark button[data-variant="secondary"],
   .dark .bg-secondary:is(button) {
-    background-color: hsl(217.2, 32.6%, 25%) !important;
-    color: hsl(210, 40%, 98%) !important;
+    background-color: hsl(0, 0%, 15%) !important;
+    color: hsl(0, 0%, 98%) !important;
     border: none;
   }
 
   /* Secondary button hover - WCAG AA compliant (4.5:1 contrast) */
   .dark button[data-variant="secondary"]:hover,
   .dark .bg-secondary:is(button):hover {
-    background-color: hsl(217.2, 32.6%, 35%) !important;
-    color: hsl(210, 40%, 98%) !important;
+    background-color: hsl(0, 0%, 20%) !important;
+    color: hsl(0, 0%, 98%) !important;
   }
 
   /* Secondary button text */
   .dark .text-secondary-foreground {
-    color: hsl(210, 40%, 98%) !important;
+    color: hsl(0, 0%, 98%) !important;
   }
 
-  /* Outline button in dark mode - Proper contrast */
+  /* Outline button in dark mode - Champagne gold theme */
   .dark button[class*="outline"]:not([class*="gold"]):not([class*="silver"]) {
-    border-color: hsl(318, 59%, 45%) !important;
-    color: hsl(318, 59%, 75%) !important;
+    border-color: hsl(38, 55%, 52%) !important;
+    color: hsl(38, 55%, 58%) !important;
     background-color: transparent !important;
   }
 
-  /* Outline button hover - WCAG AA compliant */
+  /* Outline button hover - Champagne gold theme */
   .dark button[class*="outline"]:not([class*="gold"]):not([class*="silver"]):hover {
-    background-color: hsl(318, 59%, 20%) !important;
-    border-color: hsl(318, 59%, 55%) !important;
-    color: hsl(318, 59%, 85%) !important;
+    background-color: hsl(38, 30%, 15%) !important;
+    border-color: hsl(38, 55%, 46%) !important;
+    color: hsl(38, 60%, 64%) !important;
   }
 
   /* Ghost button in dark mode - Proper contrast */
   .dark button[class*="ghost"] {
-    color: hsl(210, 40%, 90%) !important;
+    color: hsl(0, 0%, 90%) !important;
     background-color: transparent !important;
   }
 
-  /* Ghost button hover - WCAG AA compliant */
+  /* Ghost button hover - Champagne gold theme */
   .dark button[class*="ghost"]:hover {
-    background-color: hsl(318, 59%, 20%) !important;
-    color: hsl(318, 59%, 80%) !important;
+    background-color: hsl(38, 30%, 15%) !important;
+    color: hsl(38, 55%, 60%) !important;
   }
 
-  /* Link button in dark mode */
+  /* Link button in dark mode - Champagne gold theme */
   .dark button[class*="link"] {
-    color: hsl(318, 59%, 70%) !important;
+    color: hsl(38, 55%, 58%) !important;
   }
 
   .dark button[class*="link"]:hover {
-    color: hsl(318, 59%, 85%) !important;
+    color: hsl(38, 60%, 64%) !important;
   }
 
   /* Card titles and headings */
   .dark [class*="CardTitle"],
   .dark [class*="card-title"] {
-    color: hsl(210, 40%, 98%);
+    color: hsl(0, 0%, 98%);
   }
 
   .dark [class*="CardDescription"],
   .dark [class*="card-description"] {
-    color: hsl(210, 40%, 85%);
+    color: hsl(0, 0%, 85%);
   }
 
   /* Input placeholders */
   .dark input::placeholder,
   .dark textarea::placeholder {
-    color: hsl(215, 20.2%, 60%);
+    color: hsl(0, 0%, 60%);
   }
 
   /* Select dropdowns */
   .dark select {
-    color: hsl(210, 40%, 95%);
+    color: hsl(0, 0%, 95%);
   }
 
   .dark select option {
-    background-color: hsl(222.2, 84%, 6%);
-    color: hsl(210, 40%, 95%);
+    background-color: hsl(0, 0%, 10%);
+    color: hsl(0, 0%, 95%);
   }
 
   /* Tooltips and popovers */
   .dark [class*="Tooltip"],
   .dark [class*="Popover"] {
-    background-color: hsl(222.2, 84%, 8%);
-    border-color: hsl(217.2, 32.6%, 30%);
-    color: hsl(210, 40%, 98%);
+    background-color: hsl(0, 0%, 12%);
+    border-color: hsl(38, 40%, 36%);
+    color: hsl(0, 0%, 98%);
   }
 
-  /* Tabs */
+  /* Tabs - Champagne gold theme */
   .dark [class*="TabsTrigger"] {
-    color: hsl(210, 40%, 80%);
+    color: hsl(0, 0%, 80%);
   }
 
   .dark [class*="TabsTrigger"][data-state="active"] {
-    color: hsl(210, 40%, 98%);
-    border-color: hsl(318, 59%, 50%);
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    border-color: hsl(38, 55%, 52%);
   }
 
   /* Separators */
   .dark [class*="Separator"] {
-    background-color: hsl(217.2, 32.6%, 25%);
+    background-color: hsl(38, 40%, 32%);
   }
 
   /* Skeleton loaders */
   .dark [class*="Skeleton"] {
-    background-color: hsl(217.2, 32.6%, 15%);
+    background-color: hsl(0, 0%, 12%);
   }
 
   /* Progress bars */
   .dark [class*="Progress"] {
-    background-color: hsl(217.2, 32.6%, 15%);
+    background-color: hsl(0, 0%, 12%);
   }
 
-  /* Switch and toggle */
+  /* Switch and toggle - Champagne gold theme */
   .dark [class*="Switch"][data-state="checked"] {
-    background-color: hsl(318, 59%, 50%);
+    background-color: hsl(38, 55%, 52%);
   }
 
-  /* Checkbox and radio */
+  /* Checkbox and radio - Champagne gold theme */
   .dark [class*="Checkbox"][data-state="checked"],
   .dark [class*="Radio"][data-state="checked"] {
-    background-color: hsl(318, 59%, 50%);
-    border-color: hsl(318, 59%, 50%);
+    background-color: hsl(38, 55%, 52%);
+    border-color: hsl(38, 55%, 52%);
   }
 
   /* Scrollbar styling - Consistent width across themes */
@@ -862,18 +929,18 @@
     background: hsl(45, 65%, 65%);
   }
 
-  /* Dark mode scrollbar - Reverted to original */
+  /* Dark mode scrollbar - Champagne gold theme */
   .dark ::-webkit-scrollbar-track {
-    background: hsl(222.2, 84%, 6%);
+    background: hsl(0, 0%, 8%);
   }
 
   .dark ::-webkit-scrollbar-thumb {
-    background: hsl(217.2, 32.6%, 30%);
+    background: hsl(38, 40%, 38%);
     border-radius: 4px;
   }
 
   .dark ::-webkit-scrollbar-thumb:hover {
-    background: hsl(217.2, 32.6%, 40%);
+    background: hsl(38, 40%, 45%);
   }
 
   /* Accent elements hierarchy - Badges, buttons, and interactive elements */
@@ -901,46 +968,118 @@
       0 0 0 1px rgba(255, 255, 255, 0.05);
   }
 
-  /* Input and form elements */
+  /* Input and form elements - Champagne gold focus */
   .dark input:focus,
   .dark select:focus,
   .dark textarea:focus {
     box-shadow: 
       inset 0 1px 2px 0 rgba(0, 0, 0, 0.2),
-      0 0 0 2px hsl(318, 59%, 50%);
+      0 0 0 2px hsl(38, 55%, 52%);
   }
 
   /* Table rows for depth */
   .dark tbody tr {
-    background-color: hsl(222.2, 84%, 6%);
-    border-bottom: 1px solid hsl(217.2, 32.6%, 20%);
+    background-color: hsl(0, 0%, 10%);
+    border-bottom: 1px solid hsl(38, 40%, 28%);
   }
 
   .dark tbody tr:hover {
-    background-color: hsl(222.2, 84%, 7%);
+    background-color: hsl(0, 0%, 12%);
     box-shadow: 
       0 1px 3px 0 rgba(0, 0, 0, 0.2);
   }
 
   /* Alert and notification cards */
   .dark [class*="Alert"] {
-    background-color: hsl(222.2, 84%, 7%);
-    border-color: hsl(217.2, 32.6%, 25%);
+    background-color: hsl(0, 0%, 12%);
+    border-color: hsl(38, 40%, 32%);
     box-shadow: 
       0 2px 4px 0 rgba(0, 0, 0, 0.2);
   }
 
   /* Tabs for depth */
   .dark [class*="TabsList"] {
-    background-color: hsl(222.2, 84%, 6%);
+    background-color: hsl(0, 0%, 10%);
     box-shadow: 
       inset 0 1px 2px 0 rgba(0, 0, 0, 0.2);
   }
 
-  .dark [class*="TabsTrigger"][data-state="active"] {
-    background-color: hsl(222.2, 84%, 8%);
-    box-shadow: 
-      0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  /* TabsTrigger active state - consolidated rule with proper contrast */
+  [class*="TabsTrigger"][data-state="active"],
+  .tabs-trigger[data-state="active"],
+  button[class*="TabsTrigger"][data-state="active"],
+  button.tabs-trigger[data-state="active"],
+  [role="tab"][data-state="active"],
+  button[role="tab"][data-state="active"] {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  }
+
+  .dark [class*="TabsTrigger"][data-state="active"],
+  .dark .tabs-trigger[data-state="active"],
+  .dark button[class*="TabsTrigger"][data-state="active"],
+  .dark button.tabs-trigger[data-state="active"],
+  .dark [role="tab"][data-state="active"],
+  .dark button[role="tab"][data-state="active"] {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
+  }
+
+  /* ToggleGroup selected state - ensure proper contrast - HIGHEST PRIORITY */
+  button[data-state="on"],
+  [role="button"][data-state="on"],
+  [class*="ToggleGroupItem"][data-state="on"],
+  button[class*="ToggleGroupItem"][data-state="on"] {
+    background-color: #421133 !important;
+    color: #ffffff !important;
+    border-color: #421133 !important;
+  }
+
+  .dark button[data-state="on"],
+  .dark [role="button"][data-state="on"],
+  .dark [class*="ToggleGroupItem"][data-state="on"],
+  .dark button[class*="ToggleGroupItem"][data-state="on"] {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    border-color: hsl(38, 55%, 52%) !important;
+  }
+
+  /* Brand-600 buttons - ensure proper contrast for selected/active states */
+  button.bg-brand-600,
+  button[class*="bg-brand-600"],
+  button[class*="!bg-brand-600"],
+  .bg-brand-600[data-state="active"],
+  [data-state="active"].bg-brand-600 {
+    background-color: #421133 !important;
+    color: #ffffff !important;
+    border-color: #421133 !important;
+  }
+
+  button.bg-brand-600:hover,
+  button[class*="bg-brand-600"]:hover,
+  button[class*="!bg-brand-600"]:hover {
+    background-color: #521540 !important;
+    color: #ffffff !important;
+  }
+
+  /* Dark mode brand-600 buttons - Champagne gold theme */
+  .dark button.bg-brand-600,
+  .dark button[class*="bg-brand-600"],
+  .dark button[class*="!bg-brand-600"],
+  .dark .bg-brand-600[data-state="active"],
+  .dark [data-state="active"].bg-brand-600 {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    border-color: hsl(38, 55%, 52%) !important;
+  }
+
+  .dark button.bg-brand-600:hover,
+  .dark button[class*="bg-brand-600"]:hover,
+  .dark button[class*="!bg-brand-600"]:hover {
+    background-color: hsl(38, 55%, 46%) !important;
+    color: hsl(0, 0%, 12%) !important;
   }
 
   /* Image visibility in dark mode - Ensure images are bright and visible */
@@ -1431,9 +1570,210 @@
     }
   }
 
-  /* Force reset button active state when drawer closes */
-  button:not(:focus):not(:hover):not([data-state="open"]) {
+  /* Force reset button active state when drawer closes - but exclude active/selected states */
+  button:not(:focus):not(:hover):not([data-state="open"]):not([data-state="on"]):not([data-state="active"]):not([aria-selected="true"]):not([class*="bg-brand"]):not([class*="bg-primary"]):not([class*="bg-accent"]) {
     background-color: transparent !important;
+  }
+
+  /* CRITICAL: ToggleGroup selected state - override everything */
+  button[data-state="on"]:not([class*="gold"]):not([class*="silver"]),
+  .toggle-group-item[data-state="on"],
+  button.toggle-group-item[data-state="on"] {
+    background-color: #421133 !important;
+    color: #ffffff !important;
+    border-color: #421133 !important;
+  }
+
+  .dark button[data-state="on"]:not([class*="gold"]):not([class*="silver"]),
+  .dark .toggle-group-item[data-state="on"],
+  .dark button.toggle-group-item[data-state="on"] {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    border-color: hsl(38, 55%, 52%) !important;
+  }
+
+  /* Additional tab button active state - ensure all tab buttons have proper contrast */
+  button[data-state="active"]:not([class*="gold"]):not([class*="silver"]):not([class*="outline"]):not([class*="ghost"]) {
+    background-color: hsl(var(--primary)) !important;
+    color: hsl(var(--primary-foreground)) !important;
+    opacity: 1 !important;
+  }
+
+  .dark button[data-state="active"]:not([class*="gold"]):not([class*="silver"]):not([class*="outline"]):not([class*="ghost"]) {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    opacity: 1 !important;
+  }
+
+  /* Price Range Filter Buttons - covered by brand-600 rules above */
+
+  /* TabsList - Override shadcn default to make background transparent when needed */
+  [role="tablist"].grid {
+    background-color: transparent !important;
+  }
+
+  /* Inactive tabs - Ensure proper contrast with dark text (not grey) */
+  [role="tab"][data-state="inactive"] {
+    color: hsl(var(--foreground)) !important;
+    background-color: transparent !important;
+  }
+
+  [role="tab"][data-state="inactive"]:hover {
+    background-color: hsl(var(--muted) / 0.3) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Active tabs - already covered above, removing duplicate */
+
+  /* ToggleGroupItem inactive state - Ensure proper contrast */
+  .toggle-group-item[data-state="off"],
+  button.toggle-group-item[data-state="off"] {
+    color: hsl(var(--foreground)) !important;
+    background-color: transparent !important;
+  }
+
+  .toggle-group-item[data-state="off"]:hover,
+  button.toggle-group-item[data-state="off"]:hover {
+    background-color: hsl(var(--muted) / 0.5) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .dark .toggle-group-item[data-state="off"],
+  .dark button.toggle-group-item[data-state="off"] {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .dark .toggle-group-item[data-state="off"]:hover,
+  .dark button.toggle-group-item[data-state="off"]:hover {
+    background-color: hsl(var(--muted) / 0.3) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* aria-selected states - Champagne gold theme in dark mode */
+  .dark [aria-selected="true"] {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+  }
+
+  .dark [aria-selected="true"]:hover {
+    background-color: hsl(38, 55%, 46%) !important;
+  }
+
+  /* :checked states - Champagne gold theme in dark mode */
+  .dark input[type="checkbox"]:checked,
+  .dark input[type="radio"]:checked {
+    accent-color: hsl(38, 55%, 52%);
+  }
+
+  /* focus-visible states - Champagne gold ring in dark mode */
+  .dark *:focus-visible {
+    outline-color: hsl(38, 55%, 52%);
+    ring-color: hsl(38, 55%, 52%);
+  }
+
+  /* Chips and badges with selected state */
+  .dark [class*="Chip"][data-state="selected"],
+  .dark [class*="Badge"][data-state="selected"],
+  .dark [aria-selected="true"][class*="Chip"],
+  .dark [aria-selected="true"][class*="Badge"] {
+    background-color: hsl(38, 55%, 52%) !important;
+    color: hsl(0, 0%, 12%) !important;
+    border-color: hsl(38, 55%, 52%) !important;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+
+  /* Shimmer animation for skeleton loaders */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Neomorphic button effect - Extruded/raised style */
+  .neomorphic-button {
+    position: relative;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Light mode neomorphism */
+  .neomorphic-button {
+    box-shadow: 
+      8px 8px 16px rgba(66, 17, 51, 0.2),
+      -8px -8px 16px rgba(255, 255, 255, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .neomorphic-button:hover:not(:disabled) {
+    box-shadow: 
+      12px 12px 24px rgba(66, 17, 51, 0.3),
+      -12px -12px 24px rgba(255, 255, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .neomorphic-button:active:not(:disabled) {
+    box-shadow: 
+      4px 4px 8px rgba(66, 17, 51, 0.2),
+      -4px -4px 8px rgba(255, 255, 255, 0.1),
+      inset 0 2px 4px rgba(66, 17, 51, 0.3);
+    transform: translateY(0);
+  }
+
+  .neomorphic-button:disabled {
+    box-shadow: 
+      4px 4px 8px rgba(66, 17, 51, 0.15),
+      -4px -4px 8px rgba(255, 255, 255, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    opacity: 0.8;
+  }
+
+  /* Dark mode neomorphism */
+  .dark .neomorphic-button {
+    box-shadow: 
+      8px 8px 16px rgba(0, 0, 0, 0.5),
+      -8px -8px 16px rgba(201, 162, 77, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05),
+      0 0 0 1px rgba(201, 162, 77, 0.2);
+  }
+
+  .dark .neomorphic-button:hover:not(:disabled) {
+    box-shadow: 
+      12px 12px 24px rgba(0, 0, 0, 0.6),
+      -12px -12px 24px rgba(201, 162, 77, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 0 0 1px rgba(201, 162, 77, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .dark .neomorphic-button:active:not(:disabled) {
+    box-shadow: 
+      4px 4px 8px rgba(0, 0, 0, 0.5),
+      -4px -4px 8px rgba(201, 162, 77, 0.1),
+      inset 0 2px 4px rgba(0, 0, 0, 0.4),
+      0 0 0 1px rgba(201, 162, 77, 0.2);
+    transform: translateY(0);
+  }
+
+  .dark .neomorphic-button:disabled {
+    box-shadow: 
+      4px 4px 8px rgba(0, 0, 0, 0.4),
+      -4px -4px 8px rgba(201, 162, 77, 0.05),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03),
+      0 0 0 1px rgba(201, 162, 77, 0.15);
+    opacity: 0.8;
   }
 
 }

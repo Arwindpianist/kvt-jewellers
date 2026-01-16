@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { authenticateUser, createSession } from "@/lib/auth";
+import { signInStaff } from "@/lib/auth/staff";
 
 /**
- * Staff login endpoint
+ * Staff login endpoint - uses Supabase Auth
  */
 export async function POST(request: NextRequest) {
   try {
@@ -16,31 +16,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const user = await authenticateUser(email, password);
+    const { user, error } = await signInStaff(email, password);
 
-    if (!user) {
+    if (error || !user) {
       return NextResponse.json(
-        { error: "Invalid credentials" },
+        { error: error || "Invalid credentials" },
         { status: 401 }
       );
     }
 
-    // Create session - this sets the cookie
-    await createSession(user);
+    // Session is automatically created by Supabase Auth
+    // The cookie is set by Supabase Auth middleware
 
-    // Create response with user data
-    const response = NextResponse.json({
+    return NextResponse.json({
       success: true,
       user: {
         id: user.id,
         email: user.email,
         name: user.name,
+        role: user.role,
       },
     });
-
-    // Ensure cookie is included in response
-    // The cookie should already be set by createSession, but we ensure it's in the response
-    return response;
   } catch (error) {
     console.error("Error in login:", error);
     return NextResponse.json(
@@ -49,4 +45,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

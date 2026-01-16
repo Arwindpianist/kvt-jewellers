@@ -19,6 +19,11 @@ import { useEffect } from "react";
  */
 export function ContentProtection() {
   useEffect(() => {
+    // Disable content protection in development mode to allow dev tools
+    if (process.env.NODE_ENV === "development") {
+      return;
+    }
+
     // Prevent right-click context menu
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -43,27 +48,18 @@ export function ContentProtection() {
       return false;
     };
 
-    // Block keyboard shortcuts
+    // Block keyboard shortcuts and developer tools
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Block Ctrl+C, Ctrl+V, Ctrl+A, Ctrl+X, Ctrl+S, Ctrl+P, Ctrl+U, Ctrl+I, Ctrl+J
-      if (e.ctrlKey || e.metaKey) {
-        const blockedKeys = ["c", "v", "a", "x", "s", "p", "u", "i", "j"];
-        if (blockedKeys.includes(e.key.toLowerCase())) {
-          e.preventDefault();
-          e.stopPropagation();
-          return false;
-        }
-      }
-
-      // Block F12 (Developer Tools)
-      if (e.key === "F12") {
+      // Block F12, F8, F5 (Developer Tools, Debugger, Refresh with cache clear)
+      if (["F12", "F8", "F5"].includes(e.key)) {
         e.preventDefault();
+        e.stopPropagation();
         return false;
       }
 
-      // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (DevTools)
+      // Block Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+Shift+K (DevTools)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey) {
-        const blockedShiftKeys = ["I", "J", "C", "K"];
+        const blockedShiftKeys = ["I", "J", "C", "K", "D"];
         if (blockedShiftKeys.includes(e.key)) {
           e.preventDefault();
           e.stopPropagation();
@@ -71,14 +67,25 @@ export function ContentProtection() {
         }
       }
 
-      // Block Ctrl+U (View Source)
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "u") {
-        e.preventDefault();
-        return false;
+      // Block Ctrl+C, Ctrl+V, Ctrl+A, Ctrl+X, Ctrl+S, Ctrl+P, Ctrl+U, Ctrl+I, Ctrl+J, Ctrl+W, Ctrl+R
+      if (e.ctrlKey || e.metaKey) {
+        const blockedKeys = ["c", "v", "a", "x", "s", "p", "u", "i", "j", "w", "r", "d"];
+        if (blockedKeys.includes(e.key.toLowerCase())) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
       }
 
       // Block Print Screen (limited effectiveness)
-      if (e.key === "PrintScreen") {
+      if (e.key === "PrintScreen" || e.keyCode === 44) {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      }
+
+      // Block Alt+Tab (some browsers)
+      if (e.altKey && e.key === "Tab") {
         e.preventDefault();
         return false;
       }
@@ -112,6 +119,47 @@ export function ContentProtection() {
       }
     };
 
+    // Detect developer tools opening (monitoring only - don't break the app)
+    const detectDevTools = () => {
+      let devToolsOpen = false;
+      const threshold = 160;
+      
+      setInterval(() => {
+        if (
+          window.outerHeight - window.innerHeight > threshold ||
+          window.outerWidth - window.innerWidth > threshold
+        ) {
+          if (!devToolsOpen) {
+            devToolsOpen = true;
+            // In production, you might want to log this event to a monitoring service
+            // For now, we just monitor without disrupting the user experience
+          }
+        } else {
+          devToolsOpen = false;
+        }
+      }, 1000);
+    };
+
+    // Override console methods in production (only non-error methods)
+    const overrideConsole = () => {
+      if (typeof window === 'undefined') return;
+      
+      const noop = () => {};
+      // Only override non-critical methods - keep error for actual error reporting
+      const methods = ['log', 'debug', 'info', 'trace', 'dir', 'dirxml', 'group', 'groupCollapsed', 'groupEnd', 'time', 'timeEnd', 'profile', 'profileEnd', 'count', 'clear', 'assert', 'markTimeline', 'timeline', 'timelineEnd', 'timeStamp', 'table'];
+      
+      // Store original console for potential restoration
+      const originalConsole = { ...console };
+      
+      methods.forEach(method => {
+        try {
+          (console as any)[method] = noop;
+        } catch (e) {
+          // Silently fail if console override is not possible
+        }
+      });
+    };
+
     // Add event listeners with capture phase for better blocking
     const options = { capture: true, passive: false };
 
@@ -124,6 +172,10 @@ export function ContentProtection() {
     document.addEventListener("cut", handleCut, options);
     document.addEventListener("paste", handlePaste, options);
     document.addEventListener("mousedown", handleMouseDown, options);
+
+    // Start detection
+    detectDevTools();
+    overrideConsole();
 
     // Add CSS to prevent text selection globally
     const style = document.createElement("style");

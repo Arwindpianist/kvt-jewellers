@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,20 +8,59 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { AnimatedButton } from "@/components/public/AnimatedButton";
 import { AnimatedSection } from "@/components/ui/animated-section";
-import { Plus, X, Edit, Trash2, Download, Upload } from "lucide-react";
+import { ProductManagerSkeleton } from "@/components/staff/skeletons/ProductManagerSkeleton";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Plus, X, Edit, Trash2, Download, Upload, Loader2, AlertCircle } from "lucide-react";
+import { logger } from "@/lib/logger";
 import type { Product, ProductCategory } from "@/types/products";
 
 interface ProductManagerProps {
-  initialProducts: Product[];
+  initialProducts?: Product[];
 }
 
-export function ProductManager({ initialProducts }: ProductManagerProps) {
-  const [products, setProducts] = useState(initialProducts);
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export function ProductManager({ initialProducts = [] }: ProductManagerProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [loading, setLoading] = useState(true);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 20,
+    total: initialProducts.length,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<ProductCategory | "">("");
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [importing, setImporting] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState<{ open: boolean; productId: string | null }>({
+    open: false,
+    productId: null,
+  });
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
   const [formData, setFormData] = useState({
     name: "",
     category: "jewellery" as ProductCategory,
@@ -30,6 +69,61 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
     weight: "",
     purity: "",
   });
+
+  // Fetch products with pagination
+  const fetchProducts = async (page: number = 1, search: string = "", category: ProductCategory | "" = "") => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "20",
+      });
+      
+      if (search) {
+        params.append("search", search);
+      }
+      
+      if (category) {
+        params.append("category", category);
+      }
+
+      const response = await fetch(`/api/admin/products?${params.toString()}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch products");
+      }
+
+      setProducts(data.products || []);
+      setPagination(data.pagination || pagination);
+    } catch (error) {
+      logger.error("Error fetching products", error);
+      setError("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Load products on mount
+  useEffect(() => {
+    fetchProducts(1, searchQuery, categoryFilter);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only on mount
+
+  // Handle search with debounce
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts(1, searchQuery, categoryFilter);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, categoryFilter]);
+
+  // Handle page change
+  const handlePageChange = (page: number) => {
+    fetchProducts(page, searchQuery, categoryFilter);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const handleExport = async () => {
     try {
@@ -41,9 +135,10 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
       a.download = `products-${new Date().toISOString().split("T")[0]}.csv`;
       a.click();
       URL.revokeObjectURL(url);
+      setSuccess("Products exported successfully");
     } catch (error) {
-      console.error("Error exporting products:", error);
-      alert("Failed to export products. Please try again.");
+      logger.error("Error exporting products", error);
+      setError("Failed to export products. Please try again.");
     }
   };
 
@@ -80,9 +175,7 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
       const data = await response.json();
       
       // Refresh products list
-      const refreshResponse = await fetch("/api/products");
-      const refreshData = await refreshResponse.json();
-      setProducts(refreshData.products);
+      fetchProducts(pagination.page, searchQuery, categoryFilter);
 
       // Reset form
       setFormData({
@@ -101,13 +194,15 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this product?")) {
-      return;
-    }
+  const handleDeleteClick = (id: string) => {
+    setDeleteDialog({ open: true, productId: id });
+  };
+
+  const handleDelete = async () => {
+    if (!deleteDialog.productId) return;
 
     try {
-      const response = await fetch(`/api/products?id=${id}`, {
+      const response = await fetch(`/api/products?id=${deleteDialog.productId}`, {
         method: "DELETE",
       });
 
@@ -115,13 +210,14 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
         throw new Error("Failed to delete product");
       }
 
-      // Refresh products list
-      const refreshResponse = await fetch("/api/products");
-      const refreshData = await refreshResponse.json();
-      setProducts(refreshData.products);
+      setSuccess("Product deleted successfully");
+      setError("");
+      setDeleteDialog({ open: false, productId: null });
+      fetchProducts(pagination.page, searchQuery, categoryFilter);
     } catch (error) {
-      console.error("Error deleting product:", error);
-      alert("Failed to delete product. Please try again.");
+      logger.error("Error deleting product", error);
+      setError("Failed to delete product. Please try again.");
+      setDeleteDialog({ open: false, productId: null });
     }
   };
 
@@ -138,10 +234,69 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
     setShowForm(true);
   };
 
+  // Generate page numbers for pagination
+  const getPageNumbers = () => {
+    const pages: (number | "ellipsis")[] = [];
+    const totalPages = pagination.totalPages;
+    const currentPage = pagination.page;
+
+    if (totalPages <= 7) {
+      // Show all pages if 7 or fewer
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      // Always show first page
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push("ellipsis");
+      }
+
+      // Show pages around current page
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push("ellipsis");
+      }
+
+      // Always show last page
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  if (loading && products.length === 0) {
+    return <ProductManagerSkeleton />;
+  }
+
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      {success && (
+        <Alert className="bg-green-50 border-green-200">
+          <AlertCircle className="h-4 w-4 text-green-600" />
+          <AlertDescription className="text-green-800">{success}</AlertDescription>
+        </Alert>
+      )}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h2 className="font-serif text-2xl font-semibold text-brand-700">Products</h2>
+        <div>
+          <h2 className="font-serif text-2xl font-semibold text-brand-700">Products</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            Showing {products.length} of {pagination.total} products
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <AnimatedButton
             onClick={handleExport}
@@ -297,15 +452,45 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
         )}
       </AnimatePresence>
 
+      {/* Search and Filter */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Input
+              placeholder="Search products..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+            />
+            <select
+              className="flex h-10 w-full sm:w-48 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value as ProductCategory | "")}
+            >
+              <option value="">All Categories</option>
+              <option value="coin">Coin</option>
+              <option value="bar">Bar</option>
+              <option value="jewellery">Jewellery</option>
+            </select>
+          </div>
+        </CardContent>
+      </Card>
+
       <AnimatedSection>
         <Card className="border-2 border-brand-200/50 shadow-lg">
           <CardHeader className="bg-gradient-to-br from-brand-50 to-white">
             <CardTitle className="font-serif text-xl font-semibold text-brand-700">
-              All Products ({products.length})
+              All Products ({pagination.total})
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="overflow-x-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow className="border-brand-200/50">
@@ -366,7 +551,7 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
                           <Button
                             size="sm"
                             variant="destructive"
-                            onClick={() => handleDelete(product.id)}
+                            onClick={() => handleDeleteClick(product.id)}
                             className="rounded-lg"
                           >
                             <Trash2 className="mr-1 h-3 w-3" />
@@ -379,6 +564,49 @@ export function ProductManager({ initialProducts }: ProductManagerProps) {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Pagination */}
+            {pagination.totalPages > 1 && (
+              <div className="mt-6 flex justify-center">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        onClick={() => handlePageChange(pagination.page - 1)}
+                        disabled={!pagination.hasPreviousPage}
+                        className={!pagination.hasPreviousPage ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                    
+                    {getPageNumbers().map((pageNum, index) => (
+                      <PaginationItem key={index}>
+                        {pageNum === "ellipsis" ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            onClick={() => handlePageChange(pageNum)}
+                            isActive={pagination.page === pageNum}
+                            className="cursor-pointer"
+                          >
+                            {pageNum}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+                    
+                    <PaginationItem>
+                      <PaginationNext
+                        onClick={() => handlePageChange(pagination.page + 1)}
+                        disabled={!pagination.hasNextPage}
+                        className={!pagination.hasNextPage ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+              </>
+            )}
           </CardContent>
         </Card>
       </AnimatedSection>

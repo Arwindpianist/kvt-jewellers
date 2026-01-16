@@ -2,10 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { HoverCard } from "@/components/ui/hover-card";
 import { categoryImages } from "@/lib/image-placeholders";
 import type { Product } from "@/types/products";
 
@@ -14,7 +12,7 @@ interface ProductCardProps {
   index?: number;
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+export function ProductCard({ product }: ProductCardProps) {
   const formatPrice = (price?: number) => {
     if (!price) return "Price on request";
     return new Intl.NumberFormat("en-MY", {
@@ -26,86 +24,43 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -8 }}
-    >
-      <HoverCard>
-        <Card className="group overflow-hidden bg-card-level-2 shadow-card-elevated transition-all hover:bg-card-level-3 hover:shadow-card-floating">
-          <Link href={`/product/${product.id}`}>
-            <div className="relative aspect-square w-full overflow-hidden">
-              <motion.div
-                whileHover={{ scale: 1.1 }}
-                transition={{ duration: 0.4 }}
-                className="relative h-full w-full"
-              >
-                <Image
-                  src={categoryImages[product.category] || categoryImages.jewellery}
-                  alt={product.name}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                />
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-t from-black/40 dark:from-black/20 via-transparent to-transparent"
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </motion.div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 dark:from-black/20 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
-              {product.purity && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: index * 0.1 + 0.3 }}
-                >
-                  <Badge className="absolute right-3 top-3 bg-white/90 text-brand-700">
-                    {product.purity}
-                  </Badge>
-                </motion.div>
-              )}
-            </div>
-            <CardContent className="p-4 sm:p-6">
-              <motion.h3
-                className="mb-2 font-serif text-lg sm:text-xl font-semibold line-clamp-2 group-hover:text-brand-500 transition-colors"
-                whileHover={{ x: 4 }}
-                transition={{ duration: 0.2 }}
-              >
-                {product.name}
-              </motion.h3>
-              <p className="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground">
-                {product.description}
-              </p>
-              <div className="flex items-center justify-between">
-                <motion.span
-                  className="font-semibold text-base sm:text-lg gold-gradient-text"
-                  initial={{ scale: 0.9 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: index * 0.1 + 0.3 }}
-                >
-                  {formatPrice(product.price)}
-                </motion.span>
-                {product.weight && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.1 + 0.4 }}
-                  >
-                    <Badge variant="outline" className="text-xs">
-                      {product.weight}g
-                    </Badge>
-                  </motion.div>
-                )}
-              </div>
-            </CardContent>
-          </Link>
-        </Card>
-      </HoverCard>
-    </motion.div>
+    <Card className="group overflow-hidden bg-card-level-2 shadow-card transition-shadow duration-200 hover:shadow-card-elevated">
+      <Link href={`/product/${product.id}`} className="block h-full flex flex-col">
+        <div className="relative aspect-square w-full overflow-hidden bg-muted">
+          <Image
+            src={categoryImages[product.category] || categoryImages.jewellery}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 25vw, 20vw"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {product.purity && (
+            <Badge className="absolute right-2 top-2 bg-white/95 text-brand-700 text-xs font-medium">
+              {product.purity}
+            </Badge>
+          )}
+        </div>
+        <CardContent className="p-4 flex-1 flex flex-col">
+          <h3 className="mb-2 font-serif text-base font-semibold line-clamp-2 group-hover:text-brand-600 transition-colors duration-200 min-h-[2.5rem]">
+            {product.name}
+          </h3>
+          <p className="mb-3 line-clamp-2 text-xs text-muted-foreground leading-relaxed flex-1 min-h-[2.5rem]">
+            {product.description}
+          </p>
+          <div className="flex items-center justify-between gap-2 mt-auto">
+            <span className="font-semibold text-base gold-gradient-text">
+              {formatPrice(product.price)}
+            </span>
+            {product.weight && (
+              <Badge variant="outline" className="text-xs shrink-0 font-medium">
+                {product.weight}g
+              </Badge>
+            )}
+          </div>
+        </CardContent>
+      </Link>
+    </Card>
   );
 }

@@ -37,8 +37,8 @@ const nextConfig = {
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
-  // Turbopack config (empty for now, can be configured later)
-  turbopack: {},
+  // Turbopack config - disabled due to CSS parsing bug with hover:svg selectors
+  // turbopack: {},
 };
 
 // Apply PWA in both development and production for testing

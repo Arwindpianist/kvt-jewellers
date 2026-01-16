@@ -1,7 +1,11 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { StaffPageHeader } from "@/components/staff/StaffPageHeader";
 import { ActivityLog } from "@/components/staff/ActivityLog";
+import { ActivitySkeleton } from "@/components/staff/skeletons/ActivitySkeleton";
+
+export const dynamic = 'force-dynamic';
 
 export default async function ActivityLogPage() {
   const session = await getSession();
@@ -17,7 +21,9 @@ export default async function ActivityLogPage() {
         title="Activity Log"
         description="View all system activities, price changes, and product updates"
       />
-      <ActivityLog />
+      <Suspense fallback={<ActivitySkeleton />}>
+        <ActivityLog />
+      </Suspense>
     </div>
   );
 }

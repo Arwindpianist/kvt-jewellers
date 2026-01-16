@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useSpring, useTransform, useMotionValue } from "framer-motion";
+import { motion, useSpring, useTransform } from "framer-motion";
 
 interface AnimatedCounterProps {
   value: number;
@@ -10,6 +10,7 @@ interface AnimatedCounterProps {
   prefix?: string;
   suffix?: string;
   decimals?: number;
+  locale?: string;
 }
 
 export function AnimatedCounter({
@@ -18,12 +19,10 @@ export function AnimatedCounter({
   className,
   prefix = "",
   suffix = "",
-  decimals = 0,
+  decimals = 2,
+  locale = "en-US",
 }: AnimatedCounterProps) {
   const spring = useSpring(0, { duration });
-  const display = useTransform(spring, (current) =>
-    Math.floor(current).toFixed(decimals)
-  );
   const [displayValue, setDisplayValue] = useState("0");
 
   useEffect(() => {
@@ -31,11 +30,16 @@ export function AnimatedCounter({
   }, [spring, value]);
 
   useEffect(() => {
-    const unsubscribe = display.on("change", (latest) => {
-      setDisplayValue(latest);
+    const unsubscribe = spring.on("change", (latest) => {
+      // Format with proper commas and decimals
+      const formatted = new Intl.NumberFormat(locale, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }).format(latest);
+      setDisplayValue(formatted);
     });
     return () => unsubscribe();
-  }, [display]);
+  }, [spring, decimals, locale]);
 
   return (
     <motion.span className={className}>

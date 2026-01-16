@@ -1,7 +1,11 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { StaffPageHeader } from "@/components/staff/StaffPageHeader";
 import { SettingsContent } from "@/components/staff/SettingsContent";
+import { SettingsSkeleton } from "@/components/staff/skeletons/SettingsSkeleton";
+
+export const dynamic = 'force-dynamic';
 
 export default async function SettingsPage() {
   const session = await getSession();
@@ -17,7 +21,9 @@ export default async function SettingsPage() {
         title="Settings"
         description="Configure system settings and preferences"
       />
-      <SettingsContent />
+      <Suspense fallback={<SettingsSkeleton />}>
+        <SettingsContent />
+      </Suspense>
     </div>
   );
 }

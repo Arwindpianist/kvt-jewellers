@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getProductById, getAllProducts } from "@/lib/products";
+import { getProductById, getAllProducts } from "@/lib/db/products";
 import { ProductDetailContent } from "@/components/public/ProductDetailContent";
 
 interface ProductPageProps {
@@ -7,7 +7,7 @@ interface ProductPageProps {
 }
 
 export async function generateStaticParams() {
-  const products = getAllProducts();
+  const products = await getAllProducts();
   return products.map((product) => ({
     id: product.id,
   }));
@@ -15,7 +15,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await getProductById(id);
   
   if (!product) {
     return {
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await getProductById(id);
 
   if (!product) {
     notFound();

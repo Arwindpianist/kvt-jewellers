@@ -2,49 +2,25 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { Card, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Shield, User, Crown } from "lucide-react";
-import { Meteors } from "@/components/ui/meteors";
-
-type UserType = "admin" | "user" | null;
-
-const USER_OPTIONS = {
-  admin: {
-    email: "admin@kvtjewellers.com",
-    name: "Admin User",
-    icon: Crown,
-    color: "from-gold-500 to-gold-600",
-    borderColor: "border-gold-300",
-    bgColor: "bg-gold-50/50",
-  },
-  user: {
-    email: "staff@kvtjewellers.com",
-    name: "Staff User",
-    icon: User,
-    color: "from-brand-500 to-brand-600",
-    borderColor: "border-brand-300",
-    bgColor: "bg-brand-50/50",
-  },
-};
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Shield, Loader2, AlertCircle } from "lucide-react";
 
 export default function StaffLoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [selectedUser, setSelectedUser] = useState<UserType>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleUserSelect = async (userType: UserType) => {
-    if (!userType) return;
-    
-    setSelectedUser(userType);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setError("");
     setLoading(true);
-
-    const email = USER_OPTIONS[userType].email;
-    const password = "password"; // Demo password
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -64,10 +40,9 @@ export default function StaffLoginPage() {
       }
 
       // Redirect to dashboard or the page they were trying to access
-      // Use window.location for a full page reload to ensure cookie is properly set and read
       const from = searchParams.get("from") || "/staff/dashboard";
       
-      // Small delay to ensure cookie is set in browser before redirect
+      // Use window.location for a full page reload to ensure session is properly set
       setTimeout(() => {
         window.location.href = from;
       }, 100);
@@ -79,140 +54,72 @@ export default function StaffLoginPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-b from-brand-50 via-white to-background dark:bg-background dark:from-background dark:via-background dark:to-background px-4 py-12">
-      <Meteors number={20} />
-      <div className="relative z-10 w-full max-w-4xl">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="space-y-8"
-        >
-          {/* Header */}
-          <div className="text-center">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600"
-            >
+      <div className="relative z-10 w-full max-w-md">
+        <Card className="shadow-2xl">
+          <CardHeader className="space-y-1 text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600">
               <Shield className="h-8 w-8 text-white" />
-            </motion.div>
-            <motion.h1
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="font-serif text-4xl font-bold text-brand-700"
-            >
-              Staff Portal
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mt-2 text-muted-foreground"
-            >
-              Select an account to continue
-            </motion.p>
-          </div>
+            </div>
+            <CardTitle className="font-serif text-3xl font-bold">Staff Portal</CardTitle>
+            <CardDescription>
+              Sign in to access the staff dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
 
-          {/* User Selection Cards */}
-          <div className="grid gap-6 md:grid-cols-2">
-            {(Object.keys(USER_OPTIONS) as Array<keyof typeof USER_OPTIONS>).map((userType, index) => {
-              const user = USER_OPTIONS[userType];
-              const Icon = user.icon;
-              const isSelected = selectedUser === userType;
-              const isLoggingIn = loading && selectedUser === userType;
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="staff@kvtjewellers.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-11"
+                />
+              </div>
 
-              return (
-                <motion.div
-                  key={userType}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.5 + index * 0.1 }}
-                  whileHover={!loading ? { scale: 1.02 } : {}}
-                  whileTap={!loading ? { scale: 0.98 } : {}}
-                >
-                  <Card
-                    className={`cursor-pointer border-2 transition-all ${
-                      isSelected
-                        ? `${user.borderColor} shadow-xl ${user.bgColor}`
-                        : loading
-                        ? "border-brand-200/50 opacity-50 cursor-not-allowed"
-                        : "border-brand-200/50 hover:border-brand-300 hover:shadow-lg"
-                    }`}
-                    onClick={() => !loading && handleUserSelect(userType)}
-                  >
-                    <CardHeader className="text-center">
-                      <motion.div
-                        className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br ${user.color} ${
-                          isSelected ? "ring-4 ring-offset-2 ring-offset-white" : ""
-                        }`}
-                        animate={isSelected ? { scale: [1, 1.1, 1] } : {}}
-                        transition={{ duration: 0.3 }}
-                      >
-                        {isLoggingIn ? (
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          >
-                            <Shield className="h-8 w-8 text-white" />
-                          </motion.div>
-                        ) : (
-                          <Icon className="h-8 w-8 text-white" />
-                        )}
-                      </motion.div>
-                      <CardTitle className="font-serif text-2xl font-bold text-brand-700">
-                        {user.name}
-                      </CardTitle>
-                      <p className="mt-2 text-sm text-muted-foreground">{user.email}</p>
-                      {isLoggingIn && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="mt-3"
-                        >
-                          <Badge className="bg-brand-500 text-white">Logging in...</Badge>
-                        </motion.div>
-                      )}
-                      {isSelected && !isLoggingIn && (
-                        <motion.div
-                          initial={{ opacity: 0, scale: 0 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="mt-3"
-                        >
-                          <Badge className="bg-gold-500 text-white">Selected</Badge>
-                        </motion.div>
-                      )}
-                    </CardHeader>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="h-11"
+                />
+              </div>
 
-          {/* Error Message */}
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="rounded-lg bg-destructive/10 p-4 text-sm text-destructive text-center"
-            >
-              {error}
-            </motion.div>
-          )}
-
-          {/* Demo Info */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            className="rounded-lg border border-brand-200/50 bg-brand-50/50 p-4 text-xs text-center text-muted-foreground"
-          >
-            <strong className="text-brand-700">Demo Mode:</strong> Click any card to automatically log in
-          </motion.div>
-        </motion.div>
+              <Button
+                type="submit"
+                className="w-full h-11"
+                disabled={loading}
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
-

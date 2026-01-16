@@ -9,31 +9,26 @@ export function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
-    // Check for session cookie
-    const sessionCookie = request.cookies.get("kvt-staff-session");
-    
-    if (!sessionCookie) {
+    // Check for Supabase Auth session token
+    // Supabase Auth typically uses cookies like: sb-<project-ref>-auth-token
+    // We'll check for any auth-related cookie
+    const cookies = request.cookies.getAll();
+    const hasAuthCookie = cookies.some(
+      cookie => 
+        cookie.name.includes('auth-token') || 
+        cookie.name.includes('supabase') ||
+        cookie.name.startsWith('sb-')
+    );
+
+    if (!hasAuthCookie) {
       // Redirect to login
       const loginUrl = new URL("/staff/login", request.url);
       loginUrl.searchParams.set("from", request.nextUrl.pathname);
       return NextResponse.redirect(loginUrl);
     }
 
-    // Verify session is valid (basic check)
-    try {
-      const session = JSON.parse(sessionCookie.value);
-      if (new Date(session.expiresAt) < new Date()) {
-        // Session expired, redirect to login
-        const loginUrl = new URL("/staff/login", request.url);
-        loginUrl.searchParams.set("from", request.nextUrl.pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-    } catch {
-      // Invalid session, redirect to login
-      const loginUrl = new URL("/staff/login", request.url);
-      loginUrl.searchParams.set("from", request.nextUrl.pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+    // Additional verification will be done in the page components
+    // since middleware has limitations with async operations
   }
 
   return NextResponse.next();
@@ -42,4 +37,3 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/staff/:path*"],
 };
-

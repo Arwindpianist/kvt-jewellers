@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { fetchGoldPricesFromAPI } from "@/lib/gold-prices";
@@ -5,6 +6,9 @@ import { getAllProducts } from "@/lib/products";
 import { getActivityLogs } from "@/lib/activity-log";
 import { StaffPageHeader } from "@/components/staff/StaffPageHeader";
 import { AnalyticsDashboard } from "@/components/staff/AnalyticsDashboard";
+import { AnalyticsSkeleton } from "@/components/staff/skeletons/AnalyticsSkeleton";
+
+export const dynamic = 'force-dynamic';
 
 export default async function AnalyticsPage() {
   const session = await getSession();
@@ -24,11 +28,13 @@ export default async function AnalyticsPage() {
         title="Analytics & Reports"
         description="Track price trends, product performance, and system activity"
       />
-      <AnalyticsDashboard
-        prices={prices}
-        products={products}
-        activityLogs={activityLogs}
-      />
+      <Suspense fallback={<AnalyticsSkeleton />}>
+        <AnalyticsDashboard
+          prices={prices}
+          products={products}
+          activityLogs={activityLogs}
+        />
+      </Suspense>
     </div>
   );
 }

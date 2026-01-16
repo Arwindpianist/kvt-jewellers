@@ -5,49 +5,77 @@ import { Phone, Mail, Clock } from "lucide-react";
 export function LiveRateSidebar() {
   return (
     <div className="space-y-6">
-      {/* Online Trading Banner */}
-      <div className="rounded-lg bg-gradient-to-r from-brand-500 to-brand-600 p-4 text-center shadow-lg">
-        <div className="flex items-center justify-center gap-2">
-          <span className="text-2xl">✓</span>
-          <span className="font-bold text-white">ONLINE TRADING</span>
-        </div>
-      </div>
+      {/* Online Trading Button */}
+      <Button 
+        variant="default" 
+        className="w-full neomorphic-button bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold py-7 text-base relative overflow-hidden group"
+        disabled
+      >
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          <span className="text-lg">📈</span>
+          <span>Online Trading</span>
+          <span className="text-xs opacity-80">(Coming Soon)</span>
+        </span>
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+      </Button>
 
       {/* For Booking */}
-      <Card className="bg-brand-600 text-white">
-        <CardHeader>
-          <CardTitle className="text-white">FOR BOOKING</CardTitle>
+      <Card className="bg-brand-600 text-white border-brand-700">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-white text-lg font-semibold">FOR BOOKING</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4" />
-            <a
-              href="https://wa.me/60164575547"
-              className="hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              +(6)016-457 5547
-            </a>
-            <span className="text-green-400">💬</span>
+        <CardContent className="space-y-3 pt-0">
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 rounded-full bg-white/20 p-2">
+              <Phone className="h-4 w-4 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <a
+                href="https://wa.me/60164575547"
+                className="block text-white font-medium hover:text-white/90 transition-colors underline-offset-2 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                +(6)016-457 5547
+              </a>
+              <span className="text-xs text-white/80 flex items-center gap-1 mt-0.5">
+                <span className="text-green-300">💬</span>
+                WhatsApp
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Phone className="h-4 w-4" />
-            <a
-              href="https://wa.me/60125349916"
-              className="hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              +(6)012-534 9916
-            </a>
-            <span className="text-green-400">💬</span>
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 rounded-full bg-white/20 p-2">
+              <Phone className="h-4 w-4 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <a
+                href="https://wa.me/60125349916"
+                className="block text-white font-medium hover:text-white/90 transition-colors underline-offset-2 hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                +(6)012-534 9916
+              </a>
+              <span className="text-xs text-white/80 flex items-center gap-1 mt-0.5">
+                <span className="text-green-300">💬</span>
+                WhatsApp
+              </span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Mail className="h-4 w-4" />
-            <a href="mailto:sales@kvtjewellers.com" className="hover:underline">
-              sales@kvtjewellers.com
-            </a>
+          <div className="flex items-center gap-3">
+            <div className="flex-shrink-0 rounded-full bg-white/20 p-2">
+              <Mail className="h-4 w-4 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <a
+                href="mailto:sales@kvtjewellers.com"
+                className="block text-white font-medium hover:text-white/90 transition-colors underline-offset-2 hover:underline break-all"
+              >
+                sales@kvtjewellers.com
+              </a>
+              <span className="text-xs text-white/80 mt-0.5">Email</span>
+            </div>
           </div>
         </CardContent>
       </Card>

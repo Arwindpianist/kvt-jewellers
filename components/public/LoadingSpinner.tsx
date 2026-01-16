@@ -10,7 +10,7 @@ export function LoadingSpinner() {
         animate={{ rotate: 360 }}
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
       >
-        <Loader2 className="h-8 w-8 text-brand-600" />
+        <Loader2 className="h-8 w-8 text-brand-600 dark:text-gold-500" />
       </motion.div>
     </div>
   );

@@ -5,14 +5,14 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-} from "@/lib/products";
+} from "@/lib/db/products";
 import { logActivity } from "@/lib/activity-log";
 
 /**
  * GET /api/products - Get all products (public)
  */
 export async function GET(request: NextRequest) {
-  const products = getAllProducts();
+  const products = await getAllProducts();
   return NextResponse.json({ products });
 }
 
@@ -27,7 +27,14 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const product = createProduct(body);
+    const product = await createProduct(body);
+    
+    if (!product) {
+      return NextResponse.json(
+        { error: "Failed to create product" },
+        { status: 500 }
+      );
+    }
     
     // Log activity
     logActivity(
@@ -64,10 +71,10 @@ export async function PUT(request: NextRequest) {
     const { id, ...updates } = body;
     
     // Get current product for logging
-    const allProducts = getAllProducts();
-    const currentProduct = allProducts.find((p) => p.id === id);
+    const { getProductById } = await import("@/lib/db/products");
+    const currentProduct = await getProductById(id);
     
-    const product = updateProduct(id, updates);
+    const product = await updateProduct(id, updates);
     
     if (!product) {
       return NextResponse.json(
@@ -128,10 +135,10 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Get product name before deletion
-    const allProducts = getAllProducts();
-    const product = allProducts.find((p) => p.id === id);
+    const { getProductById } = await import("@/lib/db/products");
+    const product = await getProductById(id);
     
-    const success = deleteProduct(id);
+    const success = await deleteProduct(id);
     
     if (!success) {
       return NextResponse.json(

@@ -1,8 +1,12 @@
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
 import { fetchGoldPricesFromAPI } from "@/lib/gold-prices";
 import { PriceManager } from "@/components/staff/PriceManager";
 import { StaffPageHeader } from "@/components/staff/StaffPageHeader";
+import { PricesSkeleton } from "@/components/staff/skeletons/PricesSkeleton";
+
+export const dynamic = 'force-dynamic';
 
 export default async function StaffPricesPage() {
   const session = await getSession();
@@ -20,7 +24,9 @@ export default async function StaffPricesPage() {
         title="Price Management"
         description="Manage gold prices, set buy/sell percentages, exchange rates, and control publication status"
       />
-      <PriceManager initialPrices={prices} />
+      <Suspense fallback={<PricesSkeleton />}>
+        <PriceManager initialPrices={prices} />
+      </Suspense>
     </div>
   );
 }

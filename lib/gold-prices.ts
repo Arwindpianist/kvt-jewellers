@@ -21,7 +21,7 @@ let priceCache: {
   timestamp: 0,
 };
 
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 60 * 60 * 1000; // 1 hour (prices are manipulated after API fetch)
 
 /**
  * Fetches gold prices from external API (SERVER-ONLY)
@@ -99,7 +99,7 @@ export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
       {
         id: "silver-usd",
         type: "SILVER_USD",
-        fetchedPrice: silverPriceUSDPerGram,
+        fetchedPrice: silverPriceUSDPerOunce, // Store per ounce for consistency with API
         currency: "USD",
         isPublished: priceOverrides.get("silver-usd")?.isPublished ?? true,
         lastUpdated: new Date(),
@@ -160,6 +160,50 @@ export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
       data: prices,
       timestamp: Date.now(),
     };
+
+    // Record prices to history (non-blocking)
+    // Only record key prices: GOLD_USD, SILVER_USD, MYR_USD
+    try {
+      const { recordPriceHistory } = await import("@/lib/db/price-history");
+      const goldUSDPrice = prices.find(p => p.type === "GOLD_USD");
+      const silverUSDPrice = prices.find(p => p.type === "SILVER_USD");
+      const myrUSDPrice = prices.find(p => p.type === "MYR_USD");
+      
+      if (goldUSDPrice) {
+        let priceValue = goldUSDPrice.overridePrice ?? goldUSDPrice.fetchedPrice;
+        // If override is in per gram, convert to per ounce (but fetchedPrice should already be per ounce)
+        // For safety, check if price seems too low (likely per gram) and convert
+        if (priceValue < 100) {
+          // Likely per gram, convert to per ounce
+          priceValue = priceValue * 31.1035;
+        }
+        recordPriceHistory("GOLD_USD", priceValue, "USD").catch(err => 
+          console.error("Failed to record gold price history:", err)
+        );
+      }
+      
+      if (silverUSDPrice) {
+        let priceValue = silverUSDPrice.overridePrice ?? silverUSDPrice.fetchedPrice;
+        // If override is in per gram, convert to per ounce
+        if (priceValue < 10) {
+          // Likely per gram, convert to per ounce
+          priceValue = priceValue * 31.1035;
+        }
+        recordPriceHistory("SILVER_USD", priceValue, "USD").catch(err => 
+          console.error("Failed to record silver price history:", err)
+        );
+      }
+      
+      if (myrUSDPrice) {
+        const priceValue = myrUSDPrice.overridePrice ?? myrUSDPrice.fetchedPrice;
+        recordPriceHistory("MYR_USD", priceValue, "USD").catch(err => 
+          console.error("Failed to record MYR/USD history:", err)
+        );
+      }
+    } catch (error) {
+      // Don't fail price fetching if history recording fails
+      console.error("Error recording price history:", error);
+    }
 
     return prices;
   } catch (error) {
