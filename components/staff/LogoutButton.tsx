@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { logger } from "@/lib/logger";
 
 export function LogoutButton() {
   const router = useRouter();
@@ -14,11 +15,11 @@ export function LogoutButton() {
         method: "POST",
       });
       // Use window.location for a full page reload to ensure cookie is cleared
-      window.location.href = "/staff/login";
+      window.location.href = "/login";
     } catch (error) {
-      console.error("Logout error:", error);
+      logger.error("Logout error", error);
       // Even if API call fails, redirect to login
-      window.location.href = "/staff/login";
+      window.location.href = "/login";
     }
   };
 

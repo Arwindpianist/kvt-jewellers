@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   // Only protect /staff routes
   if (request.nextUrl.pathname.startsWith("/staff")) {
-    // Skip login page
+    // Skip login page (it redirects to /login)
     if (request.nextUrl.pathname === "/staff/login") {
       return NextResponse.next();
     }
@@ -21,8 +21,8 @@ export function middleware(request: NextRequest) {
     );
 
     if (!hasAuthCookie) {
-      // Redirect to login
-      const loginUrl = new URL("/staff/login", request.url);
+      // Redirect to unified login page
+      const loginUrl = new URL("/login", request.url);
       loginUrl.searchParams.set("from", request.nextUrl.pathname);
       return NextResponse.redirect(loginUrl);
     }

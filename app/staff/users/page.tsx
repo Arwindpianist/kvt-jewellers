@@ -10,7 +10,7 @@ export default async function StaffUsersPage() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/staff/login");
+    redirect("/login?from=/staff/dashboard");
   }
 
   // Check if user is admin

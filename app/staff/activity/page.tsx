@@ -11,7 +11,7 @@ export default async function ActivityLogPage() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/staff/login");
+    redirect("/login?from=/staff/dashboard");
   }
 
   return (

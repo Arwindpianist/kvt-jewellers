@@ -54,10 +54,24 @@ function LoginForm() {
         return;
       }
 
-      // Redirect to account page or the page they were trying to access
-      const from = searchParams.get("from") || "/account";
-      router.push(from);
-      router.refresh();
+      // Check if user is staff/admin and redirect accordingly
+      const userRole = data.user?.role;
+      const isStaff = userRole === 'admin' || userRole === 'staff';
+      
+      // Determine redirect destination
+      let redirectTo: string;
+      if (isStaff) {
+        // Staff users always go to staff dashboard
+        redirectTo = data.redirectTo || "/staff/dashboard";
+      } else {
+        // Regular customers go to account page or the page they were trying to access
+        redirectTo = searchParams.get("from") || "/account";
+      }
+      
+      // Use window.location for a full page reload to ensure session is properly set
+      setTimeout(() => {
+        window.location.href = redirectTo;
+      }, 100);
     } catch (err) {
       setError("An error occurred. Please try again.");
       setLoading(false);

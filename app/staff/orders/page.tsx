@@ -12,7 +12,7 @@ export default async function StaffOrdersPage() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/staff/login");
+    redirect("/login?from=/staff/dashboard");
   }
 
   // Get all orders (staff can view all)

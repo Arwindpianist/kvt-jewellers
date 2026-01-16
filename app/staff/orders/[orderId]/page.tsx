@@ -18,7 +18,7 @@ export default async function StaffOrderDetailPage({ params }: OrderPageProps) {
   const { orderId } = await params;
 
   if (!session) {
-    redirect("/staff/login");
+    redirect("/login?from=/staff/dashboard");
   }
 
   // Get order (staff can view any order)

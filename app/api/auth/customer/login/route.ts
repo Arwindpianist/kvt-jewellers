@@ -33,6 +33,10 @@ export async function POST(request: NextRequest) {
         name: user.name,
         role: user.role,
       },
+      // Include redirect hint for staff users
+      redirectTo: user.role === 'admin' || user.role === 'staff' 
+        ? '/staff/dashboard' 
+        : undefined,
     });
   } catch (error) {
     console.error("Error in customer login:", error);

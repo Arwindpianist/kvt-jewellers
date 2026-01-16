@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { User, Menu, LayoutDashboard, DollarSign, Package, BarChart3, Activity, Settings, LogOut, ShoppingBag, Users } from "lucide-react";
+import { logger } from "@/lib/logger";
 
 interface StaffHeaderProps {
   userName: string;
@@ -245,10 +246,10 @@ export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) 
                             await fetch("/api/auth/logout", {
                               method: "POST",
                             });
-                            window.location.href = "/staff/login";
+                            window.location.href = "/login";
                           } catch (error) {
-                            console.error("Logout error:", error);
-                            window.location.href = "/staff/login";
+                            logger.error("Logout error", error);
+                            window.location.href = "/login";
                           }
                         }}
                         className="w-full flex items-center justify-center gap-2 border-white/30 text-white hover:bg-white/20 hover:text-white bg-white/5"

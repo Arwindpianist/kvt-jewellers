@@ -15,7 +15,7 @@ export default async function StaffDashboardPage() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/staff/login");
+    redirect("/login?from=/staff/dashboard");
   }
 
   const prices = await fetchGoldPricesFromAPI();
