@@ -133,6 +133,14 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
     };
   }, [livePrices.length]);
 
+  const convertPrice = (priceUSD: number, targetCurrency: string): number => {
+    if (!exchangeRates) return priceUSD;
+    if (targetCurrency === "USD") return priceUSD;
+    if (targetCurrency === "MYR") return priceUSD * exchangeRates.MYR;
+    if (targetCurrency === "INR") return priceUSD * exchangeRates.INR;
+    return priceUSD;
+  };
+
   const formatPrice = (price: number, currency: string, decimals: number = 2, isExchangeRate: boolean = false) => {
     // For exchange rates (MYR/USD, MYR/INR), show without currency symbol but with commas
     if (isExchangeRate) {
@@ -141,17 +149,17 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
         maximumFractionDigits: decimals,
       }).format(price);
     }
-    // For regular USD prices (GOLD, SILVER)
-    if (currency === "USD") {
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: decimals,
-        maximumFractionDigits: decimals,
-      }).format(price);
-    }
-    // For other currencies, format with commas
-    return new Intl.NumberFormat("en-US", {
+    // For regular currency prices
+    const currencyMap: Record<string, { code: string; locale: string }> = {
+      USD: { code: "USD", locale: "en-US" },
+      MYR: { code: "MYR", locale: "en-MY" },
+      INR: { code: "INR", locale: "en-IN" },
+    };
+    
+    const config = currencyMap[currency] || currencyMap.USD;
+    return new Intl.NumberFormat(config.locale, {
+      style: "currency",
+      currency: config.code,
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     }).format(price);
@@ -262,6 +270,22 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
               const decimals = price.type === "MYR_USD" || price.type === "MYR_INR" ? 4 : 2;
               const isExchangeRate = price.type === "MYR_USD" || price.type === "MYR_INR";
 
+              // Convert prices based on selected currency
+              let displayBid = price.bid;
+              let displayAsk = price.ask;
+              let displayHigh = price.high;
+              let displayLow = price.low;
+              let displayCurrency = price.currency;
+
+              if (!isExchangeRate && exchangeRates) {
+                // For GOLD and SILVER, convert from USD to selected currency
+                displayBid = convertPrice(price.bid, selectedCurrency);
+                displayAsk = convertPrice(price.ask, selectedCurrency);
+                displayHigh = convertPrice(price.high, selectedCurrency);
+                displayLow = convertPrice(price.low, selectedCurrency);
+                displayCurrency = selectedCurrency;
+              }
+
               return (
                 <motion.tr
                   key={price.id}
@@ -290,11 +314,12 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                         )}
                       </AnimatePresence>
                       <RollingNumber
-                        value={price.bid}
-                        prevValue={price.bidPrev}
-                        currency={price.currency}
+                        value={displayBid}
+                        prevValue={convertPrice(price.bidPrev, displayCurrency)}
+                        currency={displayCurrency}
                         decimals={decimals}
                         change={price.bidChange}
+                        isExchangeRate={isExchangeRate}
                       />
                     </div>
                   </TableCell>
@@ -314,19 +339,20 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                         )}
                       </AnimatePresence>
                       <RollingNumber
-                        value={price.ask}
-                        prevValue={price.askPrev}
-                        currency={price.currency}
+                        value={displayAsk}
+                        prevValue={convertPrice(price.askPrev, displayCurrency)}
+                        currency={displayCurrency}
                         decimals={decimals}
                         change={price.askChange}
+                        isExchangeRate={isExchangeRate}
                       />
                     </div>
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm text-muted-foreground">
-                    {formatPrice(price.high, price.currency, decimals, isExchangeRate)}
+                    {formatPrice(displayHigh, displayCurrency, decimals, isExchangeRate)}
                   </TableCell>
                   <TableCell className="text-right font-mono text-sm text-muted-foreground">
-                    {formatPrice(price.low, price.currency, decimals, isExchangeRate)}
+                    {formatPrice(displayLow, displayCurrency, decimals, isExchangeRate)}
                   </TableCell>
                 </motion.tr>
               );
@@ -341,6 +367,18 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
           {livePrices.map((price, index) => {
             const decimals = price.type === "MYR_USD" || price.type === "MYR_INR" ? 4 : 2;
             const isExchangeRate = price.type === "MYR_USD" || price.type === "MYR_INR";
+
+            // Convert prices based on selected currency
+            let displayBid = price.bid;
+            let displayAsk = price.ask;
+            let displayCurrency = price.currency;
+
+            if (!isExchangeRate && exchangeRates) {
+              // For GOLD and SILVER, convert from USD to selected currency
+              displayBid = convertPrice(price.bid, selectedCurrency);
+              displayAsk = convertPrice(price.ask, selectedCurrency);
+              displayCurrency = selectedCurrency;
+            }
 
             return (
               <motion.div
@@ -376,9 +414,9 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                           )}
                         </AnimatePresence>
                         <RollingNumber
-                          value={price.bid}
-                          prevValue={price.bidPrev}
-                          currency={price.currency}
+                          value={displayBid}
+                          prevValue={convertPrice(price.bidPrev, displayCurrency)}
+                          currency={displayCurrency}
                           decimals={decimals}
                           change={price.bidChange}
                           isExchangeRate={isExchangeRate}
@@ -403,9 +441,9 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                           )}
                         </AnimatePresence>
                         <RollingNumber
-                          value={price.ask}
-                          prevValue={price.askPrev}
-                          currency={price.currency}
+                          value={displayAsk}
+                          prevValue={convertPrice(price.askPrev, displayCurrency)}
+                          currency={displayCurrency}
                           decimals={decimals}
                           change={price.askChange}
                           isExchangeRate={isExchangeRate}
