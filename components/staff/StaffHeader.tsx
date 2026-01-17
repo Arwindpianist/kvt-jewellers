@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Drawer } from "vaul";
 import { LogoutButton } from "./LogoutButton";
@@ -34,6 +34,7 @@ const adminNavItems = [
 
 export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const triggerButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -41,6 +42,11 @@ export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) 
   const allNavItems = userRole === 'admin' 
     ? [...navItems, ...adminNavItems]
     : navItems;
+
+  // Close drawer when pathname changes (navigation occurred)
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
 
   // Force reset button state when drawer closes
   useEffect(() => {
@@ -55,6 +61,12 @@ export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) 
       }, 0);
     }
   }, [drawerOpen]);
+
+  // Handle navigation and close drawer
+  const handleNavigation = (href: string) => {
+    setDrawerOpen(false);
+    router.push(href);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-brand-600 text-white shadow-lg">
@@ -160,14 +172,17 @@ export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) 
 
                   {/* Drawer Header */}
                   <div className="px-6 pb-4 border-b border-white/20">
-                    <div className="flex items-center space-x-2 mb-2">
-                      <span className="font-serif text-2xl font-bold text-white">
+                    <button
+                      onClick={() => handleNavigation("/staff/dashboard")}
+                      className="flex w-full items-center space-x-2 mb-2 rounded-lg px-2 py-2 -mx-2 transition-colors hover:bg-white/10 active:bg-white/20 text-left group"
+                    >
+                      <span className="font-serif text-2xl font-bold text-white group-hover:scale-105 transition-transform">
                         KVT
                       </span>
                       <Badge variant="outline" className="border-white/30 text-white/90 bg-white/10">
                         Staff Portal
                       </Badge>
-                    </div>
+                    </button>
                     <Drawer.Title className="text-lg font-serif text-white text-left">
                       Navigation
                     </Drawer.Title>
@@ -190,27 +205,25 @@ export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) 
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.05 }}
                           >
-                            <Drawer.Close asChild>
-                              <Link
-                                href={item.href}
-                                className={`flex items-center gap-3 rounded-lg px-4 py-4 text-base font-medium transition-colors ${
-                                  isActive
-                                    ? "bg-white/20 text-white shadow-lg"
-                                    : "text-white hover:bg-brand-700 active:bg-brand-800"
-                                }`}
-                              >
-                                <Icon className={`h-5 w-5 ${isActive ? "text-white" : "text-white/80"}`} />
-                                <span>{item.label}</span>
-                                {isActive && (
-                                  <motion.div
-                                    className="ml-auto h-2 w-2 rounded-full bg-white"
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    transition={{ delay: 0.1 }}
-                                  />
-                                )}
-                              </Link>
-                            </Drawer.Close>
+                            <button
+                              onClick={() => handleNavigation(item.href)}
+                              className={`flex w-full items-center gap-3 rounded-lg px-4 py-4 text-base font-medium transition-colors text-left cursor-pointer ${
+                                isActive
+                                  ? "bg-white/20 text-white shadow-lg"
+                                  : "text-white hover:bg-brand-700 active:bg-brand-800"
+                              }`}
+                            >
+                              <Icon className={`h-5 w-5 flex-shrink-0 ${isActive ? "text-white" : "text-white/80"}`} />
+                              <span className="flex-1">{item.label}</span>
+                              {isActive && (
+                                <motion.div
+                                  className="ml-auto h-2 w-2 rounded-full bg-white flex-shrink-0"
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ delay: 0.1 }}
+                                />
+                              )}
+                            </button>
                           </motion.div>
                         );
                       })}
