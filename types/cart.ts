@@ -4,6 +4,14 @@ export interface CartItem {
   price: number;
   image: string;
   quantity: number;
+  variantId?: string;
+  variantOptions?: {
+    size?: string;
+    finish?: string;
+    metalType?: string;
+    designStyle?: string;
+    stoneType?: string;
+  };
 }
 
 export interface Cart {

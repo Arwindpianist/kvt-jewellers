@@ -1,6 +1,11 @@
+"use client";
+
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export function Footer() {
+  const t = useTranslations();
+  
   return (
     <footer className="border-t bg-muted/50">
       <div className="container mx-auto px-4 py-12">
@@ -11,15 +16,14 @@ export function Footer() {
               KVT Jewellers
             </h3>
             <p className="text-sm text-muted-foreground">
-              Established in 2018, KVT Jewellers specializes in retail and
-              wholesale of gold jewelry and bullion.
+              {t("footer.companyDescription")}
             </p>
           </div>
 
           {/* Quick Links */}
           <div>
             <h3 className="mb-4 font-serif text-lg font-semibold">
-              Quick Links
+              {t("footer.quickLinks")}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
@@ -27,7 +31,7 @@ export function Footer() {
                   href="/about"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  About Us
+                  {t("footer.aboutUs")}
                 </Link>
               </li>
               <li>
@@ -35,7 +39,7 @@ export function Footer() {
                   href="/live-rate"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Live Rates
+                  {t("footer.liveRates")}
                 </Link>
               </li>
               <li>
@@ -43,7 +47,7 @@ export function Footer() {
                   href="/products"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Products
+                  {t("footer.products")}
                 </Link>
               </li>
               <li>
@@ -51,7 +55,7 @@ export function Footer() {
                   href="/contact"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Contact
+                  {t("footer.contact")}
                 </Link>
               </li>
             </ul>
@@ -59,14 +63,14 @@ export function Footer() {
 
           {/* Legal */}
           <div>
-            <h3 className="mb-4 font-serif text-lg font-semibold">Legal</h3>
+            <h3 className="mb-4 font-serif text-lg font-semibold">{t("footer.legal")}</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/disclaimer"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Disclaimer
+                  {t("footer.disclaimer")}
                 </Link>
               </li>
               <li>
@@ -74,7 +78,7 @@ export function Footer() {
                   href="/terms"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Terms & Conditions
+                  {t("footer.termsConditions")}
                 </Link>
               </li>
               <li>
@@ -82,7 +86,7 @@ export function Footer() {
                   href="/privacy"
                   className="text-muted-foreground hover:text-foreground"
                 >
-                  Privacy Policy
+                  {t("footer.privacyPolicy")}
                 </Link>
               </li>
             </ul>
@@ -90,7 +94,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} KVT Jewellers. All rights reserved.</p>
+          <p>{t("footer.copyright", { year: new Date().getFullYear() })}</p>
         </div>
       </div>
     </footer>

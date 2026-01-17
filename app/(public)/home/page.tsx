@@ -1,10 +1,17 @@
 import { HomePageContent } from "@/components/public/HomePageContent";
 import { fetchGoldPricesFromAPI, getPublishedGoldPrices } from "@/lib/gold-prices";
+import { getMessages } from "@/i18n/request";
 
-export const metadata = {
-  title: "KVT Jewellers | Premium Gold and Silver Trading",
-  description: "Premium gold and silver jewelry, coins, and bullion in Malaysia",
-};
+// MEMORY LEAK FIX: Use cached message loader instead of direct import
+export async function generateMetadata() {
+  const messages = await getMessages();
+  const meta = messages.meta?.home || {};
+  
+  return {
+    title: meta.title || "KVT Jewellers | Premium Gold and Silver Trading",
+    description: meta.description || "Premium gold and silver jewelry, coins, and bullion in Malaysia",
+  };
+}
 
 export default async function HomePage() {
   const allPrices = await fetchGoldPricesFromAPI();

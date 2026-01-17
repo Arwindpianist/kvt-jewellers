@@ -38,11 +38,11 @@ export function CartButton() {
   return (
     <Button
       variant="ghost"
-      size="sm"
-      className="relative text-white hover:text-white/90"
+      size="icon"
+      className="relative text-white hover:text-white/90 hover:bg-brand-700 h-8 w-8"
       onClick={handleClick}
     >
-      <ShoppingCart className="h-5 w-5" />
+      <ShoppingCart className="h-4 w-4" />
       {itemCount > 0 && (
         <Badge
           variant="destructive"

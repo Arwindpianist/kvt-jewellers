@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 /**
  * ContentProtection - Hardens customer-facing pages against copying and scripting
@@ -18,6 +18,9 @@ import { useEffect } from "react";
  * Determined users can still access content via browser dev tools or disabling JavaScript.
  */
 export function ContentProtection() {
+  // MEMORY LEAK FIX: Store interval ID in ref at component level to ensure proper cleanup
+  const devToolsIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  
   useEffect(() => {
     // Disable content protection in development mode to allow dev tools
     if (process.env.NODE_ENV === "development") {
@@ -124,7 +127,12 @@ export function ContentProtection() {
       let devToolsOpen = false;
       const threshold = 160;
       
-      setInterval(() => {
+      // MEMORY LEAK FIX: Clear any existing interval before creating new one
+      if (devToolsIntervalRef.current) {
+        clearInterval(devToolsIntervalRef.current);
+      }
+      
+      devToolsIntervalRef.current = setInterval(() => {
         if (
           window.outerHeight - window.innerHeight > threshold ||
           window.outerWidth - window.innerWidth > threshold
@@ -235,6 +243,12 @@ export function ContentProtection() {
       document.removeEventListener("cut", handleCut, options);
       document.removeEventListener("paste", handlePaste, options);
       document.removeEventListener("mousedown", handleMouseDown, options);
+      
+      // MEMORY LEAK FIX: Clear dev tools detection interval using ref
+      if (devToolsIntervalRef.current) {
+        clearInterval(devToolsIntervalRef.current);
+        devToolsIntervalRef.current = null;
+      }
       
       const styleElement = document.getElementById("content-protection-styles");
       if (styleElement) {

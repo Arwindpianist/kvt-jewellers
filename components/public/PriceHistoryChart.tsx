@@ -43,7 +43,7 @@ const getPriceTypeLabel = (type: string, currency: "USD" | "MYR" | "INR"): { lab
   } else if (type === "MYR_USD") {
     return { label: "MYR/USD", color: "#10B981" };
   } else if (type === "MYR_INR") {
-    return { label: "MYR/INR", color: "#3B82F6" };
+    return { label: "INR/MYR", color: "#3B82F6" };
   }
   return { label: type, color: "#B8860B" };
 };

@@ -48,7 +48,11 @@ function calculateTotal(items: CartItem[]): number {
  */
 export function addToCart(item: Omit<CartItem, "quantity">, quantity: number = 1): Cart {
   const cart = getCart();
-  const existingIndex = cart.items.findIndex((i) => i.productId === item.productId);
+  // For products with variants, treat items with different variants as separate items
+  const existingIndex = cart.items.findIndex((i) => 
+    i.productId === item.productId && 
+    i.variantId === item.variantId
+  );
 
   if (existingIndex >= 0) {
     // Update quantity
@@ -66,9 +70,12 @@ export function addToCart(item: Omit<CartItem, "quantity">, quantity: number = 1
 /**
  * Update item quantity in cart
  */
-export function updateCartItemQuantity(productId: string, quantity: number): Cart {
+export function updateCartItemQuantity(productId: string, quantity: number, variantId?: string): Cart {
   const cart = getCart();
-  const itemIndex = cart.items.findIndex((i) => i.productId === productId);
+  const itemIndex = cart.items.findIndex((i) => 
+    i.productId === productId && 
+    i.variantId === variantId
+  );
 
   if (itemIndex >= 0) {
     if (quantity <= 0) {
@@ -87,9 +94,11 @@ export function updateCartItemQuantity(productId: string, quantity: number): Car
 /**
  * Remove item from cart
  */
-export function removeFromCart(productId: string): Cart {
+export function removeFromCart(productId: string, variantId?: string): Cart {
   const cart = getCart();
-  cart.items = cart.items.filter((i) => i.productId !== productId);
+  cart.items = cart.items.filter((i) => 
+    i.productId !== productId || i.variantId !== variantId
+  );
   cart.total = calculateTotal(cart.items);
   saveCart(cart);
   return cart;

@@ -64,7 +64,10 @@ function shouldMakeAPICall(): boolean {
   
   // Check daily call limit
   if (dailyCallCount >= MAX_DAILY_CALLS) {
-    console.log(`Daily API call limit reached (${MAX_DAILY_CALLS}). Using cached/manipulated prices.`);
+    // Only log in development to reduce memory usage
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Daily API call limit reached (${MAX_DAILY_CALLS}). Using cached/manipulated prices.`);
+    }
     return false;
   }
   
@@ -150,7 +153,9 @@ export async function fetchGoldPriceUSD(): Promise<number> {
   try {
     // Check if we should make a real API call
     if (shouldMakeAPICall()) {
-      console.log(`Making real API call to metalpriceapi.com (${dailyCallCount + 1}/${MAX_DAILY_CALLS} today)`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Making real API call to metalpriceapi.com (${dailyCallCount + 1}/${MAX_DAILY_CALLS} today)`);
+      }
       
       const { goldUSD, exchangeRates } = await fetchMetalPricesFromAPI();
       
@@ -170,19 +175,29 @@ export async function fetchGoldPriceUSD(): Promise<number> {
     // Use cached price with artificial manipulation
     if (apiCache.goldPriceUSD !== null) {
       const manipulatedPrice = manipulatePrice(apiCache.goldPriceUSD, 1.5);
-      console.log(`Using cached gold price with artificial manipulation: $${manipulatedPrice.toFixed(2)}/oz`);
+      // Only log in development to reduce memory usage
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Using cached gold price with artificial manipulation: $${manipulatedPrice.toFixed(2)}/oz`);
+      }
       return manipulatedPrice;
     }
     
     // Fallback if no cache exists
-    console.warn("No cached price available, using fallback");
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("No cached price available, using fallback");
+    }
     return 2200; // Approximate fallback
   } catch (error) {
-    console.error("Error fetching gold price in USD:", error);
+    // Only log errors in development, but keep error handling
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error fetching gold price in USD:", error);
+    }
     
     // Try to use cached price even on error
     if (apiCache.goldPriceUSD !== null) {
-      console.log("Using cached price due to API error");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Using cached price due to API error");
+      }
       return manipulatePrice(apiCache.goldPriceUSD, 1.5);
     }
     
@@ -199,7 +214,9 @@ export async function fetchSilverPriceUSD(): Promise<number> {
   try {
     // Check if we should make a real API call
     if (shouldMakeAPICall() && apiCache.silverPriceUSD === null) {
-      console.log(`Fetching silver price from API (${dailyCallCount + 1}/${MAX_DAILY_CALLS} today)`);
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Fetching silver price from API (${dailyCallCount + 1}/${MAX_DAILY_CALLS} today)`);
+      }
       
       const { silverUSD, exchangeRates } = await fetchMetalPricesFromAPI();
       
@@ -217,19 +234,29 @@ export async function fetchSilverPriceUSD(): Promise<number> {
     // Use cached price with artificial manipulation
     if (apiCache.silverPriceUSD !== null) {
       const manipulatedPrice = manipulatePrice(apiCache.silverPriceUSD, 1.5);
-      console.log(`Using cached silver price with artificial manipulation: $${manipulatedPrice.toFixed(2)}/oz`);
+      // Only log in development to reduce memory usage
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Using cached silver price with artificial manipulation: $${manipulatedPrice.toFixed(2)}/oz`);
+      }
       return manipulatedPrice;
     }
     
     // Fallback if no cache exists
-    console.warn("No cached silver price available, using fallback");
+    if (process.env.NODE_ENV === 'development') {
+      console.warn("No cached silver price available, using fallback");
+    }
     return 25; // Approximate fallback
   } catch (error) {
-    console.error("Error fetching silver price in USD:", error);
+    // Only log errors in development, but keep error handling
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Error fetching silver price in USD:", error);
+    }
     
     // Try to use cached price even on error
     if (apiCache.silverPriceUSD !== null) {
-      console.log("Using cached silver price due to API error");
+      if (process.env.NODE_ENV === 'development') {
+        console.log("Using cached silver price due to API error");
+      }
       return manipulatePrice(apiCache.silverPriceUSD, 1.5);
     }
     
@@ -253,7 +280,10 @@ async function getExchangeRates(): Promise<{ MYR: number; INR: number }> {
       apiCache.exchangeRates = exchangeRates;
       return exchangeRates;
     } catch (error) {
-      console.error("Error fetching exchange rates:", error);
+      // Only log errors in development
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error fetching exchange rates:", error);
+      }
     }
   }
   

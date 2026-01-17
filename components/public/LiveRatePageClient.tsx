@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AnimatedSection, FadeIn } from "@/components/ui/animated-section";
 import { TrendingUp } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { GoldPrice } from "@/types/gold-prices";
 
 interface LiveRatePageClientProps {
@@ -20,6 +21,7 @@ interface LiveRatePageClientProps {
 }
 
 export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRatePageClientProps) {
+  const t = useTranslations("liveRate");
   const { currency, setCurrency } = useCurrency();
   const [publishedPrices, setPublishedPrices] = useState<GoldPrice[]>(initialPrices || []);
   const [loading, setLoading] = useState(!initialPrices || initialPrices.length === 0);
@@ -60,13 +62,13 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
           <div className="text-center mb-4">
             <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
               <TrendingUp className="mr-2 h-3 w-3" />
-              Real-Time Prices
+              {t("realTimePrices")}
             </Badge>
             <h1 className="mb-4 font-serif text-4xl font-bold md:text-6xl">
-              Live Gold & Silver Rates
+              {t("liveGoldSilverRates")}
             </h1>
             <p className="mx-auto max-w-2xl text-muted-foreground mb-6">
-              Current market prices updated in real-time
+              {t("currentMarketPrices")}
             </p>
           </div>
           
@@ -80,7 +82,7 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
         </div>
       </FadeIn>
 
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid gap-6 lg:grid-cols-3 lg:items-start">
         {/* Main Content - Two Tables */}
         <div className="lg:col-span-2 space-y-6">
           {/* Consolidated Mobile Table - Hidden on Desktop */}
@@ -90,12 +92,12 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <TrendingUp className="h-4 w-4 text-brand-600" />
-                    Live Rates
+                    {t("liveRates")}
                   </CardTitle>
                   <div className="flex items-center gap-1.5">
                     <div className="flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5">
                       <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-green-600"></div>
-                      <span className="text-[10px] font-medium text-green-700">Live</span>
+                      <span className="text-[10px] font-medium text-green-700">{t("live")}</span>
                     </div>
                   </div>
                 </div>
@@ -113,14 +115,14 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-brand-600" />
-                    Live Rates
+                    {t("liveRates")}
                   </CardTitle>
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-3 py-1">
                       <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
-                      <span className="text-xs font-medium text-green-700">Live</span>
+                      <span className="text-xs font-medium text-green-700">{t("realTimePrices")}</span>
                     </div>
-                    <span className="text-xs text-muted-foreground">Updates every 2s</span>
+                    <span className="text-xs text-muted-foreground">{t("updatesEvery2s")}</span>
                   </div>
                 </div>
               </CardHeader>
@@ -136,7 +138,7 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
               <CardHeader className="bg-brand-50">
                 <CardTitle className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-brand-600" />
-                  Market Overview
+                  {t("marketOverview")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6 pt-6">
@@ -151,7 +153,7 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
           <AnimatedSection delay={0.3}>
             <Card className="bg-card-level-2 shadow-card-elevated">
               <CardHeader className="bg-brand-50">
-                <CardTitle>Product Rates</CardTitle>
+                <CardTitle>{t("productRates")}</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <ProductRatesTable />
@@ -160,8 +162,8 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
           </AnimatedSection>
         </div>
 
-        {/* Sidebar */}
-        <AnimatedSection delay={0.3} className="order-1 lg:order-2">
+        {/* Sidebar - pt-6 matches main's space-y-6 offset so Online Trading and Live Rates tops align */}
+        <AnimatedSection delay={0.3} className="order-1 lg:order-2 lg:pt-6">
           <LiveRateSidebar />
         </AnimatedSection>
       </div>
@@ -170,11 +172,10 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
         <div className="mt-8 rounded-lg border border-brand-200 bg-brand-50/50 p-6">
           <div>
             <p className="text-sm font-semibold text-brand-700 mb-1">
-              Important Notice
+              {t("importantNotice")}
             </p>
             <p className="text-sm text-muted-foreground">
-              Prices are updated regularly and may vary. Please contact us for the most 
-              current pricing and availability. All prices are subject to market conditions.
+              {t("importantNoticeDesc")}
             </p>
           </div>
         </div>
@@ -184,7 +185,7 @@ export function LiveRatePageClient({ publishedPrices: initialPrices }: LiveRateP
       <AnimatedSection delay={0.5}>
         <div className="mt-8 rounded-lg border border-brand-200/50 dark:border-brand-700/20 bg-card-level-1 shadow-card p-6">
           <p className="text-xs leading-relaxed text-muted-foreground text-center">
-            KVT Jewellers Liverates provides gold & silver prices obtained from various sources believed to be reliable, but we do not guarantee their accuracy. Our gold & silver price data are provided without warranty or claim of reliability. It is accepted by the site visitor on the condition that errors or omissions shall not be made the basis for any claim, demand or cause for action.
+            {t("disclaimer")}
           </p>
         </div>
       </AnimatedSection>

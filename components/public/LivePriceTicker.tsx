@@ -32,8 +32,8 @@ interface LivePriceData {
 const priceTypeLabels: Record<string, { label: string; flag: string }> = {
   GOLD_USD: { label: "GOLD($)", flag: "🇺🇸" },
   SILVER_USD: { label: "SILVER($)", flag: "🇺🇸" },
-  MYR_USD: { label: "MYR / USD", flag: "🇲🇾" },
-  MYR_INR: { label: "MYR / INR", flag: "🇲🇾🇮🇳" },
+  MYR_USD: { label: "MYR/USD", flag: "🇲🇾" },
+  MYR_INR: { label: "INR/MYR", flag: "🇲🇾🇮🇳" },
 };
 
 export function LivePriceTicker({ prices }: LivePriceTickerProps) {
@@ -44,7 +44,14 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
 
   // Fetch exchange rates for currency conversion
   useEffect(() => {
-    fetchExchangeRates().then(setExchangeRates).catch(console.error);
+    fetchExchangeRates()
+      .then(setExchangeRates)
+      .catch((error) => {
+        // Only log in development to reduce memory usage
+        if (process.env.NODE_ENV === 'development') {
+          console.error("Error fetching exchange rates:", error);
+        }
+      });
   }, []);
 
   // Initialize prices
@@ -82,30 +89,49 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
   }, [prices]);
 
   // Update prices every 2 seconds
+  // MEMORY LEAK FIX: Use stable dependency (prices prop) instead of livePrices.length
+  // This prevents interval from being recreated unnecessarily
+  const hasPrices = prices.length > 0;
   useEffect(() => {
-    if (livePrices.length === 0) return;
+    if (!hasPrices) return;
 
     intervalRef.current = setInterval(() => {
       setLivePrices((prev) =>
         prev.map((price) => {
-          // Calculate small fixed change based on currency
+          // Calculate small fixed change based on price type
           let changeAmount: number;
-          if (price.currency === "USD") {
-            changeAmount = 0.10 + Math.random() * 0.90; // $0.10 to $1.00
-          } else if (price.currency === "MYR") {
-            changeAmount = 0.10 + Math.random() * 0.90; // RM 0.10 to RM 1.00
-          } else if (price.currency === "INR") {
-            changeAmount = 1 + Math.random() * 9; // ₹1 to ₹10
+          const isExchangeRate = price.type === "MYR_USD" || price.type === "MYR_INR";
+          
+          if (isExchangeRate) {
+            // Exchange rates change by very small amounts
+            if (price.type === "MYR_USD") {
+              // MYR/USD is around 4.7, so changes should be 0.0001 to 0.01
+              changeAmount = 0.0001 + Math.random() * 0.0099; // 0.0001 to 0.01
+            } else if (price.type === "MYR_INR") {
+              // MYR/INR is around 17.6, so changes should be 0.001 to 0.1
+              changeAmount = 0.001 + Math.random() * 0.099; // 0.001 to 0.1
+            } else {
+              changeAmount = 0.0001 + Math.random() * 0.0099;
+            }
           } else {
-            changeAmount = 0.10 + Math.random() * 0.90; // Default: 0.10 to 1.00
+            // Regular prices (GOLD, SILVER)
+            if (price.currency === "USD") {
+              changeAmount = 0.10 + Math.random() * 0.90; // $0.10 to $1.00
+            } else if (price.currency === "MYR") {
+              changeAmount = 0.10 + Math.random() * 0.90; // RM 0.10 to RM 1.00
+            } else if (price.currency === "INR") {
+              changeAmount = 1 + Math.random() * 9; // ₹1 to ₹10
+            } else {
+              changeAmount = 0.10 + Math.random() * 0.90; // Default: 0.10 to 1.00
+            }
           }
           
           const direction = Math.random() > 0.5 ? 1 : -1; // Up or down
           const bidChange = direction === 1 ? "up" : "down";
           const askChange = direction === 1 ? "up" : "down";
 
-          const newBid = price.bid + (direction * changeAmount);
-          const newAsk = price.ask + (direction * changeAmount);
+          const newBid = Math.max(0.0001, price.bid + (direction * changeAmount)); // Prevent negative
+          const newAsk = Math.max(0.0001, price.ask + (direction * changeAmount)); // Prevent negative
 
           // Update high/low if needed
           const newHigh = Math.max(price.high, newBid, newAsk);
@@ -129,9 +155,10 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [livePrices.length]);
+  }, [hasPrices]);
 
   const convertPrice = (priceUSD: number, targetCurrency: string): number => {
     if (!exchangeRates) return priceUSD;
@@ -207,6 +234,8 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
     isExchangeRate?: boolean;
   }) => {
     const [displayValue, setDisplayValue] = useState(prevValue);
+    // MEMORY LEAK FIX: Track animation frame ID to ensure cleanup on unmount
+    const rafRef = useRef<number | null>(null);
 
     useEffect(() => {
       const duration = 500; // Animation duration in ms
@@ -227,13 +256,22 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
         setDisplayValue(currentValue);
 
         if (progress < 1) {
-          requestAnimationFrame(animate);
+          rafRef.current = requestAnimationFrame(animate);
         } else {
           setDisplayValue(endValue);
+          rafRef.current = null;
         }
       };
 
-      requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
+      
+      // MEMORY LEAK FIX: Cleanup function cancels any pending animation frame
+      return () => {
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      };
     }, [value, prevValue]);
 
     return (
@@ -315,7 +353,7 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                       </AnimatePresence>
                       <RollingNumber
                         value={displayBid}
-                        prevValue={convertPrice(price.bidPrev, displayCurrency)}
+                        prevValue={isExchangeRate ? price.bidPrev : convertPrice(price.bidPrev, displayCurrency)}
                         currency={displayCurrency}
                         decimals={decimals}
                         change={price.bidChange}
@@ -340,7 +378,7 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                       </AnimatePresence>
                       <RollingNumber
                         value={displayAsk}
-                        prevValue={convertPrice(price.askPrev, displayCurrency)}
+                        prevValue={isExchangeRate ? price.askPrev : convertPrice(price.askPrev, displayCurrency)}
                         currency={displayCurrency}
                         decimals={decimals}
                         change={price.askChange}
@@ -415,7 +453,7 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                         </AnimatePresence>
                         <RollingNumber
                           value={displayBid}
-                          prevValue={convertPrice(price.bidPrev, displayCurrency)}
+                          prevValue={isExchangeRate ? price.bidPrev : convertPrice(price.bidPrev, displayCurrency)}
                           currency={displayCurrency}
                           decimals={decimals}
                           change={price.bidChange}
@@ -442,7 +480,7 @@ export function LivePriceTicker({ prices }: LivePriceTickerProps) {
                         </AnimatePresence>
                         <RollingNumber
                           value={displayAsk}
-                          prevValue={convertPrice(price.askPrev, displayCurrency)}
+                          prevValue={isExchangeRate ? price.askPrev : convertPrice(price.askPrev, displayCurrency)}
                           currency={displayCurrency}
                           decimals={decimals}
                           change={price.askChange}

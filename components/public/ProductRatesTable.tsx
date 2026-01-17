@@ -63,8 +63,11 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
   }, [products]);
 
   // Update prices every 2 seconds
+  // MEMORY LEAK FIX: Use stable dependency (products prop) instead of liveProducts.length
+  // This prevents interval from being recreated unnecessarily
+  const hasProducts = products.length > 0;
   useEffect(() => {
-    if (liveProducts.length === 0) return;
+    if (!hasProducts) return;
 
     intervalRef.current = setInterval(() => {
       setLiveProducts((prev) =>
@@ -99,9 +102,10 @@ export function ProductRatesTable({ products = defaultProducts }: ProductRatesTa
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [liveProducts.length]);
+  }, [hasProducts]);
 
   const convertPrice = (priceMYR: number, targetCurrency: string): number => {
     if (!exchangeRates) return priceMYR;

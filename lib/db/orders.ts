@@ -1,6 +1,9 @@
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server'
 import type { Database } from '@/types/database'
 import { generatePaymentReference } from '@/lib/payment-reference'
+import { fetchGoldPriceUSD, fetchSilverPriceUSD } from '@/lib/gold-price-api'
+import { fetchExchangeRates } from '@/lib/currency-converter'
+import { getPriceHistory } from '@/lib/db/price-history'
 
 type OrderRow = Database['public']['Tables']['orders']['Row']
 type OrderInsert = Database['public']['Tables']['orders']['Insert']
@@ -75,7 +78,58 @@ export async function createOrder(
     return { order: null, error: orderError?.message || 'Failed to create order' }
   }
 
-  // Create order items with pricing metadata
+  // Capture comprehensive price analytics at purchase time
+  // Fetch all current prices and exchange rates
+  const [goldPriceUSD, silverPriceUSD, exchangeRates] = await Promise.all([
+    fetchGoldPriceUSD(),
+    fetchSilverPriceUSD(),
+    fetchExchangeRates(),
+  ])
+
+  // Get price history snapshot (last 3 records per price type)
+  const priceHistorySnapshot = await Promise.all([
+    getPriceHistory('GOLD_USD', 7, 3),
+    getPriceHistory('SILVER_USD', 7, 3),
+    getPriceHistory('MYR_USD', 7, 3),
+    getPriceHistory('MYR_INR', 7, 3),
+    getPriceHistory('GOLD_USD_24H', 7, 3),
+    getPriceHistory('SILVER_USD_24H', 7, 3),
+    getPriceHistory('MYR_USD_24H', 7, 3),
+    getPriceHistory('MYR_INR_24H', 7, 3),
+  ])
+
+  const priceHistoryData = {
+    GOLD_USD: priceHistorySnapshot[0],
+    SILVER_USD: priceHistorySnapshot[1],
+    MYR_USD: priceHistorySnapshot[2],
+    MYR_INR: priceHistorySnapshot[3],
+    GOLD_USD_24H: priceHistorySnapshot[4],
+    SILVER_USD_24H: priceHistorySnapshot[5],
+    MYR_USD_24H: priceHistorySnapshot[6],
+    MYR_INR_24H: priceHistorySnapshot[7],
+  }
+
+  // Prepare all metal prices and exchange rates
+  const allMetalPrices = {
+    gold: {
+      USD: goldPriceUSD,
+      MYR: goldPriceUSD * exchangeRates.MYR,
+      INR: goldPriceUSD * exchangeRates.INR,
+    },
+    silver: {
+      USD: silverPriceUSD,
+      MYR: silverPriceUSD * exchangeRates.MYR,
+      INR: silverPriceUSD * exchangeRates.INR,
+    },
+  }
+
+  const allExchangeRates = {
+    MYR_USD: exchangeRates.MYR,
+    INR_USD: exchangeRates.INR,
+    MYR_INR: exchangeRates.INR / exchangeRates.MYR,
+  }
+
+  // Create order items with comprehensive pricing analytics
   const orderItems: OrderItemInsert[] = items.map((item) => ({
     order_id: order.id,
     product_id: item.productId,
@@ -84,6 +138,14 @@ export async function createOrder(
     metal_price_usd: item.metadata?.metalPriceUSD || null,
     exchange_rate_myr: item.metadata?.exchangeRateMYR || null,
     exchange_rate_inr: item.metadata?.exchangeRateINR || null,
+    // New comprehensive analytics columns
+    gold_price_usd_at_purchase: goldPriceUSD,
+    silver_price_usd_at_purchase: silverPriceUSD,
+    exchange_rate_myr_usd_at_purchase: exchangeRates.MYR,
+    exchange_rate_inr_usd_at_purchase: exchangeRates.INR,
+    price_history_snapshot: priceHistoryData,
+    all_metal_prices_at_purchase: allMetalPrices,
+    all_exchange_rates_at_purchase: allExchangeRates,
     pricing_metadata: item.metadata ? {
       metalType: item.metadata.metalType,
       currency: item.metadata.currency,

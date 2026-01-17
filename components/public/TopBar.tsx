@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { Phone, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslations } from "next-intl";
 
 const STORAGE_KEY = "kvt-topbar-dismissed";
 
 export function TopBar() {
+  const t = useTranslations();
   const [times, setTimes] = useState({
     us: "",
     india: "",
@@ -97,7 +99,7 @@ export function TopBar() {
             <button
               onClick={handleDismiss}
               className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-md hover:bg-brand-600 transition-colors focus:outline-none focus:ring-2 focus:ring-brand-400 focus:ring-offset-2 focus:ring-offset-brand-700"
-              aria-label="Dismiss top bar"
+              aria-label={t("topBar.dismiss")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -132,7 +134,7 @@ export function TopBar() {
           </div>
           <div className="flex items-center gap-2">
             <Phone className="h-3.5 w-3.5" />
-            <span>Phone:</span>
+            <span>{t("topBar.phone")}</span>
             <a 
               href="tel:+60326029916" 
               className="font-medium hover:underline"

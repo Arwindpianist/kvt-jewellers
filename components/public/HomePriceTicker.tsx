@@ -53,8 +53,11 @@ export function HomePriceTicker({ prices, showLastUpdated = true }: HomePriceTic
   }, [prices]);
 
   // Update prices every 2 seconds
+  // MEMORY LEAK FIX: Use stable dependency (prices prop) instead of livePrices.length
+  // This prevents interval from being recreated unnecessarily
+  const hasPrices = prices.length > 0;
   useEffect(() => {
-    if (livePrices.length === 0) return;
+    if (!hasPrices) return;
 
     intervalRef.current = setInterval(() => {
       setLivePrices((prev) =>
@@ -88,9 +91,10 @@ export function HomePriceTicker({ prices, showLastUpdated = true }: HomePriceTic
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
+        intervalRef.current = null;
       }
     };
-  }, [livePrices.length]);
+  }, [hasPrices]);
 
   const formatPrice = (price: number, currency: string) => {
     return new Intl.NumberFormat("en-MY", {
@@ -143,6 +147,8 @@ export function HomePriceTicker({ prices, showLastUpdated = true }: HomePriceTic
     change: "up" | "down" | "neutral";
   }) => {
     const [displayValue, setDisplayValue] = useState(prevValue);
+    // MEMORY LEAK FIX: Track animation frame ID to ensure cleanup on unmount
+    const rafRef = useRef<number | null>(null);
 
     useEffect(() => {
       const duration = 500; // Animation duration in ms
@@ -163,13 +169,22 @@ export function HomePriceTicker({ prices, showLastUpdated = true }: HomePriceTic
         setDisplayValue(currentValue);
 
         if (progress < 1) {
-          requestAnimationFrame(animate);
+          rafRef.current = requestAnimationFrame(animate);
         } else {
           setDisplayValue(endValue);
+          rafRef.current = null;
         }
       };
 
-      requestAnimationFrame(animate);
+      rafRef.current = requestAnimationFrame(animate);
+      
+      // MEMORY LEAK FIX: Cleanup function cancels any pending animation frame
+      return () => {
+        if (rafRef.current !== null) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+      };
     }, [value, prevValue]);
 
     return (

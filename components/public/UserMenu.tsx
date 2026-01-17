@@ -54,23 +54,19 @@ export function UserMenu() {
 
   if (!user) {
     return (
-      <div className="flex items-center gap-2">
-        <Button asChild variant="ghost" size="sm" className="text-white hover:text-white/90">
-          <Link href="/login">Sign In</Link>
-        </Button>
-        <Button asChild size="sm" className="gold-gradient-button">
-          <Link href="/register">Sign Up</Link>
-        </Button>
-      </div>
+      <Button asChild variant="ghost" size="icon" className="text-white hover:text-white/90 hover:bg-brand-700 h-8 w-8">
+        <Link href="/login">
+          <User className="h-4 w-4" />
+        </Link>
+      </Button>
     );
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="sm" className="text-white hover:text-white/90">
-          <User className="h-4 w-4 mr-2" />
-          {user.name}
+        <Button variant="ghost" size="icon" className="text-white hover:text-white/90 hover:bg-brand-700 h-8 w-8">
+          <User className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

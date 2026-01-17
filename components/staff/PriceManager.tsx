@@ -13,6 +13,7 @@ import { AnimatedSection } from "@/components/ui/animated-section";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Info, ChevronDown, ChevronUp, DollarSign, Percent, Clock, Download, Upload } from "lucide-react";
 import { BulkPriceOperations } from "./BulkPriceOperations";
+import { PricingConfigurator } from "./PricingConfigurator";
 import type { GoldPrice } from "@/types/gold-prices";
 
 interface PriceManagerProps {
@@ -211,8 +212,9 @@ export function PriceManager({ initialPrices, lastFetched }: PriceManagerProps) 
   return (
     <AnimatedSection>
       <Tabs defaultValue="prices" className="space-y-6">
-        <TabsList className="grid w-full max-w-2xl grid-cols-3">
+        <TabsList className="grid w-full max-w-3xl grid-cols-4">
           <TabsTrigger value="prices">Price Settings</TabsTrigger>
+          <TabsTrigger value="configurator">Pricing Config</TabsTrigger>
           <TabsTrigger value="advanced">Advanced Config</TabsTrigger>
           <TabsTrigger value="bulk">Bulk Operations</TabsTrigger>
         </TabsList>
@@ -580,6 +582,10 @@ export function PriceManager({ initialPrices, lastFetched }: PriceManagerProps) 
               </motion.div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="configurator" className="space-y-6">
+          <PricingConfigurator />
         </TabsContent>
 
         <TabsContent value="advanced" className="space-y-6">

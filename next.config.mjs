@@ -1,4 +1,7 @@
 import withPWA from "next-pwa";
+import createNextIntlPlugin from 'next-intl/plugin';
+
+const withNextIntl = createNextIntlPlugin('./i18n.ts');
 
 const nextConfig = {
   reactStrictMode: true,
@@ -29,6 +32,11 @@ const nextConfig = {
         hostname: "unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "xcbiebysiwewfifbznew.supabase.co",
+        pathname: "/storage/v1/object/public/product-images/**",
+      },
     ],
     formats: ["image/avif", "image/webp"],
     dangerouslyAllowSVG: true,
@@ -41,13 +49,13 @@ const nextConfig = {
   // turbopack: {},
 };
 
-// Apply PWA in both development and production for testing
-// In production, this will work fully. In development, service worker may have limitations.
-const config = withPWA({
+// Apply PWA in production only
+// Disabled in development to reduce console noise and improve performance
+const pwaConfig = {
   dest: "public",
   register: true,
   skipWaiting: true,
-  disable: process.env.NODE_ENV === "development" ? false : false, // Enable in dev for testing
+  disable: process.env.NODE_ENV === "development", // Disable PWA in dev to suppress workbox logs
   runtimeCaching: [
     {
       urlPattern: /^https?.*/,
@@ -62,7 +70,9 @@ const config = withPWA({
   ],
   // Build exclusions for development
   buildExcludes: [/middleware-manifest\.json$/],
-})(nextConfig);
+};
+
+const config = withNextIntl(withPWA(pwaConfig)(nextConfig));
 
 export default config;
 

@@ -6,24 +6,42 @@ const UNSPLASH_CDN = "https://images.unsplash.com";
 const IMAGE_PARAMS = "w=800&h=600&auto=format&fit=crop&q=85";
 
 export const categoryImages: Record<string, string> = {
-  // Gold Coins - Verified image showing gold and silver round coins
-  // Image: https://unsplash.com/photos/gold-and-silver-round-coins-8t9c3ET7_Ts
-  // Credit: Zlaťáky.cz (https://zlataky.cz)
-  // This image shows a pile of gold bullion coins and bars from various mints:
-  // Argor Heraeus, Münze Österreich, Royal Canadian Mint, U.S. Mint, 
-  // Australian Mint of Perth, panda and Krugerrand
+  // Investment Products
+  gold_bar: `https://unsplash.com/photos/tgB2UnM2dmI/download?force=true&w=800`,
+  silver_bar: `https://unsplash.com/photos/tgB2UnM2dmI/download?force=true&w=800`,
+  gold_coin: `https://unsplash.com/photos/8t9c3ET7_Ts/download?force=true&w=800`,
+  silver_coin: `https://unsplash.com/photos/8t9c3ET7_Ts/download?force=true&w=800`,
+  
+  // Jewelry - Necklaces & Chains
+  necklace: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  chain: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  pendant: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  choker: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  
+  // Jewelry - Bangles & Bracelets
+  bangle: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  bracelet: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  charm_bracelet: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  
+  // Jewelry - Rings
+  ring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  engagement_ring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  wedding_ring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  
+  // Jewelry - Earrings
+  earring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  stud_earring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  hoop_earring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  drop_earring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  
+  // Other Jewelry
+  anklet: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  toe_ring: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  other: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
+  
+  // Legacy mappings for backward compatibility
   coin: `https://unsplash.com/photos/8t9c3ET7_Ts/download?force=true&w=800`,
-  
-  // Gold Bars - Verified image showing a stack of gold bars
-  // Image: https://unsplash.com/photos/a-stack-of-gold-bars-sitting-on-top-of-a-table-tgB2UnM2dmI
-  // Credit: Scottsdale Mint (https://scottsdalemint.com)
-  // Shows: Scottsdale Mint 1 Kilo Gold Bullion Bars - pure 9999 Fine gold
   bar: `https://unsplash.com/photos/tgB2UnM2dmI/download?force=true&w=800`,
-  
-  // Jewelry - Gold ring on white textile
-  // Image: https://unsplash.com/photos/gold-ring-on-white-textile-ZYet8yoepik
-  // Credit: Mariano Rivas (colormono on Unsplash)
-  // Shows: "Con amor" wedding rings - gold ring on white textile
   jewellery: `https://unsplash.com/photos/ZYet8yoepik/download?force=true&w=800`,
 };
 

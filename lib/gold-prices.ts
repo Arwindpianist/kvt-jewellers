@@ -10,6 +10,8 @@ import { fetchExchangeRates } from "./currency-converter";
 
 // In-memory storage for price overrides and publish status
 // In production, this would be in a database
+// Limit size to prevent memory leaks
+const MAX_OVERRIDES = 100;
 let priceOverrides: Map<string, Partial<GoldPrice>> = new Map();
 
 // Cache for fetched prices
@@ -165,9 +167,15 @@ export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
     // Only record key prices: GOLD_USD, SILVER_USD, MYR_USD
     try {
       const { recordPriceHistory } = await import("@/lib/db/price-history");
+      const { ensure24hHistoryRecorded } = await import("@/lib/ensure-24h-history");
+      
       const goldUSDPrice = prices.find(p => p.type === "GOLD_USD");
       const silverUSDPrice = prices.find(p => p.type === "SILVER_USD");
       const myrUSDPrice = prices.find(p => p.type === "MYR_USD");
+      const myrINRPrice = prices.find(p => p.type === "MYR_INR");
+      
+      // Record current prices
+      const recordPromises = [];
       
       if (goldUSDPrice) {
         let priceValue = goldUSDPrice.overridePrice ?? goldUSDPrice.fetchedPrice;
@@ -177,8 +185,10 @@ export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
           // Likely per gram, convert to per ounce
           priceValue = priceValue * 31.1035;
         }
-        recordPriceHistory("GOLD_USD", priceValue, "USD").catch(err => 
-          console.error("Failed to record gold price history:", err)
+        recordPromises.push(
+          recordPriceHistory("GOLD_USD", priceValue, "USD").catch(err => 
+            console.error("Failed to record gold price history:", err)
+          )
         );
       }
       
@@ -189,17 +199,38 @@ export async function fetchGoldPricesFromAPI(): Promise<GoldPrice[]> {
           // Likely per gram, convert to per ounce
           priceValue = priceValue * 31.1035;
         }
-        recordPriceHistory("SILVER_USD", priceValue, "USD").catch(err => 
-          console.error("Failed to record silver price history:", err)
+        recordPromises.push(
+          recordPriceHistory("SILVER_USD", priceValue, "USD").catch(err => 
+            console.error("Failed to record silver price history:", err)
+          )
         );
       }
       
       if (myrUSDPrice) {
         const priceValue = myrUSDPrice.overridePrice ?? myrUSDPrice.fetchedPrice;
-        recordPriceHistory("MYR_USD", priceValue, "USD").catch(err => 
-          console.error("Failed to record MYR/USD history:", err)
+        recordPromises.push(
+          recordPriceHistory("MYR_USD", priceValue, "USD").catch(err => 
+            console.error("Failed to record MYR/USD history:", err)
+          )
         );
       }
+
+      if (myrINRPrice) {
+        const priceValue = myrINRPrice.overridePrice ?? myrINRPrice.fetchedPrice;
+        recordPromises.push(
+          recordPriceHistory("MYR_INR", priceValue, "INR").catch(err => 
+            console.error("Failed to record MYR/INR history:", err)
+          )
+        );
+      }
+
+      // Wait for current prices to be recorded, then ensure 24h history
+      await Promise.all(recordPromises);
+      
+      // Ensure 24h ago prices are recorded (non-blocking, uses existing history)
+      ensure24hHistoryRecorded().catch(err => 
+        console.error("Failed to ensure 24h history:", err)
+      );
     } catch (error) {
       // Don't fail price fetching if history recording fails
       console.error("Error recording price history:", error);
@@ -292,6 +323,15 @@ export function updatePriceOverride(
   priceId: string,
   override: Partial<GoldPrice>
 ): void {
+  // Limit Map size to prevent memory leaks
+  if (priceOverrides.size >= MAX_OVERRIDES && !priceOverrides.has(priceId)) {
+    // Remove oldest entry (first key)
+    const firstKey = priceOverrides.keys().next().value;
+    if (firstKey) {
+      priceOverrides.delete(firstKey);
+    }
+  }
+  
   const existing = priceOverrides.get(priceId) || {};
   priceOverrides.set(priceId, { ...existing, ...override });
   

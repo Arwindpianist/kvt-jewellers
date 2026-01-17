@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { ProductCard } from "@/components/public/ProductCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,13 +9,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Filter, X, Search, ChevronLeft } from "lucide-react";
+import { Filter, X, Search, ChevronLeft, ChevronDown, ChevronRight, ChevronsLeft, ChevronsRight, Loader2 } from "lucide-react";
 import type { Product, ProductCategory } from "@/types/products";
+import { categoryGroups, categoryConfig } from "@/lib/product-categories";
+import { useCurrency } from "@/lib/currency-context";
+import { ProductGridSkeleton } from "@/components/ui/product-grid-skeleton";
 
-interface ProductsPageClientProps {
-  products: Product[];
-}
+interface ProductsPageClientProps {}
 
 type SortOption = "newest" | "price-low" | "price-high" | "name-asc" | "name-desc";
 
@@ -30,14 +30,39 @@ const priceRangePresets: Array<{ value: PriceRangePreset; label: string; range: 
   { value: "over-20000", label: "RM 20,000+", range: [20000, Infinity] },
 ];
 
-export function ProductsPageClient({ products }: ProductsPageClientProps) {
+interface PaginationInfo {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+}
+
+export function ProductsPageClient({}: ProductsPageClientProps) {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [priceLoading, setPriceLoading] = useState(false);
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 25,
+    total: 0,
+    totalPages: 0,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  });
+  
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | "all">("all");
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory | "all" | "investment" | "jewelry">("all");
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRangePreset>("all");
   const [selectedPurity, setSelectedPurity] = useState<string>("all");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set(["investment", "jewelry"]));
+  const [allPurities, setAllPurities] = useState<string[]>([]);
+  const { currency } = useCurrency();
+  const [prevCurrency, setPrevCurrency] = useState<"USD" | "MYR" | "INR">(currency);
 
   // Calculate price range from selected preset
   const priceRange = useMemo(() => {
@@ -45,92 +70,189 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
     return preset ? preset.range : [0, Infinity];
   }, [selectedPriceRange]);
 
-  // Get unique purities from products
-  const purities = useMemo(() => {
-    const uniquePurities = new Set<string>();
-    products.forEach((p) => {
-      if (p.purity) uniquePurities.add(p.purity);
-    });
-    return Array.from(uniquePurities).sort();
-  }, [products]);
-
-  // Categories
-  const categories = [
-    { 
-      label: "All",
-      value: "all" as const,
-      count: products.length,
-    },
-    { 
-      label: "Coins", 
-      value: "coin" as ProductCategory,
-      count: products.filter((p) => p.category === "coin").length,
-    },
-    { 
-      label: "Bars", 
-      value: "bar" as ProductCategory,
-      count: products.filter((p) => p.category === "bar").length,
-    },
-    { 
-      label: "Jewelry", 
-      value: "jewellery" as ProductCategory,
-      count: products.filter((p) => p.category === "jewellery").length,
-    },
-  ];
-
-  // Filter and sort products
-  const filteredAndSortedProducts = useMemo(() => {
-    let filtered = products;
-
-    // Search filter
-    if (searchQuery.trim()) {
-      const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (p) =>
-          p.name.toLowerCase().includes(query) ||
-          p.description.toLowerCase().includes(query)
-      );
+  // Track currency changes to show price loading animation
+  useEffect(() => {
+    if (prevCurrency !== currency) {
+      if (products.length > 0) {
+        // Currency changed and we have products - show price loading
+        setPriceLoading(true);
+      }
+      setPrevCurrency(currency);
     }
+  }, [currency, prevCurrency, products.length]);
 
-    // Category filter
-    if (selectedCategory !== "all") {
-      filtered = filtered.filter((p) => p.category === selectedCategory);
+  // Abort controller ref for cleanup
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Fetch products from API
+  const fetchProducts = useCallback(async (page: number = 1) => {
+    // Abort previous request if still pending
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-
-    // Price range filter
-    filtered = filtered.filter((p) => {
-      const price = p.price || 0;
-      return price >= priceRange[0] && price <= priceRange[1];
-    });
-
-    // Purity filter
-    if (selectedPurity !== "all") {
-      filtered = filtered.filter((p) => p.purity === selectedPurity);
+    
+    // Create new abort controller for this request
+    const abortController = new AbortController();
+    abortControllerRef.current = abortController;
+    
+    // Only set main loading on initial load or page change, not on currency change
+    if (page === 1 && products.length === 0) {
+      setLoading(true);
     }
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "25",
+        sortBy: sortBy,
+        currency: currency,
+      });
 
-    // Sort
-    const sorted = [...filtered];
-    switch (sortBy) {
-      case "price-low":
-        sorted.sort((a, b) => (a.price || 0) - (b.price || 0));
-        break;
-      case "price-high":
-        sorted.sort((a, b) => (b.price || 0) - (a.price || 0));
-        break;
-      case "name-asc":
-        sorted.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "name-desc":
-        sorted.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case "newest":
-      default:
-        sorted.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-        break;
+      if (searchQuery.trim()) {
+        params.append("search", searchQuery.trim());
+      }
+
+      if (selectedCategory !== "all") {
+        params.append("category", selectedCategory);
+      }
+
+      const currentPriceRange = priceRangePresets.find((p) => p.value === selectedPriceRange)?.range || [0, Infinity];
+      if (selectedPriceRange !== "all") {
+        params.append("priceMin", currentPriceRange[0].toString());
+        if (currentPriceRange[1] !== Infinity) {
+          params.append("priceMax", currentPriceRange[1].toString());
+        }
+      }
+
+      if (selectedPurity !== "all") {
+        params.append("purity", selectedPurity);
+      }
+
+      // OPTIMIZATION: Only add cache-busting for currency changes if products already loaded
+      // For initial load or filter changes, use normal fetch (server handles caching)
+      if (products.length > 0 && prevCurrency !== currency) {
+        params.append("_t", Date.now().toString());
+      }
+      
+      const response = await fetch(`/api/products?${params.toString()}`, {
+        // OPTIMIZATION: Server-side caching is handled by the API route
+        // Client-side: only prevent cache on currency changes when products already loaded
+        cache: (products.length > 0 && prevCurrency !== currency) ? "no-store" : "default",
+        signal: abortController.signal,
+      });
+      
+      // Check if request was aborted
+      if (abortController.signal.aborted) {
+        return;
+      }
+      
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage = data.error || "Failed to fetch products";
+        const errorDetails = data.details ? `: ${data.details}` : "";
+        // Only log in development to reduce memory usage
+        if (process.env.NODE_ENV === 'development') {
+          console.error("API Error:", errorMessage, errorDetails, data);
+        }
+        throw new Error(`${errorMessage}${errorDetails}`);
+      }
+
+      // Check if request was aborted before setting state
+      if (abortController.signal.aborted) {
+        return;
+      }
+      
+      setProducts(data.products || []);
+      setPagination(data.pagination || {
+        page: 1,
+        limit: 25,
+        total: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      });
+    } catch (error) {
+      // Ignore abort errors, only log other errors in development
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+      // Only log in development to reduce memory usage
+      if (process.env.NODE_ENV === 'development') {
+        console.error("Error fetching products:", error);
+      }
+      // Only set state if not aborted
+      if (!abortController.signal.aborted) {
+        setProducts([]);
+      }
+    } finally {
+      // Only update loading state if not aborted
+      if (!abortController.signal.aborted) {
+        setLoading(false);
+        setPriceLoading(false); // Hide price loading animation when products are loaded
+      }
     }
+  }, [searchQuery, selectedCategory, selectedPriceRange, selectedPurity, sortBy, currency, products.length]);
+  
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
-    return sorted;
-  }, [products, searchQuery, selectedCategory, priceRange, selectedPurity, sortBy]);
+  // Fetch all purities for filter (one-time fetch) - OPTIMIZED: uses dedicated endpoint
+  useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+    
+    const fetchPurities = async () => {
+      try {
+        // OPTIMIZATION: Use dedicated purities endpoint instead of fetching 100 products
+        const response = await fetch("/api/products/purities", {
+          signal: abortController.signal,
+          next: { revalidate: 3600 }, // Cache for 1 hour
+        });
+        const data = await response.json();
+        if (isMounted && data.purities) {
+          setAllPurities(data.purities);
+        }
+      } catch (error) {
+        // Only log in development and ignore abort errors
+        if (process.env.NODE_ENV === 'development' && error instanceof Error && error.name !== 'AbortError') {
+          console.error("Error fetching purities:", error);
+        }
+      }
+    };
+    fetchPurities();
+    
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, []);
+
+  // Debounced search and filter changes
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchProducts(1);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery, selectedCategory, selectedPriceRange, selectedPurity, sortBy, currency, fetchProducts]);
+
+  // Initial load
+  useEffect(() => {
+    fetchProducts(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Handle page change
+  const handlePageChange = useCallback((page: number) => {
+    fetchProducts(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [fetchProducts]);
 
   const clearFilters = useCallback(() => {
     setSearchQuery("");
@@ -154,24 +276,125 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
       {/* Category Filter */}
       <div>
         <label className="text-sm font-semibold mb-3 block text-foreground">Category</label>
-        <Tabs
-          value={selectedCategory}
-          onValueChange={(value) => setSelectedCategory(value as ProductCategory | "all")}
-          className="w-full"
-        >
-          <TabsList className="grid w-full grid-cols-2 gap-2 h-auto p-1">
-            {categories.map((category) => (
-              <TabsTrigger
-                key={category.value}
-                value={category.value}
-                className="text-xs py-2.5 px-2 flex flex-col items-center justify-center gap-0.5 min-h-[3rem]"
-              >
-                <span className="truncate w-full text-center">{category.label}</span>
-                <span className="text-[10px] opacity-70">({category.count})</span>
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className="space-y-1 max-h-[400px] overflow-y-auto">
+          {/* All Products */}
+          <button
+            onClick={() => {
+              setSelectedCategory("all");
+              fetchProducts(1);
+            }}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+              selectedCategory === "all"
+                ? "bg-brand-600 text-white"
+                : "hover:bg-muted"
+            }`}
+          >
+            <span>All Products</span>
+            <span className="text-xs opacity-70">({pagination.total})</span>
+          </button>
+
+          {/* Investment Products Group */}
+          <div>
+            <button
+              onClick={() => setExpandedGroups((prev) => {
+                const newSet = new Set(prev);
+                if (newSet.has("investment")) {
+                  newSet.delete("investment");
+                } else {
+                  newSet.add("investment");
+                }
+                return newSet;
+              })}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                selectedCategory === "investment"
+                  ? "bg-brand-600 text-white"
+                  : "hover:bg-muted"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {expandedGroups.has("investment") ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+                <span>Investment Products</span>
+              </div>
+            </button>
+            {expandedGroups.has("investment") && (
+              <div className="ml-4 mt-1 space-y-1">
+                {categoryGroups.investment.categories.map((cat) => {
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        fetchProducts(1);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
+                        selectedCategory === cat
+                          ? "bg-brand-500 text-white"
+                          : "hover:bg-muted/50"
+                      }`}
+                    >
+                      <span>{categoryConfig[cat].label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* Jewelry Group */}
+          <div>
+            <button
+              onClick={() => setExpandedGroups((prev) => {
+                const newSet = new Set(prev);
+                if (newSet.has("jewelry")) {
+                  newSet.delete("jewelry");
+                } else {
+                  newSet.add("jewelry");
+                }
+                return newSet;
+              })}
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                selectedCategory === "jewelry"
+                  ? "bg-brand-600 text-white"
+                  : "hover:bg-muted"
+              }`}
+            >
+              <div className="flex items-center gap-2">
+                {expandedGroups.has("jewelry") ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+                <span>Jewelry</span>
+              </div>
+            </button>
+            {expandedGroups.has("jewelry") && (
+              <div className="ml-4 mt-1 space-y-1">
+                {categoryGroups.jewelry.categories.map((cat) => {
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => {
+                        setSelectedCategory(cat);
+                        fetchProducts(1);
+                      }}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs transition-colors ${
+                        selectedCategory === cat
+                          ? "bg-brand-500 text-white"
+                          : "hover:bg-muted/50"
+                      }`}
+                    >
+                      <span>{categoryConfig[cat].label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       <Separator />
@@ -189,7 +412,10 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
                   ? "!bg-brand-600 !text-white hover:!bg-brand-700"
                   : "hover:bg-muted"
               }`}
-              onClick={() => setSelectedPriceRange(preset.value)}
+              onClick={() => {
+                setSelectedPriceRange(preset.value);
+                fetchProducts(1);
+              }}
             >
               {preset.label}
             </Button>
@@ -200,17 +426,20 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
       <Separator />
 
       {/* Purity Filter */}
-      {purities.length > 0 && (
+      {allPurities.length > 0 && (
         <>
           <div>
             <label className="text-sm font-semibold mb-3 block text-foreground">Purity</label>
-            <Select value={selectedPurity} onValueChange={setSelectedPurity}>
+            <Select value={selectedPurity} onValueChange={(value) => {
+              setSelectedPurity(value);
+              fetchProducts(1);
+            }}>
               <SelectTrigger className="h-10 transition-all duration-200">
                 <SelectValue placeholder="All purities" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Purities</SelectItem>
-                {purities.map((purity) => (
+                {allPurities.map((purity) => (
                   <SelectItem key={purity} value={purity}>
                     {purity}
                   </SelectItem>
@@ -225,7 +454,10 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
       {/* Sort Options */}
       <div>
         <label className="text-sm font-semibold mb-3 block text-foreground">Sort By</label>
-        <Select value={sortBy} onValueChange={(value) => setSortBy(value as SortOption)}>
+        <Select value={sortBy} onValueChange={(value) => {
+          setSortBy(value as SortOption);
+          fetchProducts(1);
+        }}>
           <SelectTrigger className="h-10 transition-all duration-200">
             <SelectValue />
           </SelectTrigger>
@@ -250,6 +482,106 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
       )}
     </div>
   );
+
+  // Pagination component
+  const PaginationControls = () => {
+    if (pagination.totalPages <= 1) return null;
+
+    const pages = [];
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, pagination.page - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(pagination.totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return (
+      <div className="flex items-center justify-center gap-2 mt-8">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(1)}
+          disabled={!pagination.hasPreviousPage}
+          className="h-9"
+        >
+          <ChevronsLeft className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(pagination.page - 1)}
+          disabled={!pagination.hasPreviousPage}
+          className="h-9"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        
+        {startPage > 1 && (
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(1)}
+              className="h-9"
+            >
+              1
+            </Button>
+            {startPage > 2 && <span className="px-2">...</span>}
+          </>
+        )}
+
+        {pages.map((page) => (
+          <Button
+            key={page}
+            variant={page === pagination.page ? "default" : "outline"}
+            size="sm"
+            onClick={() => handlePageChange(page)}
+            className={`h-9 ${page === pagination.page ? "bg-brand-600" : ""}`}
+          >
+            {page}
+          </Button>
+        ))}
+
+        {endPage < pagination.totalPages && (
+          <>
+            {endPage < pagination.totalPages - 1 && <span className="px-2">...</span>}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePageChange(pagination.totalPages)}
+              className="h-9"
+            >
+              {pagination.totalPages}
+            </Button>
+          </>
+        )}
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(pagination.page + 1)}
+          disabled={!pagination.hasNextPage}
+          className="h-9"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => handlePageChange(pagination.totalPages)}
+          disabled={!pagination.hasNextPage}
+          className="h-9"
+        >
+          <ChevronsRight className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -308,7 +640,18 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
 
             {/* Results Count */}
             <div className="hidden sm:block text-sm text-muted-foreground whitespace-nowrap transition-all duration-200">
-              {filteredAndSortedProducts.length} {filteredAndSortedProducts.length === 1 ? "product" : "products"}
+              {loading && products.length === 0 ? (
+                <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+              ) : (
+                <>
+                  {pagination.total} {pagination.total === 1 ? "product" : "products"}
+                  {pagination.totalPages > 1 && (
+                    <span className="ml-1">
+                      (Page {pagination.page} of {pagination.totalPages})
+                    </span>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -317,9 +660,14 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
             <div className="mt-3 flex flex-wrap gap-2 transition-all duration-200">
               {selectedCategory !== "all" && (
                 <Badge variant="secondary" className="gap-1 h-7 px-2 transition-all duration-200">
-                  {categories.find((c) => c.value === selectedCategory)?.label}
+                  {selectedCategory === "investment" ? "Investment Products" : 
+                   selectedCategory === "jewelry" ? "Jewelry" : 
+                   categoryConfig[selectedCategory as ProductCategory]?.label || selectedCategory}
                   <button
-                    onClick={() => setSelectedCategory("all")}
+                    onClick={() => {
+                      setSelectedCategory("all");
+                      fetchProducts(1);
+                    }}
                     className="ml-1 rounded-full hover:bg-muted p-0.5 transition-all duration-200"
                   >
                     <X className="h-3 w-3" />
@@ -330,7 +678,10 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
                 <Badge variant="secondary" className="gap-1 h-7 px-2 transition-all duration-200">
                   {priceRangePresets.find((p) => p.value === selectedPriceRange)?.label}
                   <button
-                    onClick={() => setSelectedPriceRange("all")}
+                    onClick={() => {
+                      setSelectedPriceRange("all");
+                      fetchProducts(1);
+                    }}
                     className="ml-1 rounded-full hover:bg-muted p-0.5 transition-all duration-200"
                   >
                     <X className="h-3 w-3" />
@@ -341,7 +692,10 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
                 <Badge variant="secondary" className="gap-1 h-7 px-2 transition-all duration-200">
                   {selectedPurity}
                   <button
-                    onClick={() => setSelectedPurity("all")}
+                    onClick={() => {
+                      setSelectedPurity("all");
+                      fetchProducts(1);
+                    }}
                     className="ml-1 rounded-full hover:bg-muted p-0.5 transition-all duration-200"
                   >
                     <X className="h-3 w-3" />
@@ -384,7 +738,9 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
 
           {/* Products Grid */}
           <main className="flex-1 min-w-0">
-            {filteredAndSortedProducts.length === 0 ? (
+            {loading && products.length === 0 ? (
+              <ProductGridSkeleton count={pagination.limit || 25} />
+            ) : products.length === 0 ? (
               <div className="py-16 text-center animate-in fade-in duration-300">
                 <p className="mb-4 text-lg text-muted-foreground">
                   No products found matching your criteria.
@@ -394,11 +750,14 @@ export function ProductsPageClient({ products }: ProductsPageClientProps) {
                 </Button>
               </div>
             ) : (
-              <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-                {filteredAndSortedProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
+              <>
+                <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+                  {products.map((product, index) => (
+                    <ProductCard key={product.id} product={product} index={index} priceLoading={priceLoading} />
+                  ))}
+                </div>
+                <PaginationControls />
+              </>
             )}
           </main>
         </div>

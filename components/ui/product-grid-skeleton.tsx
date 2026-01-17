@@ -6,7 +6,7 @@ interface ProductGridSkeletonProps {
 
 export function ProductGridSkeleton({ count = 6 }: ProductGridSkeletonProps) {
   return (
-    <div className="grid gap-4 sm:gap-6 grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+    <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="space-y-3">
           <Skeleton className="aspect-square w-full rounded-lg" />

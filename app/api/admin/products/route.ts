@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyStaffAuth } from "@/lib/auth";
 import { createServiceRoleClient } from "@/lib/supabase/server";
+import { dbProductToProduct } from "@/lib/db/products";
 
 /**
  * Get paginated products (admin/staff only)
@@ -26,7 +27,11 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get("limit") || "20", 10)));
     const search = searchParams.get("search") || "";
     const categoryParam = searchParams.get("category") || "";
-    const category = categoryParam && ["coin", "bar", "jewellery"].includes(categoryParam) ? categoryParam : "";
+    const category = categoryParam || "";
+    const metalType = searchParams.get("metalType") || "";
+    const priceMin = searchParams.get("priceMin") ? parseFloat(searchParams.get("priceMin")!) : null;
+    const priceMax = searchParams.get("priceMax") ? parseFloat(searchParams.get("priceMax")!) : null;
+    const sortBy = searchParams.get("sortBy") || "newest";
 
     const supabase = createServiceRoleClient();
     
@@ -40,6 +45,15 @@ export async function GET(request: NextRequest) {
     }
     if (category) {
       countQuery = countQuery.eq('category', category);
+    }
+    if (metalType) {
+      countQuery = countQuery.eq('metal_type', metalType);
+    }
+    if (priceMin !== null) {
+      countQuery = countQuery.gte('price', priceMin);
+    }
+    if (priceMax !== null) {
+      countQuery = countQuery.lte('price', priceMax);
     }
 
     // Get total count
@@ -56,14 +70,41 @@ export async function GET(request: NextRequest) {
     if (category) {
       dataQuery = dataQuery.eq('category', category);
     }
+    if (metalType) {
+      dataQuery = dataQuery.eq('metal_type', metalType);
+    }
+    if (priceMin !== null) {
+      dataQuery = dataQuery.gte('price', priceMin);
+    }
+    if (priceMax !== null) {
+      dataQuery = dataQuery.lte('price', priceMax);
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case "price-low":
+        dataQuery = dataQuery.order('price', { ascending: true, nullsFirst: false });
+        break;
+      case "price-high":
+        dataQuery = dataQuery.order('price', { ascending: false, nullsFirst: false });
+        break;
+      case "name-asc":
+        dataQuery = dataQuery.order('name', { ascending: true });
+        break;
+      case "name-desc":
+        dataQuery = dataQuery.order('name', { ascending: false });
+        break;
+      case "newest":
+      default:
+        dataQuery = dataQuery.order('created_at', { ascending: false });
+        break;
+    }
 
     // Apply pagination
     const from = (page - 1) * limit;
     const to = from + limit - 1;
 
-    const { data: products, error } = await dataQuery
-      .order('created_at', { ascending: false })
-      .range(from, to);
+    const { data: products, error } = await dataQuery.range(from, to);
 
     if (error) {
       console.error("Error fetching products:", error);
@@ -75,8 +116,11 @@ export async function GET(request: NextRequest) {
 
     const totalPages = count ? Math.ceil(count / limit) : 0;
 
+    // Convert database products to Product type (handles image -> images conversion)
+    const convertedProducts = (products || []).map(dbProductToProduct);
+
     return NextResponse.json({
-      products: products || [],
+      products: convertedProducts,
       pagination: {
         page,
         limit,

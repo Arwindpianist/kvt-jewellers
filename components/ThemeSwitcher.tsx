@@ -19,7 +19,7 @@ export function ThemeSwitcher() {
       <Button
         variant="ghost"
         size="icon"
-        className="h-9 w-9 rounded-lg"
+        className="h-8 w-8 text-white hover:text-white/90 hover:bg-brand-700"
         aria-label="Toggle theme"
       >
         <Sun className="h-4 w-4" />
@@ -32,16 +32,14 @@ export function ThemeSwitcher() {
       variant="ghost"
       size="icon"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="h-9 w-9 rounded-lg transition-colors hover:bg-white/10 relative"
+      className="h-8 w-8 text-white hover:text-white/90 hover:bg-brand-700 transition-colors flex items-center justify-center"
       aria-label="Toggle theme"
     >
-      <div className="absolute inset-0 flex items-center justify-center">
-        {theme === "dark" ? (
-          <Sun className="h-4 w-4 text-white transition-opacity duration-150" />
-        ) : (
-          <Moon className="h-4 w-4 text-white transition-opacity duration-150" />
-        )}
-      </div>
+      {theme === "dark" ? (
+        <Sun className="h-4 w-4 transition-opacity duration-150" />
+      ) : (
+        <Moon className="h-4 w-4 transition-opacity duration-150" />
+      )}
     </Button>
   );
 }

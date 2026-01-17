@@ -18,8 +18,8 @@
     --muted-foreground: 215.4 16.3% 46.9%;
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72.2% 50.6%;
+    --destructive-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 318 59% 20%;
@@ -808,10 +808,17 @@
   }
 
   /* Outline button hover - Champagne gold theme */
-  .dark button[class*="outline"]:not([class*="gold"]):not([class*="silver"]):hover {
+  .dark button[class*="outline"]:not([class*="gold"]):not([class*="silver"]):hover:not(.products-dropdown-trigger) {
     background-color: hsl(38, 30%, 15%) !important;
     border-color: hsl(38, 55%, 46%) !important;
     color: hsl(38, 60%, 64%) !important;
+  }
+  
+  /* Explicitly override outline hover for products dropdown */
+  .dark button.products-dropdown-trigger[class*="outline"]:hover,
+  .dark button.products-dropdown-trigger:hover {
+    background-color: transparent !important;
+    border-color: transparent !important;
   }
 
   /* Ghost button in dark mode - Proper contrast */
@@ -821,9 +828,16 @@
   }
 
   /* Ghost button hover - Champagne gold theme */
-  .dark button[class*="ghost"]:hover {
+  .dark button[class*="ghost"]:hover:not(.products-dropdown-trigger) {
     background-color: hsl(38, 30%, 15%) !important;
     color: hsl(38, 55%, 60%) !important;
+  }
+  
+  /* Explicitly override for products dropdown trigger */
+  .dark button.products-dropdown-trigger:hover,
+  .dark button.products-dropdown-trigger[class*="ghost"]:hover {
+    background-color: transparent !important;
+    color: inherit !important;
   }
 
   /* Link button in dark mode - Champagne gold theme */
@@ -962,7 +976,7 @@
       0 1px 2px 0 rgba(0, 0, 0, 0.2);
   }
 
-  .dark button:not([class*="gold"]):not([class*="silver"]):not([class*="outline"]):not([class*="ghost"]):hover {
+  .dark button:not([class*="gold"]):not([class*="silver"]):not([class*="outline"]):not([class*="ghost"]):hover:not(.products-dropdown-trigger) {
     box-shadow: 
       0 2px 4px 0 rgba(0, 0, 0, 0.3),
       0 0 0 1px rgba(255, 255, 255, 0.05);
@@ -1270,6 +1284,34 @@
     50% {
       background-position: 100% 50%;
     }
+  }
+
+  /* Golden shimmer animation for price loading */
+  @keyframes price-shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes price-shimmer-delayed {
+    0% {
+      transform: translateX(-150%);
+    }
+    100% {
+      transform: translateX(150%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: price-shimmer 1.5s ease-in-out infinite;
+  }
+
+  .animate-shimmer-delayed {
+    animation: price-shimmer-delayed 1.5s ease-in-out infinite;
+    animation-delay: 0.3s;
   }
 
   /* Silver gradient text with shine effect */
@@ -1774,6 +1816,127 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.03),
       0 0 0 1px rgba(201, 162, 77, 0.15);
     opacity: 0.8;
+  }
+
+  /* Products Dropdown - Force visible colors in light mode */
+  .products-dropdown {
+    background-color: rgb(255, 255, 255) !important;
+    border-color: rgb(229, 231, 235) !important;
+  }
+
+  .dark .products-dropdown {
+    background-color: rgb(17, 24, 39) !important;
+    border-color: rgb(55, 65, 81) !important;
+  }
+
+  .products-dropdown-section {
+    border-color: rgb(229, 231, 235) !important;
+  }
+
+  .dark .products-dropdown-section {
+    border-color: rgb(55, 65, 81) !important;
+  }
+
+  .products-dropdown-heading {
+    color: rgb(107, 114, 128) !important;
+  }
+
+  .dark .products-dropdown-heading {
+    color: rgb(156, 163, 175) !important;
+  }
+
+  .products-dropdown-link {
+    color: rgb(17, 24, 39) !important;
+  }
+
+  .products-dropdown-link:hover {
+    background-color: rgb(243, 244, 246) !important;
+  }
+
+  .dark .products-dropdown-link {
+    color: rgb(243, 244, 246) !important;
+  }
+
+  .dark .products-dropdown-link:hover {
+    background-color: rgb(31, 41, 55) !important;
+  }
+
+  .products-dropdown-viewall {
+    color: rgb(82, 21, 64) !important;
+  }
+
+  .dark .products-dropdown-viewall {
+    color: hsl(38, 55%, 52%) !important;
+  }
+
+  /* Products dropdown button - keep transparent in all states, including during transforms */
+  /* This must come AFTER other button rules to ensure it overrides them */
+  button.products-dropdown-trigger,
+  button.products-dropdown-trigger:hover,
+  button.products-dropdown-trigger:active,
+  button.products-dropdown-trigger:focus,
+  button.products-dropdown-trigger:focus-visible,
+  button.products-dropdown-trigger[data-state],
+  button.products-dropdown-trigger[data-state="open"],
+  button.products-dropdown-trigger[data-state="closed"],
+  button.products-dropdown-trigger[class*="ghost"],
+  button.products-dropdown-trigger[class*="outline"],
+  button.products-dropdown-trigger[class*="ghost"]:hover,
+  button.products-dropdown-trigger[class*="outline"]:hover,
+  .dark button.products-dropdown-trigger,
+  .dark button.products-dropdown-trigger:hover,
+  .dark button.products-dropdown-trigger:active,
+  .dark button.products-dropdown-trigger:focus,
+  .dark button.products-dropdown-trigger:focus-visible,
+  .dark button.products-dropdown-trigger[data-state],
+  .dark button.products-dropdown-trigger[data-state="open"],
+  .dark button.products-dropdown-trigger[data-state="closed"],
+  .dark button.products-dropdown-trigger[class*="ghost"],
+  .dark button.products-dropdown-trigger[class*="outline"],
+  .dark button.products-dropdown-trigger[class*="ghost"]:hover,
+  .dark button.products-dropdown-trigger[class*="outline"]:hover {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-color: transparent !important;
+  }
+  
+  /* Specifically target buttons containing motion elements during animation */
+  button.ghost:has([style*="transform"]),
+  button.ghost:has([style*="scale"]),
+  button.products-dropdown-trigger:has([style*="transform"]),
+  button.products-dropdown-trigger:has([style*="scale"]),
+  .dark button.ghost:has([style*="transform"]),
+  .dark button.ghost:has([style*="scale"]),
+  .dark button.products-dropdown-trigger:has([style*="transform"]),
+  .dark button.products-dropdown-trigger:has([style*="scale"]) {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+  
+  /* CRITICAL: Highest specificity override for products dropdown - must be last */
+  .dark button.products-dropdown-trigger[class*="outline"]:hover,
+  .dark button.products-dropdown-trigger[class*="ghost"]:hover,
+  .dark button.products-dropdown-trigger:hover,
+  .dark button.products-dropdown-trigger:active,
+  .dark button.products-dropdown-trigger:focus,
+  .dark button.products-dropdown-trigger[data-state="open"]:hover,
+  .dark button.products-dropdown-trigger[data-state="closed"]:hover {
+    background-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-color: transparent !important;
+  }
+
+  /* Performance optimization for header nav animations */
+  header nav [class*="motion"] {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
   }
 
 }

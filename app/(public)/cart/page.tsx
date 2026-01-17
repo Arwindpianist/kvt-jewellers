@@ -30,14 +30,14 @@ export default function CartPage() {
       });
   }, []);
 
-  const updateQuantity = (productId: string, quantity: number) => {
-    const updatedCart = updateCartItemQuantity(productId, quantity);
+  const updateQuantity = (productId: string, quantity: number, variantId?: string) => {
+    const updatedCart = updateCartItemQuantity(productId, quantity, variantId);
     setCart(updatedCart);
     dispatchCartUpdate();
   };
 
-  const removeItem = (productId: string) => {
-    const updatedCart = removeFromCart(productId);
+  const removeItem = (productId: string, variantId?: string) => {
+    const updatedCart = removeFromCart(productId, variantId);
     setCart(updatedCart);
     dispatchCartUpdate();
   };
@@ -54,6 +54,36 @@ export default function CartPage() {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="mb-8">
+          <h1 className="font-serif text-4xl font-bold md:text-5xl">Shopping Cart</h1>
+          <p className="mt-2 text-muted-foreground">
+            Review your items before checkout
+          </p>
+        </div>
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-16">
+            <ShoppingBag className="h-16 w-16 text-muted-foreground mb-4" />
+            <h2 className="text-2xl font-bold mb-2">Sign in to view your cart</h2>
+            <p className="text-muted-foreground mb-6 text-center max-w-md">
+              Create an account or sign in to add items to your cart and complete your purchase.
+            </p>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <Button asChild className="gold-gradient-button">
+                <Link href="/login?from=/cart">Sign in</Link>
+              </Button>
+              <Button variant="outline" asChild>
+                <Link href="/register?from=/cart">Sign up</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -83,8 +113,8 @@ export default function CartPage() {
       ) : (
         <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-2 space-y-4">
-            {cart.items.map((item) => (
-              <Card key={item.productId}>
+            {cart.items.map((item, index) => (
+              <Card key={`${item.productId}-${item.variantId || index}`}>
                 <CardContent className="p-4 sm:p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative h-24 w-24 flex-shrink-0 rounded-lg overflow-hidden bg-muted mx-auto sm:mx-0">
@@ -97,6 +127,25 @@ export default function CartPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-base sm:text-lg mb-1 break-words">{item.name}</h3>
+                      {item.variantOptions && (
+                        <div className="mb-2 flex flex-wrap gap-1">
+                          {item.variantOptions.size && (
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded">Size: {item.variantOptions.size}</span>
+                          )}
+                          {item.variantOptions.finish && (
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded">Finish: {item.variantOptions.finish}</span>
+                          )}
+                          {item.variantOptions.metalType && (
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded">Metal: {item.variantOptions.metalType}</span>
+                          )}
+                          {item.variantOptions.designStyle && (
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded">Style: {item.variantOptions.designStyle}</span>
+                          )}
+                          {item.variantOptions.stoneType && (
+                            <span className="text-xs bg-muted px-2 py-0.5 rounded">Stone: {item.variantOptions.stoneType}</span>
+                          )}
+                        </div>
+                      )}
                       <p className="text-muted-foreground mb-4 text-sm sm:text-base">
                         ${item.price.toFixed(2)} each
                       </p>
@@ -106,7 +155,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.productId, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.productId, item.quantity - 1, item.variantId)}
                           >
                             <Minus className="h-4 w-4" />
                           </Button>
@@ -115,7 +164,7 @@ export default function CartPage() {
                             value={item.quantity}
                             onChange={(e) => {
                               const qty = parseInt(e.target.value) || 1;
-                              updateQuantity(item.productId, qty);
+                              updateQuantity(item.productId, qty, item.variantId);
                             }}
                             className="w-16 text-center"
                             min="1"
@@ -124,7 +173,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             className="h-8 w-8"
-                            onClick={() => updateQuantity(item.productId, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.productId, item.quantity + 1, item.variantId)}
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -132,7 +181,7 @@ export default function CartPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => removeItem(item.productId)}
+                          onClick={() => removeItem(item.productId, item.variantId)}
                           className="text-destructive hover:text-destructive"
                         >
                           <Trash2 className="h-4 w-4" />

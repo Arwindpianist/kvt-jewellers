@@ -17,28 +17,31 @@ import type { GoldPrice } from "@/types/gold-prices";
 import { categoryImages, storeImage } from "@/lib/image-placeholders";
 import { HeroGeometric } from "@/components/ui/shape-landing-hero";
 import { PWADownloadPrompt } from "@/components/public/PWADownloadPrompt";
+import { useTranslations } from "next-intl";
 
 interface HomePageContentProps {
   publishedPrices: GoldPrice[];
 }
 
 export function HomePageContent({ publishedPrices }: HomePageContentProps) {
+  const t = useTranslations();
+  
   return (
     <div className="flex flex-col bg-transparent">
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <HeroGeometric
-          badge="Established 2018"
-          title1="Premium Gold"
-          title2="& Silver Trading"
-          description="KVT Jewellers offers premium 916 gold jewelry and 999.9 gold bar bullion. Experience luxury craftsmanship backed by years of expertise in precious metals."
+          badge={t("hero.badge")}
+          title1={t("hero.title1")}
+          title2={t("hero.title2")}
+          description={t("hero.description")}
         >
           <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:justify-center">
             <AnimatedButton asChild size="lg" className="gold-gradient-button rounded-xl">
-              <Link href="/products">Browse Products</Link>
+              <Link href="/products">{t("hero.browseProducts")}</Link>
             </AnimatedButton>
             <AnimatedButton asChild size="lg" className="silver-gradient-button-outline rounded-xl">
-              <Link href="/live-rate">View Live Rates</Link>
+              <Link href="/live-rate">{t("hero.viewLiveRates")}</Link>
             </AnimatedButton>
           </div>
         </HeroGeometric>
@@ -51,23 +54,23 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
             <div className="mx-auto max-w-2xl">
               <div className="mb-6 md:mb-8 text-center">
                 <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
-                  Live Prices
+                  {t("home.livePrices")}
                 </Badge>
                 <h2 className="mb-2 font-serif text-3xl md:text-4xl font-semibold">
-                  Today&apos;s Gold Prices
+                  {t("home.todaysGoldPrices")}
                 </h2>
-                <p className="text-sm md:text-base text-muted-foreground">Updated in real-time</p>
+                <p className="text-sm md:text-base text-muted-foreground">{t("home.updatedInRealTime")}</p>
               </div>
               <Card className="bg-card-level-2 shadow-card-elevated">
                 <CardHeader>
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <CardTitle className="text-lg md:text-xl">Current Market Rates</CardTitle>
+                    <CardTitle className="text-lg md:text-xl">{t("home.currentMarketRates")}</CardTitle>
                     <div className="flex items-center gap-2">
                       <div className="flex items-center gap-1.5 rounded-full bg-green-100 px-2 md:px-3 py-1">
                         <div className="h-2 w-2 animate-pulse rounded-full bg-green-600"></div>
-                        <span className="text-xs font-medium text-green-700">Live</span>
+                        <span className="text-xs font-medium text-green-700">{t("common.live")}</span>
                       </div>
-                      <span className="text-xs text-muted-foreground">Updates every 2s</span>
+                      <span className="text-xs text-muted-foreground">{t("home.updatesEvery2s")}</span>
                     </div>
                   </div>
                 </CardHeader>
@@ -76,7 +79,7 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
                   <Separator className="my-4 md:my-6" />
                   <div className="text-center">
                     <AnimatedButton asChild className="w-full sm:w-auto gold-gradient-button-outline rounded-lg">
-                      <Link href="/live-rate">View All Rates →</Link>
+                      <Link href="/live-rate">{t("home.viewAllRates")}</Link>
                     </AnimatedButton>
                   </div>
                 </CardContent>
@@ -92,9 +95,9 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
           <StaggerAnimation>
             <div className="grid gap-8 md:grid-cols-3">
               {[
-                { icon: Shield, title: "Authentic Quality", desc: "Certified 916 & 999.9 purity" },
-                { icon: TrendingUp, title: "Live Market Rates", desc: "Real-time price updates" },
-                { icon: Award, title: "Expert Craftsmanship", desc: "Professional goldsmiths" },
+                { icon: Shield, title: t("home.features.authenticQuality"), desc: t("home.features.authenticQualityDesc") },
+                { icon: TrendingUp, title: t("home.features.liveMarketRates"), desc: t("home.features.liveMarketRatesDesc") },
+                { icon: Award, title: t("home.features.expertCraftsmanship"), desc: t("home.features.expertCraftsmanshipDesc") },
               ].map((feature) => (
                 <StaggerItem key={feature.title}>
                   <HoverCard>
@@ -123,13 +126,13 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
           <AnimatedSection>
             <div className="mb-12 text-center">
               <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
-                Collections
+                {t("home.categories.title")}
               </Badge>
               <h2 className="mb-4 font-serif text-4xl font-semibold md:text-5xl">
-                Featured Collections
+                {t("home.categories.title")}
               </h2>
               <p className="mx-auto max-w-2xl text-muted-foreground">
-                Discover our premium selection of gold coins, bars, and exquisite jewelry pieces
+                {t("home.categories.description")}
               </p>
             </div>
           </AnimatedSection>
@@ -137,25 +140,25 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
             <div className="grid gap-8 md:grid-cols-3">
               {[
                 {
-                  title: "Gold Coins",
-                  description: "Premium gold coins for investment and collection. Limited editions and commemorative pieces available.",
+                  title: t("home.categories.coins"),
+                  description: t("home.categories.coinsDesc"),
                   href: "/products/coin",
                   image: categoryImages.coin,
-                  badge: "Investment Grade",
+                  badge: t("home.categories.coinsBadge"),
                 },
                 {
-                  title: "Gold Bars",
-                  description: "999.9 pure gold bars in various sizes. Perfect for serious investors and collectors.",
+                  title: t("home.categories.bars"),
+                  description: t("home.categories.barsDesc"),
                   href: "/products/bar",
                   image: categoryImages.bar,
-                  badge: "999.9 Pure",
+                  badge: t("home.categories.barsBadge"),
                 },
                 {
-                  title: "Jewelry",
-                  description: "Exquisite 916 gold jewelry designs. Handcrafted by professional goldsmiths with attention to detail.",
+                  title: t("home.categories.jewellery"),
+                  description: t("home.categories.jewelleryDesc"),
                   href: "/products/jewellery",
                   image: categoryImages.jewellery,
-                  badge: "Handcrafted",
+                  badge: t("home.categories.jewelleryBadge"),
                 },
               ].map((item) => (
                 <StaggerItem key={item.href}>
@@ -193,7 +196,7 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
                           {item.description}
                         </p>
                         <AnimatedButton asChild className="w-full gold-gradient-button-outline">
-                          <Link href={item.href}>Explore Collection →</Link>
+                          <Link href={item.href}>{t("common.viewMore")} →</Link>
                         </AnimatedButton>
                       </CardContent>
                     </Card>
@@ -225,25 +228,23 @@ export function HomePageContent({ publishedPrices }: HomePageContentProps) {
                 </motion.div>
                 <div>
                   <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
-                    Our Story
+                    {t("about.ourStory")}
                   </Badge>
                   <h2 className="mb-6 font-serif text-4xl font-semibold md:text-5xl">
-                    About KVT Jewellers
+                    {t("about.title")}
                   </h2>
                   <p className="mb-4 text-lg leading-relaxed text-muted-foreground">
-                    Established in 2018 by Mr. Thangadurai Venkatraman, KVT Jewellers
-                    specializes in retail and wholesale of gold jewelry and bullion.
+                    {t("about.ourStoryDesc1")}
                   </p>
                   <p className="mb-6 text-lg leading-relaxed text-muted-foreground">
-                    We offer custom-made jewelry crafted by professional goldsmiths, ensuring
-                    each piece meets the highest standards of quality and craftsmanship.
+                    {t("about.ourStoryDesc2")}
                   </p>
                   <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
                     <AnimatedButton asChild className="gold-gradient-button">
-                      <Link href="/about">Learn More</Link>
+                      <Link href="/about">{t("common.learnMore")}</Link>
                     </AnimatedButton>
                     <AnimatedButton asChild className="gold-gradient-button-outline">
-                      <Link href="/contact">Contact Us</Link>
+                      <Link href="/contact">{t("nav.contact")}</Link>
                     </AnimatedButton>
                   </div>
                 </div>

@@ -12,8 +12,8 @@ interface LiveRatesTableProps {
 const priceTypeLabels: Record<string, { label: string; flag: string }> = {
   GOLD_USD: { label: "GOLD($)", flag: "🇺🇸" },
   SILVER_USD: { label: "SILVER($)", flag: "🇺🇸" },
-  MYR_USD: { label: "MYR / USD", flag: "🇲🇾" },
-  MYR_INR: { label: "MYR / INR", flag: "🇲🇾🇮🇳" },
+  MYR_USD: { label: "MYR/USD", flag: "🇲🇾" },
+  MYR_INR: { label: "INR/MYR", flag: "🇲🇾🇮🇳" },
 };
 
 export function LiveRatesTable({ prices }: LiveRatesTableProps) {

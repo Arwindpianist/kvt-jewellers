@@ -1,40 +1,36 @@
-import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth";
-import { fetchGoldPricesFromAPI } from "@/lib/gold-prices";
-import { getAllProducts } from "@/lib/products";
-import { getActivityLogs } from "@/lib/activity-log";
+import { createServiceRoleClient } from "@/lib/supabase/server";
 import { StaffPageHeader } from "@/components/staff/StaffPageHeader";
-import { AnalyticsDashboard } from "@/components/staff/AnalyticsDashboard";
-import { AnalyticsSkeleton } from "@/components/staff/skeletons/AnalyticsSkeleton";
+import { PurchaseAnalyticsContent } from "@/components/staff/PurchaseAnalyticsContent";
 
-export const dynamic = 'force-dynamic';
-
-export default async function AnalyticsPage() {
+export default async function StaffAnalyticsPage() {
   const session = await getSession();
 
   if (!session) {
-    redirect("/login?from=/staff/dashboard");
+    redirect("/login?from=/staff/analytics");
   }
 
-  const prices = await fetchGoldPricesFromAPI();
-  const products = getAllProducts();
-  const activityLogs = getActivityLogs({ limit: 100 });
+  // Check if user is staff or admin
+  const supabase = createServiceRoleClient();
+  const { data: user } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', session.user.id)
+    .single();
+
+  if (!user || !['admin', 'staff'].includes(user.role)) {
+    redirect("/staff/dashboard");
+  }
 
   return (
     <div className="container mx-auto px-4 py-8 md:py-12">
       <StaffPageHeader
         icon="BarChart3"
-        title="Analytics & Reports"
-        description="Track price trends, product performance, and system activity"
+        title="Purchase Analytics"
+        description="View comprehensive price analytics for all product purchases with timestamps and market data"
       />
-      <Suspense fallback={<AnalyticsSkeleton />}>
-        <AnalyticsDashboard
-          prices={prices}
-          products={products}
-          activityLogs={activityLogs}
-        />
-      </Suspense>
+      <PurchaseAnalyticsContent />
     </div>
   );
 }

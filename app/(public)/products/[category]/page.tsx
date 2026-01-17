@@ -1,61 +1,96 @@
 import { notFound } from "next/navigation";
 import { ProductCard } from "@/components/public/ProductCard";
-import { getProductsByCategory } from "@/lib/db/products";
+import { getAllProducts } from "@/lib/db/products";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { AnimatedSection, FadeIn } from "@/components/ui/animated-section";
 import type { ProductCategory } from "@/types/products";
-import { Coins, BarChart3, Gem } from "lucide-react";
+import { categoryConfig, categoryGroups } from "@/lib/product-categories";
+import { Coins, BarChart3, Gem, Sparkles } from "lucide-react";
 
 interface CategoryPageProps {
   params: Promise<{ category: string }>;
 }
 
-const categoryMap: Record<string, { type: ProductCategory; icon: typeof Coins; description: string }> = {
-  coin: {
-    type: "coin",
-    icon: Coins,
-    description: "Premium gold and silver coins for investment and collection. Limited editions and commemorative pieces available.",
-  },
-  bar: {
-    type: "bar",
-    icon: BarChart3,
-    description: "999.9 pure gold bars in various sizes. Perfect for serious investors and collectors seeking investment-grade bullion.",
-  },
-  jewellery: {
-    type: "jewellery",
-    icon: Gem,
-    description: "Exquisite 916 gold jewelry designs. Handcrafted by professional goldsmiths with attention to detail and timeless elegance.",
-  },
+// Map URL slugs to actual categories
+const categorySlugMap: Record<string, ProductCategory[]> = {
+  // Legacy routes for backward compatibility
+  coin: ["gold_coin", "silver_coin"],
+  bar: ["gold_bar", "silver_bar"],
+  jewellery: categoryGroups.jewelry.categories,
+  // New specific routes
+  "gold-bar": ["gold_bar"],
+  "silver-bar": ["silver_bar"],
+  "gold-coin": ["gold_coin"],
+  "silver-coin": ["silver_coin"],
+  necklace: ["necklace"],
+  chain: ["chain"],
+  pendant: ["pendant"],
+  choker: ["choker"],
+  bangle: ["bangle"],
+  bracelet: ["bracelet"],
+  "charm-bracelet": ["charm_bracelet"],
+  ring: ["ring"],
+  "engagement-ring": ["engagement_ring"],
+  "wedding-ring": ["wedding_ring"],
+  earring: ["earring"],
+  "stud-earring": ["stud_earring"],
+  "hoop-earring": ["hoop_earring"],
+  "drop-earring": ["drop_earring"],
+  anklet: ["anklet"],
+  "toe-ring": ["toe_ring"],
+  other: ["other"],
+};
+
+const getCategoryInfo = (categories: ProductCategory[]) => {
+  const primaryCategory = categories[0];
+  const config = categoryConfig[primaryCategory];
+  
+  let icon = Gem;
+  if (config.group === "investment") {
+    icon = primaryCategory.includes("coin") ? Coins : BarChart3;
+  } else {
+    icon = Gem;
+  }
+  
+  return {
+    categories,
+    icon,
+    label: config.label,
+    description: `Explore our collection of ${config.label.toLowerCase()} products. ${config.group === "investment" ? "Investment-grade precious metals." : "Handcrafted jewelry pieces."}`,
+  };
 };
 
 export async function generateMetadata({ params }: CategoryPageProps) {
   const { category } = await params;
-  const categoryInfo = categoryMap[category];
+  const categorySlugs = categorySlugMap[category];
 
-  if (!categoryInfo) {
+  if (!categorySlugs) {
     return {
       title: "Category Not Found",
     };
   }
 
-  const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+  const categoryInfo = getCategoryInfo(categorySlugs);
   return {
-    title: `${categoryLabel} | KVT Jewellers`,
+    title: `${categoryInfo.label} | KVT Jewellers`,
     description: categoryInfo.description,
   };
 }
 
 export default async function CategoryPage({ params }: CategoryPageProps) {
   const { category } = await params;
-  const categoryInfo = categoryMap[category];
+  const categorySlugs = categorySlugMap[category];
 
-  if (!categoryInfo) {
+  if (!categorySlugs) {
     notFound();
   }
 
-  const products = await getProductsByCategory(categoryInfo.type);
-  const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1);
+  // Get all products and filter by categories
+  const allProducts = await getAllProducts();
+  const products = allProducts.filter((p) => categorySlugs.includes(p.category));
+  
+  const categoryInfo = getCategoryInfo(categorySlugs);
   const Icon = categoryInfo.icon;
 
   return (
@@ -66,10 +101,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             <Icon className="h-8 w-8 text-brand-600" />
           </div>
           <Badge variant="outline" className="mb-4 border-brand-300 text-brand-700">
-            {categoryLabel} Collection
+            {categoryInfo.label} Collection
           </Badge>
           <h1 className="mb-4 font-serif text-4xl font-bold md:text-6xl">
-            {categoryLabel}
+            {categoryInfo.label}
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-muted-foreground">
             {categoryInfo.description}

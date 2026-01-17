@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { cookies } from "next/headers";
 import "./globals.css";
+// Import memory optimization to disable console.log in production
+import "@/lib/memory-optimization";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -38,13 +41,20 @@ export function generateViewport() {
   };
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Get locale from cookie directly (without next-intl dependency)
+  // This avoids next-intl initialization issues in root layout
+  // Staff routes will always be English (no i18n provider)
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get('kvt_lang')?.value;
+  const locale = (localeCookie === 'ms' || localeCookie === 'en') ? localeCookie : 'en';
+  
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+    <html lang={locale} className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/app.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/app.jpg" />
