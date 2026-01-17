@@ -31,6 +31,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/ui/phone-input";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { TableSkeleton } from "@/components/staff/skeletons/TableSkeleton";
 import { Loader2, Search, Edit, Trash2, UserPlus, AlertCircle, X } from "lucide-react";
@@ -428,19 +429,15 @@ export function StaffUserManagement() {
                 placeholder="John Doe"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="edit-phone">Phone Number</Label>
-              <Input
-                id="edit-phone"
-                type="tel"
-                value={editFormData.phone}
-                onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
-                placeholder="+60 12-345 6789"
-              />
-              <p className="text-xs text-muted-foreground">
-                Phone number will be used for notifications (WhatsApp/SMS)
-              </p>
-            </div>
+            <PhoneInput
+              id="edit-phone"
+              label="Phone Number"
+              value={editFormData.phone || ""}
+              onChange={(value) => setEditFormData({ ...editFormData, phone: value })}
+              countryCode="MY"
+              helperText="Phone number will be used for notifications (WhatsApp/SMS)"
+              disabled={saving}
+            />
             <div className="space-y-2">
               <Label htmlFor="edit-role">Role *</Label>
               <Select

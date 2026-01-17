@@ -74,3 +74,4 @@ scripts/generate-icons-instructions.md
 
 **/*README.md
 !/README.md
+supabase/migrations/create_trading_pre_registrations_table.sql

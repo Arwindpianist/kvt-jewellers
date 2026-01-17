@@ -12,7 +12,7 @@ const iconMap = {
   FileText,
   ShoppingBag,
   Users,
-};
+} as const;
 
 type IconName = keyof typeof iconMap;
 

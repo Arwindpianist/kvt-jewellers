@@ -1,3 +1,6 @@
+"use client";
+
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Phone, Mail, Clock } from "lucide-react";
@@ -7,16 +10,18 @@ export function LiveRateSidebar() {
     <div className="space-y-6">
       {/* Online Trading Button */}
       <Button 
+        asChild
         variant="default" 
         className="w-full neomorphic-button bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white font-semibold py-7 text-base relative overflow-hidden group"
-        disabled
       >
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          <span className="text-lg">📈</span>
-          <span>Online Trading</span>
-          <span className="text-xs opacity-80">(Coming Soon)</span>
-        </span>
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+        <Link href="/pre-register-trading">
+          <span className="relative z-10 flex items-center justify-center gap-2">
+            <span className="text-lg">📈</span>
+            <span>Online Trading</span>
+            <span className="text-xs opacity-80">(Pre-Register)</span>
+          </span>
+          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+        </Link>
       </Button>
 
       {/* For Booking */}

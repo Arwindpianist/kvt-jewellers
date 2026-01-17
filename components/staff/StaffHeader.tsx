@@ -30,6 +30,7 @@ const navItems = [
 const adminNavItems = [
   { href: "/staff/staff-users", label: "Staff Users", icon: Users },
   { href: "/staff/customers", label: "Customers", icon: Users },
+  { href: "/staff/pre-registrations", label: "Pre-Registrations", icon: Users },
 ];
 
 export function StaffHeader({ userName, userRole = 'staff' }: StaffHeaderProps) {

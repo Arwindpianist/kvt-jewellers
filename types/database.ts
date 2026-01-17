@@ -274,6 +274,39 @@ export type Database = {
         }
         Relationships: []
       }
+      trading_pre_registrations: {
+        Row: {
+          country: string
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string
+          status: "pending" | "converted"
+          updated_at: string
+        }
+        Insert: {
+          country: string
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone: string
+          status?: "pending" | "converted"
+          updated_at?: string
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string
+          status?: "pending" | "converted"
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

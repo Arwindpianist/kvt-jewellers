@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, Mail, Lock, User, Phone, MapPin, CheckCircle2, ArrowRight, ArrowLeft, Shield, CreditCard, Inbox } from "lucide-react";
+import { PhoneInput } from "@/components/ui/phone-input";
+import { Loader2, Mail, Lock, User, MapPin, CheckCircle2, ArrowRight, ArrowLeft, Shield, CreditCard, Inbox } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface FormData {
@@ -587,25 +588,16 @@ export function RegisterForm() {
                         </Select>
                       </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number *</Label>
-                        <div className="relative">
-                          <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder={formData.country === "MY" ? "+60 12-345 6789" : "+[country code] [number]"}
-                            value={formData.phone}
-                            onChange={(e) => updateFormData("phone", e.target.value)}
-                            required
-                            className="pl-10"
-                            disabled={loading}
-                          />
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Include country code (e.g., +60 for Malaysia, +65 for Singapore)
-                        </p>
-                      </div>
+                      <PhoneInput
+                        id="phone"
+                        label="Phone Number"
+                        value={formData.phone}
+                        onChange={(value) => updateFormData("phone", value)}
+                        countryCode={formData.country}
+                        required
+                        disabled={loading}
+                        helperText="Phone number will be used for order notifications (WhatsApp/SMS)"
+                      />
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
