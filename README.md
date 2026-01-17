@@ -1,119 +1,28 @@
-# KVT Jewellers Website & Staff Web App
+# KVT Jewellers - Digital Platform
 
-A modern, secure rebuild of the KVT Jewellers website and staff management system.
+A premium digital platform for KVT Jewellers, providing customers with seamless access to gold and silver products, live market rates, and secure online trading capabilities.
 
-## Features
+## About
 
-### Public Website
-- Homepage with brand messaging and featured products
-- Live gold and silver price display
-- Product catalog (Coins, Bars, Jewelry)
-- Product detail pages
-- About Us and Contact pages
-- PWA support (installable, offline fallback)
+KVT Jewellers is a trusted name in precious metals, offering a comprehensive digital experience that combines traditional jewelry craftsmanship with modern e-commerce and trading technology.
 
-### Staff Web App
-- Secure authentication (mock implementation)
-- Gold price management (view, override, publish/unpublish)
-- Product management (CRUD operations)
-- Tablet-optimized interface
+## Key Features
 
-## Tech Stack
+- **Live Market Rates**: Real-time gold and silver prices with multi-currency support
+- **Product Catalog**: Browse and purchase coins, bars, and fine jewelry
+- **Online Trading**: Pre-registration for upcoming precious metals trading platform
+- **Secure Transactions**: Bank-level security for all financial operations
+- **Mobile Experience**: Progressive Web App (PWA) for seamless mobile access
+- **Staff Portal**: Comprehensive management system for inventory, orders, and customer service
 
-- **Framework**: Next.js 14+ (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS + shadcn/ui
-- **PWA**: next-pwa
-- **Deployment**: Vercel
+## Technology
 
-## Getting Started
+Built with modern web technologies to ensure security, performance, and scalability.
 
-### Prerequisites
+## Contact
 
-- Node.js 18+ 
-- npm or yarn
+For inquiries, please visit our website or contact our customer service team.
 
-### Installation
+---
 
-1. Install dependencies:
-```bash
-npm install
-```
-
-2. Set up environment variables:
-```bash
-cp .env.example .env
-```
-
-Edit `.env` and configure:
-- `GOLD_PRICE_API_URL` - URL for gold price API (e.g., metals.live or goldapi.io)
-- `GOLD_PRICE_API_KEY` - API key for gold price service
-- `AUTH_SECRET` - Secret for authentication (for future real auth)
-- `NEXT_PUBLIC_APP_URL` - Public URL of the app
-
-3. Run the development server:
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## Demo Credentials
-
-### Staff Login
-- **Admin**: admin@kvtjewellers.com / password
-- **Staff**: staff@kvtjewellers.com / password
-
-## Project Structure
-
-```
-kvt-jewellers/
-├── app/
-│   ├── (public)/          # Public website routes
-│   ├── (staff)/            # Staff app routes (protected)
-│   ├── api/               # API routes
-│   └── layout.tsx         # Root layout
-├── components/
-│   ├── public/            # Public site components
-│   ├── staff/             # Staff app components
-│   └── ui/                # shadcn/ui components
-├── lib/                   # Utility functions
-├── types/                  # TypeScript type definitions
-└── public/                # Static assets
-```
-
-## Security Features
-
-- **Server-side gold price fetching**: All external API calls happen server-side only
-- **No exposed endpoints**: Provider URLs and API keys never reach the client
-- **Protected staff routes**: Middleware protects all `/staff/*` routes
-- **Rate limiting**: Public API endpoints have basic rate limiting
-
-## PWA Setup
-
-The app is configured as a PWA. To complete setup:
-
-1. Add app icons to `public/icons/` in the following sizes:
-   - 72x72, 96x96, 128x128, 144x144, 152x152, 192x192, 384x384, 512x512
-
-2. Icons should be square PNG images with a gold/logo design.
-
-## Development Notes
-
-- Mock authentication is implemented for development
-- Product and price data is stored in-memory (will be migrated to database)
-- Gold price API supports metals.live and goldapi.io formats
-- All sensitive operations are server-side only
-
-## Future Enhancements
-
-- Migrate to Supabase Auth for real authentication
-- Move data storage to Supabase Postgres
-- Add image upload functionality for products
-- Implement real-time price updates
-- Add analytics and monitoring
-
-## License
-
-Proprietary - KVT Jewellers
-
+© 2024 KVT Jewellers. All rights reserved.

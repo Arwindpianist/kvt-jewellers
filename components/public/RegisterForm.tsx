@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PhoneInput } from "@/components/ui/phone-input";
-import { Loader2, Mail, Lock, User, MapPin, CheckCircle2, ArrowRight, ArrowLeft, Shield, CreditCard, Inbox } from "lucide-react";
+import { Loader2, Mail, Lock, User, Phone, MapPin, CheckCircle2, ArrowRight, ArrowLeft, Shield, CreditCard, Inbox } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 
 interface FormData {

@@ -72,6 +72,7 @@ scripts/generate-icons-instructions.md
 *_STATUS.md
 *_CHECKLIST.md
 
-**/*README.md
+# Markdown files (except root README.md)
+*.md
 !/README.md
-supabase/migrations/create_trading_pre_registrations_table.sql
+**/*.md
