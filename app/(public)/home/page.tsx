@@ -1,16 +1,30 @@
 import { HomePageContent } from "@/components/public/HomePageContent";
 import { fetchGoldPricesFromAPI, getPublishedGoldPrices } from "@/lib/gold-prices";
 import { getMessages } from "@/i18n/request";
+import { generatePageMetadata } from "@/lib/metadata";
 
 // MEMORY LEAK FIX: Use cached message loader instead of direct import
 export async function generateMetadata() {
   const messages = await getMessages();
   const meta = messages.meta?.home || {};
   
-  return {
+  return generatePageMetadata({
     title: meta.title || "KVT Jewellers | Premium Gold and Silver Trading",
     description: meta.description || "Premium gold and silver jewelry, coins, and bullion in Malaysia",
-  };
+    url: "/home",
+    keywords: [
+      "KVT Jewellers",
+      "gold jewelry",
+      "silver jewelry",
+      "gold coins",
+      "gold bars",
+      "precious metals",
+      "Malaysia",
+      "916 gold",
+      "999.9 gold",
+      "bullion",
+    ],
+  });
 }
 
 export default async function HomePage() {

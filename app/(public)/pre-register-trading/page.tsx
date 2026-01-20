@@ -2,11 +2,24 @@ import { Suspense } from "react";
 import { PreRegisterTradingForm } from "@/components/public/PreRegisterTradingForm";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { generatePageMetadata } from "@/lib/metadata";
 
-export const metadata = {
-  title: "Pre-Register for Online Trading | KVT Jewellers",
-  description: "Be among the first to experience our revolutionary online trading platform for gold and silver",
-};
+export async function generateMetadata() {
+  return generatePageMetadata({
+    title: "Pre-Register for Online Trading | KVT Jewellers",
+    description: "Be among the first to experience our revolutionary online trading platform for gold and silver",
+    url: "/pre-register-trading",
+    keywords: [
+      "online trading",
+      "gold trading",
+      "silver trading",
+      "pre-register",
+      "trading platform",
+      "KVT Jewellers",
+      "precious metals trading",
+    ],
+  });
+}
 
 function FormSkeleton() {
   return (

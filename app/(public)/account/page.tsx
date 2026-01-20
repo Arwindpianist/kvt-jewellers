@@ -5,8 +5,19 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ShoppingBag, Settings, Package, User } from "lucide-react";
 import { AccountNav } from "@/components/public/AccountNav";
+import { generatePageMetadata } from "@/lib/metadata";
 
 export const dynamic = 'force-dynamic'; // This page requires authentication, so it can't be statically generated
+
+export async function generateMetadata() {
+  return generatePageMetadata({
+    title: "My Account | KVT Jewellers",
+    description: "Manage your account, view orders, and update settings",
+    url: "/account",
+    noIndex: true, // Account page is user-specific, shouldn't be indexed
+    keywords: ["account", "profile", "orders", "settings", "KVT Jewellers"],
+  });
+}
 
 export default async function AccountPage() {
   const user = await getCustomerUser();
