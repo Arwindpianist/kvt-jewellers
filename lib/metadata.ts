@@ -30,6 +30,9 @@ export function generatePageMetadata(options: MetadataOptions): Metadata {
 
   const fullUrl = url ? `${BASE_URL}${url}` : BASE_URL;
   const imageUrl = image.startsWith("http") ? image : `${BASE_URL}${image}`;
+  
+  // Next.js OpenGraph only supports "website" | "article", so map "product" to "website"
+  const openGraphType = type === "product" ? "website" : type;
 
   const metadata: Metadata = {
     title,
@@ -49,7 +52,7 @@ export function generatePageMetadata(options: MetadataOptions): Metadata {
           alt: title,
         },
       ],
-      type,
+      type: openGraphType,
       locale: "en_US",
     },
     twitter: {
